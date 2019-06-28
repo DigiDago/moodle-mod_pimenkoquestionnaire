@@ -17,7 +17,7 @@
 /**
  * This file contains the parent class for yesno question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
@@ -37,6 +37,7 @@ class yesno extends base {
 
     /**
      * Override and return a form template if provided. Output of question_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function question_template() {
@@ -45,6 +46,7 @@ class yesno extends base {
 
     /**
      * Override and return a response template if provided. Output of question_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function response_template() {
@@ -53,6 +55,7 @@ class yesno extends base {
 
     /**
      * Override this and return true if the question type allows dependent questions.
+     *
      * @return boolean
      */
     public function allows_dependents() {
@@ -75,6 +78,7 @@ class yesno extends base {
 
     /**
      * Get the maximum score possible for feedback if appropriate. Override if default behaviour is not correct.
+     *
      * @return int | boolean
      */
     public function get_feedback_maxscore() {
@@ -89,6 +93,7 @@ class yesno extends base {
     /**
      * Returns an array of dependency options for the question as an array of id value / display value pairs. Override in specific
      * question types that support this.
+     *
      * @return array An array of valid pair options.
      */
     protected function get_dependency_options() {
@@ -102,13 +107,15 @@ class yesno extends base {
 
     /**
      * Return the context tags for the check question template.
-     * @param object $data
-     * @param array $dependants Array of all questions/choices depending on this question.
+     *
+     * @param object  $data
+     * @param array   $dependants Array of all questions/choices depending on this question.
      * @param boolean $blankpimenkoquestionnaire
+     *
      * @return object The check question context tags.
      *
      */
-    protected function question_survey_display($data, $dependants=[], $blankpimenkoquestionnaire=false) {
+    protected function question_survey_display( $data, $dependants = [], $blankpimenkoquestionnaire = false ) {
         global $idcounter;  // To make sure all radio buttons have unique ids. // JR 20 NOV 2007.
 
         $stryes = get_string('yes');
@@ -118,13 +125,13 @@ class yesno extends base {
         $val2 = 'n';
 
         if ($blankpimenkoquestionnaire) {
-            $stryes = ' (1) '.$stryes;
-            $strno = ' (0) '.$strno;
+            $stryes = ' (1) ' . $stryes;
+            $strno = ' (0) ' . $strno;
         }
 
         $options = [$val1 => $stryes, $val2 => $strno];
-        $name = 'q'.$this->id;
-        $checked = (isset($data->{'q'.$this->id}) ? $data->{'q'.$this->id} : '');
+        $name = 'q' . $this->id;
+        $checked = (isset($data->{'q' . $this->id}) ? $data->{'q' . $this->id} : '');
         $ischecked = false;
 
         $choicetags = new \stdClass();
@@ -132,7 +139,7 @@ class yesno extends base {
         $choicetags->qelements->choice = [];
 
         foreach ($options as $value => $label) {
-            $htmlid = 'auto-rb'.sprintf('%04d', ++$idcounter);
+            $htmlid = 'auto-rb' . sprintf('%04d', ++$idcounter);
             $option = new \stdClass();
             $option->name = $name;
             $option->id = $htmlid;
@@ -150,7 +157,7 @@ class yesno extends base {
         // CONTRIB-846.
         if (!$this->required()) {
             $id = '';
-            $htmlid = 'auto-rb'.sprintf('%04d', ++$idcounter);
+            $htmlid = 'auto-rb' . sprintf('%04d', ++$idcounter);
             $content = get_string('noanswer', 'pimenkoquestionnaire');
             $option = new \stdClass();
             $option->name = $name;
@@ -169,34 +176,36 @@ class yesno extends base {
 
     /**
      * Return the context tags for the text response template.
+     *
      * @param object $data
+     *
      * @return object The radio question response context tags.
      *
      */
-    protected function response_survey_display($data) {
+    protected function response_survey_display( $data ) {
         static $uniquetag = 0;  // To make sure all radios have unique names.
 
         $resptags = new \stdClass();
 
-        $resptags->yesname = 'q'.$this->id.$uniquetag++.'y';
-        $resptags->noname = 'q'.$this->id.$uniquetag++.'n';
+        $resptags->yesname = 'q' . $this->id . $uniquetag++ . 'y';
+        $resptags->noname = 'q' . $this->id . $uniquetag++ . 'n';
         $resptags->stryes = get_string('yes');
         $resptags->strno = get_string('no');
-        if (isset($data->{'q'.$this->id}) && ($data->{'q'.$this->id} == 'y')) {
+        if (isset($data->{'q' . $this->id}) && ($data->{'q' . $this->id} == 'y')) {
             $resptags->yesselected = 1;
         }
-        if (isset($data->{'q'.$this->id}) && ($data->{'q'.$this->id} == 'n')) {
+        if (isset($data->{'q' . $this->id}) && ($data->{'q' . $this->id} == 'n')) {
             $resptags->noselected = 1;
         }
 
         return $resptags;
     }
 
-    protected function form_length(\MoodleQuickForm $mform, $helpname = '') {
+    protected function form_length( \MoodleQuickForm $mform, $helpname = '' ) {
         return base::form_length_hidden($mform);
     }
 
-    protected function form_precise(\MoodleQuickForm $mform, $helpname = '') {
+    protected function form_precise( \MoodleQuickForm $mform, $helpname = '' ) {
         return base::form_precise_hidden($mform);
     }
 }

@@ -18,7 +18,7 @@
 
 require_once("../../config.php");
 require_once($CFG->libdir . '/completionlib.php');
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
 if (!isset($SESSION->pimenkoquestionnaire)) {
     $SESSION->pimenkoquestionnaire = new stdClass();
@@ -38,7 +38,7 @@ require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/pimenkoquestionnaire:view', $context);
 
-$url = new moodle_url($CFG->wwwroot.'/mod/pimenkoquestionnaire/complete.php');
+$url = new moodle_url($CFG->wwwroot . '/mod/pimenkoquestionnaire/complete.php');
 if (isset($id)) {
     $url->param('id', $id);
 } else {
@@ -53,7 +53,7 @@ $pimenkoquestionnaire->add_renderer($PAGE->get_renderer('mod_pimenkoquestionnair
 $pimenkoquestionnaire->add_page(new \mod_pimenkoquestionnaire\output\completepage());
 
 $pimenkoquestionnaire->strpimenkoquestionnaires = get_string("modulenameplural", "pimenkoquestionnaire");
-$pimenkoquestionnaire->strpimenkoquestionnaire  = get_string("modulename", "pimenkoquestionnaire");
+$pimenkoquestionnaire->strpimenkoquestionnaire = get_string("modulename", "pimenkoquestionnaire");
 
 // Mark as viewed.
 $completion = new completion_info($course);
@@ -63,11 +63,11 @@ if ($resume) {
     $context = context_module::instance($pimenkoquestionnaire->cm->id);
     $anonymous = $pimenkoquestionnaire->respondenttype == 'anonymous';
 
-    $event = \mod_pimenkoquestionnaire\event\attempt_resumed::create(array(
-                    'objectid' => $pimenkoquestionnaire->id,
-                    'anonymous' => $anonymous,
-                    'context' => $context
-    ));
+    $event = \mod_pimenkoquestionnaire\event\attempt_resumed::create([
+            'objectid' => $pimenkoquestionnaire->id,
+            'anonymous' => $anonymous,
+            'context' => $context
+    ]);
     $event->trigger();
 }
 

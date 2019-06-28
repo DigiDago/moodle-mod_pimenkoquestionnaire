@@ -17,7 +17,7 @@
 // This page shows results of a pimenkoquestionnaire to a student.
 
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
 $instance = required_param('instance', PARAM_INT);   // Questionnaire ID.
 $userid = optional_param('user', $USER->id, PARAM_INT);
@@ -26,13 +26,13 @@ $byresponse = optional_param('byresponse', 0, PARAM_INT);
 $action = optional_param('action', 'summary', PARAM_ALPHA);
 $currentgroupid = optional_param('group', 0, PARAM_INT); // Groupid.
 
-if (! $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", array("id" => $instance))) {
+if (!$pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $instance])) {
     print_error('incorrectpimenkoquestionnaire', 'pimenkoquestionnaire');
 }
-if (! $course = $DB->get_record("course", array("id" => $pimenkoquestionnaire->course))) {
+if (!$course = $DB->get_record("course", ["id" => $pimenkoquestionnaire->course])) {
     print_error('coursemisconf');
 }
-if (! $cm = get_coursemodule_from_instance("pimenkoquestionnaire", $pimenkoquestionnaire->id, $course->id)) {
+if (!$cm = get_coursemodule_from_instance("pimenkoquestionnaire", $pimenkoquestionnaire->id, $course->id)) {
     print_error('invalidcoursemodule');
 }
 
@@ -40,11 +40,11 @@ require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 $pimenkoquestionnaire->canviewallgroups = has_capability('moodle/site:accessallgroups', $context);
 // Should never happen, unless called directly by a snoop...
-if ( !has_capability('mod/pimenkoquestionnaire:readownresponses', $context)
-    || $userid != $USER->id) {
+if (!has_capability('mod/pimenkoquestionnaire:readownresponses', $context)
+        || $userid != $USER->id) {
     print_error('Permission denied');
 }
-$url = new moodle_url($CFG->wwwroot.'/mod/pimenkoquestionnaire/myreport.php', array('instance' => $instance));
+$url = new moodle_url($CFG->wwwroot . '/mod/pimenkoquestionnaire/myreport.php', ['instance' => $instance]);
 if (isset($userid)) {
     $url->param('userid', $userid);
 }
@@ -214,9 +214,9 @@ switch ($action) {
             }
 
             if ($currentgroupid > 0) {
-                $groupname = get_string('group').' <strong>'.groups_get_group_name($currentgroupid).'</strong>';
+                $groupname = get_string('group') . ' <strong>' . groups_get_group_name($currentgroupid) . '</strong>';
             } else {
-                $groupname = '<strong>'.get_string('allparticipants').'</strong>';
+                $groupname = '<strong>' . get_string('allparticipants') . '</strong>';
             }
         }
 
@@ -242,9 +242,9 @@ switch ($action) {
 
         if (count($resps) > 1) {
             $userresps = $resps;
-            $pimenkoquestionnaire->survey_results_navbar_student ($rid, $userid, $instance, $userresps);
+            $pimenkoquestionnaire->survey_results_navbar_student($rid, $userid, $instance, $userresps);
         }
-        $resps = array();
+        $resps = [];
         // Determine here which "global" responses should get displayed for comparison with current user.
         // Current user is viewing his own group's results.
         if (isset($currentgroupresps)) {
@@ -269,5 +269,5 @@ switch ($action) {
 
     case get_string('return', 'pimenkoquestionnaire'):
     default:
-        redirect('view.php?id='.$cm->id);
+        redirect('view.php?id=' . $cm->id);
 }

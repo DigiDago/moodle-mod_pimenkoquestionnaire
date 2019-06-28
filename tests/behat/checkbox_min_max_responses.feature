@@ -6,36 +6,36 @@ Feature: Checkbox questions can have forced minimum and maximum numbers of boxes
 
   Background: Add a checkbox question to a pimenkoquestionnaire with a min and max entered
     Given the following "users" exist:
-      | username | firstname | lastname | email |
-      | teacher1 | Teacher | 1 | teacher1@example.com |
-      | student1 | Student | 1 | student1@example.com |
+      | username | firstname | lastname | email                |
+      | teacher1 | Teacher   | 1        | teacher1@example.com |
+      | student1 | Student   | 1        | student1@example.com |
     And the following "courses" exist:
       | fullname | shortname | category |
-      | Course 1 | C1 | 0 |
+      | Course 1 | C1        | 0        |
     And the following "course enrolments" exist:
-      | user | course | role |
-      | teacher1 | C1 | editingteacher |
-      | student1 | C1 | student |
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+      | student1 | C1     | student        |
     And the following "activities" exist:
-      | activity | name | description | course | idnumber |
-      | pimenkoquestionnaire | Test pimenkoquestionnaire | Test pimenkoquestionnaire description | C1 | questionnaire0 |
+      | activity             | name                      | description                           | course | idnumber       |
+      | pimenkoquestionnaire | Test pimenkoquestionnaire | Test pimenkoquestionnaire description | C1     | questionnaire0 |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Test pimenkoquestionnaire"
     And I navigate to "Questions" in current page administration
     And I add a "Check Boxes" question and I fill the form with:
-      | Question Name | Q1 |
-      | Yes | y |
-      | Min. forced responses | 1 |
-      | Max. forced responses | 2 |
-      | Question Text | Select one or two choices only |
-      | Possible answers | One,Two,Three,Four |
+      | Question Name         | Q1                             |
+      | Yes                   | y                              |
+      | Min. forced responses | 1                              |
+      | Max. forced responses | 2                              |
+      | Question Text         | Select one or two choices only |
+      | Possible answers      | One,Two,Three,Four             |
     Then I should see "position 1"
     And I should see "[Check Boxes] (Q1)"
     And I should see "Select one or two choices only"
     And I log out
 
-@javascript
+  @javascript
   Scenario: Student must select exactly one or two boxes to submit the question.
     And I log in as "student1"
     And I am on "Course 1" course homepage

@@ -53,12 +53,12 @@
     }}
 <!-- Begin HTML generated from question_drop template. -->
 {{#qelements}}
-{{#choice}}
-<select id="{{choice.id}}" name="{{choice.name}}" class="{{choice.class}}" {{#choice.onchange}}onchange="{{.}}"{{/choice.onchange}}>
-{{#choice.options}}
-<option {{#selected}}selected="selected" {{/selected}}value="{{value}}">{{label}}</option>
-{{/choice.options}}
-</select>
-{{/choice}}
+    {{#choice}}
+        <select id="{{choice.id}}" name="{{choice.name}}" class="{{choice.class}}" {{#choice.onchange}}onchange="{{.}}"{{/choice.onchange}}>
+            {{#choice.options}}
+                <option {{#selected}}selected="selected" {{/selected}}value="{{value}}">{{label}}</option>
+            {{/choice.options}}
+        </select>
+    {{/choice}}
 {{/qelements}}
 <!-- End HTML generated from question_drop template. -->

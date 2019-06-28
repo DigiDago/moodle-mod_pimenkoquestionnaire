@@ -17,31 +17,31 @@
 // This page displays a non-completable instance of pimenkoquestionnaire.
 
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
-$id     = optional_param('id', 0, PARAM_INT);
-$sid    = optional_param('sid', 0, PARAM_INT);
-$popup  = optional_param('popup', 0, PARAM_INT);
-$qid    = optional_param('qid', 0, PARAM_INT);
+$id = optional_param('id', 0, PARAM_INT);
+$sid = optional_param('sid', 0, PARAM_INT);
+$popup = optional_param('popup', 0, PARAM_INT);
+$qid = optional_param('qid', 0, PARAM_INT);
 $currentgroupid = optional_param('group', 0, PARAM_INT); // Groupid.
 
 if ($id) {
-    if (! $cm = get_coursemodule_from_id('pimenkoquestionnaire', $id)) {
+    if (!$cm = get_coursemodule_from_id('pimenkoquestionnaire', $id)) {
         print_error('invalidcoursemodule');
     }
 
-    if (! $course = $DB->get_record("course", array("id" => $cm->course))) {
+    if (!$course = $DB->get_record("course", ["id" => $cm->course])) {
         print_error('coursemisconf');
     }
 
-    if (! $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", array("id" => $cm->instance))) {
+    if (!$pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $cm->instance])) {
         print_error('invalidcoursemodule');
     }
 } else {
-    if (! $survey = $DB->get_record("pimenkoquestionnaire_survey", array("id" => $sid))) {
+    if (!$survey = $DB->get_record("pimenkoquestionnaire_survey", ["id" => $sid])) {
         print_error('surveynotexists', 'pimenkoquestionnaire');
     }
-    if (! $course = $DB->get_record("course", ["id" => $survey->courseid])) {
+    if (!$course = $DB->get_record("course", ["id" => $survey->courseid])) {
         print_error('coursemisconf');
     }
     // Dummy pimenkoquestionnaire object.
@@ -86,11 +86,11 @@ $pimenkoquestionnaire->add_renderer($PAGE->get_renderer('mod_pimenkoquestionnair
 $pimenkoquestionnaire->add_page(new \mod_pimenkoquestionnaire\output\previewpage());
 
 $canpreview = (!isset($pimenkoquestionnaire->capabilities) &&
-               has_capability('mod/pimenkoquestionnaire:preview', context_course::instance($course->id))) ||
-              (isset($pimenkoquestionnaire->capabilities) && $pimenkoquestionnaire->capabilities->preview);
+                has_capability('mod/pimenkoquestionnaire:preview', context_course::instance($course->id))) ||
+        (isset($pimenkoquestionnaire->capabilities) && $pimenkoquestionnaire->capabilities->preview);
 if (!$canpreview && !$popup) {
     // Should never happen, unless called directly by a snoop...
-    print_error('nopermissions', 'pimenkoquestionnaire', $CFG->wwwroot.'/mod/pimenkoquestionnaire/view.php?id='.$cm->id);
+    print_error('nopermissions', 'pimenkoquestionnaire', $CFG->wwwroot . '/mod/pimenkoquestionnaire/view.php?id=' . $cm->id);
 }
 
 if (!isset($SESSION->pimenkoquestionnaire)) {
@@ -113,10 +113,8 @@ if (!$popup) {
 
 // Include the needed js.
 
-
 $PAGE->requires->js('/mod/pimenkoquestionnaire/module.js');
 // Print the tabs.
-
 
 echo $pimenkoquestionnaire->renderer->header();
 if (!$popup) {
@@ -127,19 +125,19 @@ $pimenkoquestionnaire->page->add_to_page('heading', clean_text($pq));
 if ($pimenkoquestionnaire->capabilities->printblank) {
     // Open print friendly as popup window.
 
-    $linkname = '&nbsp;'.get_string('printblank', 'pimenkoquestionnaire');
+    $linkname = '&nbsp;' . get_string('printblank', 'pimenkoquestionnaire');
     $title = get_string('printblanktooltip', 'pimenkoquestionnaire');
-    $url = '/mod/pimenkoquestionnaire/print.php?qid='.$pimenkoquestionnaire->id.'&amp;rid=0&amp;'.'courseid='.
-            $pimenkoquestionnaire->course->id.'&amp;sec=1';
-    $options = array('menubar' => true, 'location' => false, 'scrollbars' => true, 'resizable' => true,
-                    'height' => 600, 'width' => 800, 'title' => $title);
+    $url = '/mod/pimenkoquestionnaire/print.php?qid=' . $pimenkoquestionnaire->id . '&amp;rid=0&amp;' . 'courseid=' .
+            $pimenkoquestionnaire->course->id . '&amp;sec=1';
+    $options = ['menubar' => true, 'location' => false, 'scrollbars' => true, 'resizable' => true,
+            'height' => 600, 'width' => 800, 'title' => $title];
     $name = 'popup';
     $link = new moodle_url($url);
     $action = new popup_action('click', $link, $name, $options);
     $class = "floatprinticon";
     $pimenkoquestionnaire->page->add_to_page('printblank',
-        $pimenkoquestionnaire->renderer->action_link($link, $linkname, $action, array('class' => $class, 'title' => $title),
-            new pix_icon('t/print', $title)));
+            $pimenkoquestionnaire->renderer->action_link($link, $linkname, $action, ['class' => $class, 'title' => $title],
+                    new pix_icon('t/print', $title)));
 }
 $pimenkoquestionnaire->survey_print_render('', 'preview', $course->id, $rid = 0, $popup);
 if ($popup) {
@@ -152,9 +150,9 @@ echo $pimenkoquestionnaire->renderer->footer($course);
 $context = context_module::instance($pimenkoquestionnaire->cm->id);
 $anonymous = $pimenkoquestionnaire->respondenttype == 'anonymous';
 
-$event = \mod_pimenkoquestionnaire\event\pimenkoquestionnaire_previewed::create(array(
-                'objectid' => $pimenkoquestionnaire->id,
-                'anonymous' => $anonymous,
-                'context' => $context
-));
+$event = \mod_pimenkoquestionnaire\event\pimenkoquestionnaire_previewed::create([
+        'objectid' => $pimenkoquestionnaire->id,
+        'anonymous' => $anonymous,
+        'context' => $context
+]);
 $event->trigger();

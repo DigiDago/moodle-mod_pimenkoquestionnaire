@@ -34,7 +34,6 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2014 Joseph Rézeau <moodle@rezeau.org>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class question_created extends \core\event\base {
     /*
      * Set basic properties for the event.

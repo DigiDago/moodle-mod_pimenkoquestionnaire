@@ -17,7 +17,7 @@
 /**
  * This file contains the parent class for pimenkoquestionnaire question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
@@ -30,10 +30,9 @@ use mod_pimenkoquestionnaire\db\bulk_sql_config;
 /**
  * Class for multiple response types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @package responsetypes
  */
-
 class multiple extends single {
     /**
      * The only differences between multuple and single responses are the
@@ -43,17 +42,17 @@ class multiple extends single {
         return 'pimenko_resp_multiple';
     }
 
-    public function insert_response($rid, $val) {
+    public function insert_response( $rid, $val ) {
         global $DB;
         $resid = '';
         foreach ($this->question->choices as $cid => $choice) {
             if (strpos($choice->content, '!other') === 0) {
-                $other = optional_param('q'.$this->question->id.'_'.$cid, '', PARAM_CLEAN);
+                $other = optional_param('q' . $this->question->id . '_' . $cid, '', PARAM_CLEAN);
                 if (empty($other)) {
                     continue;
                 }
                 if (!isset($val) || !is_array($val)) {
-                    $val = array($cid);
+                    $val = [$cid];
                 } else {
                     array_push($val, $cid);
                 }
@@ -91,27 +90,28 @@ class multiple extends single {
     /**
      * Return an array of answers by question/choice for the given response. Must be implemented by the subclass.
      *
-     * @param int $rid The response id.
-     * @param null $col Other data columns to return.
-     * @param bool $csvexport Using for CSV export.
-     * @param int $choicecodes CSV choicecodes are required.
-     * @param int $choicetext CSV choicetext is required.
+     * @param int  $rid         The response id.
+     * @param null $col         Other data columns to return.
+     * @param bool $csvexport   Using for CSV export.
+     * @param int  $choicecodes CSV choicecodes are required.
+     * @param int  $choicetext  CSV choicetext is required.
+     *
      * @return array
      */
-    static public function response_select($rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1) {
+    static public function response_select( $rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1 ) {
         global $DB;
 
         $stringother = get_string('other', 'pimenkoquestionnaire');
         $values = [];
-        $sql = 'SELECT a.id as aid, q.id as qid '.$col.',c.content as ccontent,c.id as cid '.
-            'FROM {'.self::response_table().'} a, {pimenko_question} q, {pimenko_quest_choice} c '.
-            'WHERE a.response_id = ? AND a.question_id=q.id AND a.choice_id=c.id '.
-            'ORDER BY a.id,a.question_id,c.id';
+        $sql = 'SELECT a.id as aid, q.id as qid ' . $col . ',c.content as ccontent,c.id as cid ' .
+                'FROM {' . self::response_table() . '} a, {pimenko_question} q, {pimenko_quest_choice} c ' .
+                'WHERE a.response_id = ? AND a.question_id=q.id AND a.choice_id=c.id ' .
+                'ORDER BY a.id,a.question_id,c.id';
         $records = $DB->get_records_sql($sql, [$rid]);
         if ($csvexport) {
             $tmp = null;
             if (!empty($records)) {
-                $qids2 = array();
+                $qids2 = [];
                 $oldqid = '';
                 foreach ($records as $qid => $row) {
                     if ($row->qid != $oldqid) {
@@ -129,7 +129,7 @@ class multiple extends single {
                     $c2 = $row2->content;
                     $otherend = false;
                     if ($c2 == '!other') {
-                        $c2 = '!other='.get_string('other', 'pimenkoquestionnaire');
+                        $c2 = '!other=' . get_string('other', 'pimenkoquestionnaire');
                     }
                     if (preg_match('/^!other/', $c2)) {
                         $otherend = true;
@@ -142,7 +142,7 @@ class multiple extends single {
                         }
                     }
                     $sql = 'SELECT a.name as name, a.type_id as q_type, a.position as pos ' .
-                        'FROM {pimenko_question} a WHERE id = ?';
+                            'FROM {pimenko_question} a WHERE id = ?';
                     $currentquestion = $DB->get_records_sql($sql, [$qid2]);
                     foreach ($currentquestion as $question) {
                         $name1 = $question->name;
@@ -158,13 +158,13 @@ class multiple extends single {
                         }
                     }
                     if ($otherend) {
-                        $newrow2 = array();
+                        $newrow2 = [];
                         $newrow2[] = $question->pos;
                         $newrow2[] = $type1;
                         $newrow2[] = $name1;
-                        $newrow2[] = '['.get_string('other', 'pimenkoquestionnaire').']';
+                        $newrow2[] = '[' . get_string('other', 'pimenkoquestionnaire') . ']';
                         $newrow2[] = $selected;
-                        $tmp2 = $qid2.'_other';
+                        $tmp2 = $qid2 . '_other';
                         $values["$tmp2"] = $newrow2;
                     }
                     $newrow[] = $question->pos;
@@ -172,7 +172,7 @@ class multiple extends single {
                     $newrow[] = $name1;
                     $newrow[] = $c2;
                     $newrow[] = $selected;
-                    $tmp = $qid2.'_'.$cid2;
+                    $tmp = $qid2 . '_' . $cid2;
                     $values["$tmp"] = $newrow;
                 }
             }
@@ -198,7 +198,7 @@ class multiple extends single {
                 if (preg_match('/^!other/', $row->ccontent)) {
                     $newrow[] = 'other_' . $cid;
                 } else {
-                    $newrow[] = (int)$cid;
+                    $newrow[] = (int) $cid;
                 }
                 if ($tmp == $qid) {
                     $arr[] = $newrow;
@@ -208,7 +208,7 @@ class multiple extends single {
                     $values["$tmp"] = $arr;
                 }
                 $tmp = $qid;
-                $arr = array($newrow);
+                $arr = [$newrow];
             }
             if ($tmp != null) {
                 $values["$tmp"] = $arr;
@@ -222,10 +222,10 @@ class multiple extends single {
         // This will work even for multiple !other fields within one question
         // AND for identical !other responses in different questions JR.
         $sql = 'SELECT c.id as cid, c.content as content, a.response as aresponse, q.id as qid, q.position as position,
-                                    q.type_id as type_id, q.name as name '.
-            'FROM {pimenko_response_other} a, {pimenko_question} q, {pimenko_quest_choice} c '.
-            'WHERE a.response_id= ? AND a.question_id=q.id AND a.choice_id=c.id '.
-            'ORDER BY a.question_id,c.id ';
+                                    q.type_id as type_id, q.name as name ' .
+                'FROM {pimenko_response_other} a, {pimenko_question} q, {pimenko_quest_choice} c ' .
+                'WHERE a.response_id= ? AND a.question_id=q.id AND a.choice_id=c.id ' .
+                'ORDER BY a.question_id,c.id ';
         $records = $DB->get_records_sql($sql, [$rid]);
         foreach ($records as $record) {
             $newrow = [];
@@ -238,7 +238,7 @@ class multiple extends single {
 
             // The !other modality with no label.
             if ($content == '!other') {
-                $content = '!other='.$stringother;
+                $content = '!other=' . $stringother;
             }
             $content = substr($content, 7);
             $aresponse = $record->aresponse;
@@ -258,13 +258,17 @@ class multiple extends single {
 
     /**
      * Return sql and params for getting responses in bulk.
-     * @author Guy Thomas
+     *
      * @param int|array $pimenkoquestionnaireids One id, or an array of ids.
-     * @param bool|int $responseid
-     * @param bool|int $userid
+     * @param bool|int  $responseid
+     * @param bool|int  $userid
+     *
      * @return array
+     * @author Guy Thomas
      */
-    public function get_bulk_sql($pimenkoquestionnaireids, $responseid = false, $userid = false, $groupid = false, $showincompletes = 0) {
+    public function get_bulk_sql(
+            $pimenkoquestionnaireids, $responseid = false, $userid = false, $groupid = false, $showincompletes = 0
+    ) {
         global $DB;
 
         $sql = $this->bulk_sql();
@@ -310,8 +314,9 @@ class multiple extends single {
 
     /**
      * Return sql for getting responses in bulk.
-     * @author Guy Thomas
+     *
      * @return string
+     * @author Guy Thomas
      */
     protected function bulk_sql() {
         global $DB;
@@ -322,11 +327,11 @@ class multiple extends single {
         $extraselect .= 'qrm.choice_id, ' . $DB->sql_order_by_text('qro.response', 1000) . ' AS response, 0 AS rankvalue';
 
         return "
-            SELECT " . $DB->sql_concat_join("'_'", ['qr.id', "'".$this->question->helpname()."'", $alias.'.id']) . " AS id,
+            SELECT " . $DB->sql_concat_join("'_'", ['qr.id', "'" . $this->question->helpname() . "'", $alias . '.id']) . " AS id,
                    qr.submitted, qr.complete, qr.grade, qr.userid, $userfields, qr.id AS rid, $alias.question_id,
                    $extraselect
               FROM {pimenko_response} qr
-              JOIN {".self::response_table()."} $alias ON $alias.response_id = qr.id
+              JOIN {" . self::response_table() . "} $alias ON $alias.response_id = qr.id
         ";
     }
 }

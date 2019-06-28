@@ -17,13 +17,14 @@
 /**
  * This file contains the parent class for date question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
 
 namespace mod_pimenkoquestionnaire\question;
 defined('MOODLE_INTERNAL') || die();
+
 use \html_writer;
 
 class date extends base {
@@ -38,6 +39,7 @@ class date extends base {
 
     /**
      * Override and return a form template if provided. Output of question_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function question_template() {
@@ -46,6 +48,7 @@ class date extends base {
 
     /**
      * Override and return a form template if provided. Output of response_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function response_template() {
@@ -54,77 +57,39 @@ class date extends base {
 
     /**
      * Return the context tags for the check question template.
-     * @param object $data
-     * @param string $descendantdata
+     *
+     * @param object  $data
+     * @param string  $descendantdata
      * @param boolean $blankpimenkoquestionnaire
+     *
      * @return object The check question context tags.
      *
      */
-    protected function question_survey_display($data, $descendantsdata, $blankpimenkoquestionnaire=false) {
+    protected function question_survey_display( $data, $descendantsdata, $blankpimenkoquestionnaire = false ) {
         // Date.
         $questiontags = new \stdClass();
-        if (!empty($data->{'q'.$this->id})) {
-            $validdate = $this->check_date_format($data->{'q'.$this->id});
+        if (!empty($data->{'q' . $this->id})) {
+            $validdate = $this->check_date_format($data->{'q' . $this->id});
             if (!$validdate) {
-                $msg = get_string('wrongdateformat', 'pimenkoquestionnaire', $data->{'q'.$this->id});
+                $msg = get_string('wrongdateformat', 'pimenkoquestionnaire', $data->{'q' . $this->id});
                 $this->add_notification($msg);
             }
         }
         $choice = new \stdClass();
         $choice->type = 'date'; // Using HTML5 date input.
         $choice->onkeypress = 'return event.keyCode != 13;';
-        $choice->name = 'q'.$this->id;
-        $choice->value = (isset($data->{'q'.$this->id}) ? $data->{'q'.$this->id} : '');
+        $choice->name = 'q' . $this->id;
+        $choice->value = (isset($data->{'q' . $this->id}) ? $data->{'q' . $this->id} : '');
         $questiontags->qelements = new \stdClass();
         $questiontags->qelements->choice = $choice;
         return $questiontags;
     }
 
     /**
-     * Return the context tags for the check response template.
-     * @param object $data
-     * @return object The check question response context tags.
-     *
-     */
-    protected function response_survey_display($data) {
-        $resptags = new \stdClass();
-        if (isset($data->{'q'.$this->id})) {
-            $resptags->content = $data->{'q'.$this->id};
-        }
-        return $resptags;
-    }
-
-    /**
-     * Check question's form data for valid response. Override this is type has specific format requirements.
-     *
-     * @param object $responsedata The data entered into the response.
-     * @return boolean
-     */
-    public function response_valid($responsedata) {
-        if (isset($responsedata->{'q'.$this->id})) {
-            $validresponse = true;
-            if ($responsedata->{'q'.$this->id} != '') {
-                $validresponse = $this->check_date_format($responsedata->{'q'.$this->id});
-            }
-            return $validresponse;
-        } else {
-            return parent::response_valid($responsedata);
-        }
-    }
-
-    protected function form_length(\MoodleQuickForm $mform, $helpname = '') {
-        return base::form_length_hidden($mform);
-    }
-
-    protected function form_precise(\MoodleQuickForm $mform, $helpname = '') {
-        return base::form_precise_hidden($mform);
-    }
-
-    /**
      * Verify that the date provided is in the proper YYYY-MM-DD format.
      *
      */
-    public function check_date_format($date) {
+    public function check_date_format( $date ) {
         $datepieces = explode('-', $date);
         $return = true;
 
@@ -147,7 +112,7 @@ class date extends base {
 
                     // Month check.
                     case 1:
-                        if ((strlen($datepiece) != 2) || ((int)$datepiece < 1) || ((int)$datepiece > 12)) {
+                        if ((strlen($datepiece) != 2) || ((int) $datepiece < 1) || ((int) $datepiece > 12)) {
                             $return = false;
                             break 2;
                         }
@@ -155,7 +120,7 @@ class date extends base {
 
                     // Day check.
                     case 2:
-                        if ((strlen($datepiece) != 2) || ((int)$datepiece < 1) || ((int)$datepiece > 31)) {
+                        if ((strlen($datepiece) != 2) || ((int) $datepiece < 1) || ((int) $datepiece > 31)) {
                             $return = false;
                             break 2;
                         }
@@ -164,5 +129,48 @@ class date extends base {
             }
         }
         return $return;
+    }
+
+    /**
+     * Return the context tags for the check response template.
+     *
+     * @param object $data
+     *
+     * @return object The check question response context tags.
+     *
+     */
+    protected function response_survey_display( $data ) {
+        $resptags = new \stdClass();
+        if (isset($data->{'q' . $this->id})) {
+            $resptags->content = $data->{'q' . $this->id};
+        }
+        return $resptags;
+    }
+
+    /**
+     * Check question's form data for valid response. Override this is type has specific format requirements.
+     *
+     * @param object $responsedata The data entered into the response.
+     *
+     * @return boolean
+     */
+    public function response_valid( $responsedata ) {
+        if (isset($responsedata->{'q' . $this->id})) {
+            $validresponse = true;
+            if ($responsedata->{'q' . $this->id} != '') {
+                $validresponse = $this->check_date_format($responsedata->{'q' . $this->id});
+            }
+            return $validresponse;
+        } else {
+            return parent::response_valid($responsedata);
+        }
+    }
+
+    protected function form_length( \MoodleQuickForm $mform, $helpname = '' ) {
+        return base::form_length_hidden($mform);
+    }
+
+    protected function form_precise( \MoodleQuickForm $mform, $helpname = '' ) {
+        return base::form_precise_hidden($mform);
     }
 }

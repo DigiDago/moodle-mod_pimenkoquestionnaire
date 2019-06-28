@@ -21,11 +21,13 @@
  * @author     Mike Churchward
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_pimenkoquestionnaire\search;
 defined('MOODLE_INTERNAL') || die();
+
 /**
- * Search area for mod_pimenkoquestionnaire questions. Separated from the activity search so that admins can choose whether or not they
- * want this part enabled.
+ * Search area for mod_pimenkoquestionnaire questions. Separated from the activity search so that admins can choose whether or not
+ * they want this part enabled.
  *
  * @package    mod_pimenkoquestionnaire
  * @copyright  2016 Mike Churchward (mike.churchward@poetgroup.org)
@@ -36,17 +38,18 @@ class question extends \core_search\base_mod {
      * Returns recordset containing required data for indexing activities.
      *
      * @param int $modifiedfrom timestamp
+     *
      * @return \moodle_recordset
      */
-    public function get_recordset_by_timestamp($modifiedfrom = 0) {
+    public function get_recordset_by_timestamp( $modifiedfrom = 0 ) {
         global $DB;
 
         // Join the survey record to ensure only questionnaires with questions are returned.
         $sql = 'SELECT q.* ' .
-            'FROM {pimenkoquestionnaire} q ' .
-            'INNER JOIN {questionnaire_survey} s ON q.sid = s.id ' .
-            'WHERE q.timemodified >= ? ' .
-            'ORDER BY q.timemodified ASC';
+                'FROM {pimenkoquestionnaire} q ' .
+                'INNER JOIN {questionnaire_survey} s ON q.sid = s.id ' .
+                'WHERE q.timemodified >= ? ' .
+                'ORDER BY q.timemodified ASC';
 
         return $DB->get_recordset_sql($sql, [$modifiedfrom]);
     }
@@ -56,10 +59,11 @@ class question extends \core_search\base_mod {
      * questions associated with a pimenkoquestionnaire.
      *
      * @param \stdClass $record
-     * @param array    $options
+     * @param array     $options
+     *
      * @return \core_search\document
      */
-    public function get_document($record, $options = []) {
+    public function get_document( $record, $options = [] ) {
         global $DB;
 
         try {
@@ -68,7 +72,7 @@ class question extends \core_search\base_mod {
         } catch (\dml_missing_record_exception $ex) {
             // Notify it as we run here as admin, we should see everything.
             debugging('Error retrieving ' . $this->areaid . ' ' . $record->id . ' document, not all required data is available: ' .
-                $ex->getMessage(), DEBUG_DEVELOPER);
+                    $ex->getMessage(), DEBUG_DEVELOPER);
             return false;
         } catch (\dml_exception $ex) {
             // Notify it as we run here as admin, we should see everything.
@@ -79,7 +83,7 @@ class question extends \core_search\base_mod {
         // Because there is no database agnostic way to combine all of the possible question content data into one record in
         // get_recordset_by_timestamp, I need to grab it all now and add it to the document.
         $recordset = $DB->get_recordset('pimenkoquestionnaire_question', ['surveyid' => $record->sid, 'deleted' => 'n'],
-            'id', 'id,content');
+                'id', 'id,content');
 
         // If no question data, don't index this document.
         if (empty($recordset)) {
@@ -108,9 +112,10 @@ class question extends \core_search\base_mod {
      * Can the current user edit questions in the document.
      *
      * @param int $id The internal search area entity id.
+     *
      * @return bool True if the user can see it, false otherwise
      */
-    public function check_access($id) {
+    public function check_access( $id ) {
         global $DB;
         try {
             $activity = $DB->get_record('pimenkoquestionnaire', ['id' => $id], '*', MUST_EXIST);
@@ -130,8 +135,8 @@ class question extends \core_search\base_mod {
         // If the user has the ability to see questions beyond completing a pimenkoquestionnaire, grant access.
         $context = \context_module::instance($cminfo->id);
         if (!(has_capability('mod/pimenkoquestionnaire:readallresponses', $context) ||
-              has_capability('mod/pimenkoquestionnaire:readallresponseanytime', $context) ||
-              has_capability('mod/pimenkoquestionnaire:editquestions', $context))) {
+                has_capability('mod/pimenkoquestionnaire:readallresponseanytime', $context) ||
+                has_capability('mod/pimenkoquestionnaire:editquestions', $context))) {
             return \core_search\manager::ACCESS_DENIED;
         }
         return \core_search\manager::ACCESS_GRANTED;
@@ -141,9 +146,10 @@ class question extends \core_search\base_mod {
      * Link to the module instance.
      *
      * @param \core_search\document $doc
+     *
      * @return \moodle_url
      */
-    public function get_doc_url(\core_search\document $doc) {
+    public function get_doc_url( \core_search\document $doc ) {
         return $this->get_context_url($doc);
     }
 
@@ -151,9 +157,10 @@ class question extends \core_search\base_mod {
      * Link to the module instance.
      *
      * @param \core_search\document $doc
+     *
      * @return \moodle_url
      */
-    public function get_context_url(\core_search\document $doc) {
+    public function get_context_url( \core_search\document $doc ) {
         $context = \context::instance_by_id($doc->get('contextid'));
         return new \moodle_url('/mod/pimenkoquestionnaire/view.php', ['id' => $context->instanceid]);
     }

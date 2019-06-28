@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod_pimenkoquestionnaire
+ * @package    mod_pimenkoquestionnaire
  * @copyright  2016 Mike Churchward (mike.churchward@poetgroup.org)
  * @author     Mike Churchward
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -46,24 +46,25 @@ class backup_pimenkoquestionnaire_activity_task extends backup_activity_task {
      */
     protected function define_my_steps() {
         // Choice only has one structure step.
-        $this->add_step(new backup_pimenkoquestionnaire_activity_structure_step('pimenkoquestionnaire_structure', 'pimenkoquestionnaire.xml'));
+        $this->add_step(new backup_pimenkoquestionnaire_activity_structure_step('pimenkoquestionnaire_structure',
+                'pimenkoquestionnaire.xml'));
     }
 
     /**
      * Code the transformations to perform in the activity in
      * order to get transportable (encoded) links
      */
-    static public function encode_content_links($content) {
+    static public function encode_content_links( $content ) {
         global $CFG;
 
         $base = preg_quote($CFG->wwwroot, "/");
 
         // Link to the list of pimenkoquestionnaires.
-        $search = "/(".$base."\/mod\/pimenkoquestionnaire\/index.php\?id\=)([0-9]+)/";
+        $search = "/(" . $base . "\/mod\/pimenkoquestionnaire\/index.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@QUESTIONNAIREINDEX*$2@$', $content);
 
         // Link to pimenkoquestionnaire view by moduleid.
-        $search = "/(".$base."\/mod\/pimenkoquestionnaire\/view.php\?id\=)([0-9]+)/";
+        $search = "/(" . $base . "\/mod\/pimenkoquestionnaire\/view.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@QUESTIONNAIREVIEWBYID*$2@$', $content);
 
         return $content;

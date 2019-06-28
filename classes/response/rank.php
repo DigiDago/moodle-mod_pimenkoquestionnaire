@@ -17,7 +17,7 @@
 /**
  * This file contains the parent class for pimenkoquestionnaire question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
@@ -30,26 +30,26 @@ use mod_pimenkoquestionnaire\db\bulk_sql_config;
 /**
  * Class for rank responses.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @package responsetypes
  */
-
 class rank extends base {
     static public function response_table() {
         return 'pimenko_response_rank';
     }
 
     /**
-     * @param int $rid
+     * @param int   $rid
      * @param mixed $val
+     *
      * @return bool|int
      */
-    public function insert_response($rid, $val) {
+    public function insert_response( $rid, $val ) {
         global $DB;
         if ($this->question->type_id == QUESRATE) {
             $resid = false;
             foreach ($this->question->choices as $cid => $choice) {
-                $other = optional_param('q'.$this->question->id.'_'.$cid, null, PARAM_CLEAN);
+                $other = optional_param('q' . $this->question->id . '_' . $cid, null, PARAM_CLEAN);
                 // Choice not set or not answered.
                 if (!isset($other) || $other == '') {
                     continue;
@@ -84,9 +84,10 @@ class rank extends base {
     /**
      * @param bool $rids
      * @param bool $anonymous
+     *
      * @return array
      */
-    public function get_results($rids=false, $anonymous=false) {
+    public function get_results( $rids = false, $anonymous = false ) {
         global $DB;
 
         $rsql = '';
@@ -102,8 +103,8 @@ class rank extends base {
             if ($rows = $DB->get_records_select('pimenko_quest_choice', $select)) {
                 foreach ($rows as $row) {
                     $this->counts[$row->content] = new \stdClass();
-                    $nbna = $DB->count_records(self::response_table(), array('question_id' => $this->question->id,
-                                    'choice_id' => $row->id, 'rankvalue' => '-1'));
+                    $nbna = $DB->count_records(self::response_table(), ['question_id' => $this->question->id,
+                            'choice_id' => $row->id, 'rankvalue' => '-1']);
                     $this->counts[$row->content]->nbna = $nbna;
                     // The $row->value may be null (i.e. empty) or have a 'NULL' value.
                     if (($row->value !== null) && ($row->value !== 'NULL') && ($row->value !== '')) {
@@ -117,13 +118,13 @@ class rank extends base {
             if (!$isrestricted) {
                 if (!empty ($rankvalue)) {
                     $sql = "SELECT r.id, c.content, r.rankvalue, c.id AS choiceid
-                    FROM {pimenko_quest_choice} c, {".self::response_table()."} r
+                    FROM {pimenko_quest_choice} c, {" . self::response_table() . "} r
                     WHERE r.choice_id = c.id
                     AND c.question_id = " . $this->question->id . "
                     AND r.rankvalue >= 0{$rsql}
                     ORDER BY choiceid";
                     $results = $DB->get_records_sql($sql, $params);
-                    $value = array();
+                    $value = [];
                     foreach ($results as $result) {
                         if (isset ($value[$result->choiceid])) {
                             $value[$result->choiceid] += $rankvalue[$result->rankvalue];
@@ -137,11 +138,11 @@ class rank extends base {
                         FROM {pimenko_quest_choice} c
                         INNER JOIN
                              (SELECT c2.id, AVG(a2.rankvalue+1) AS average, COUNT(a2.response_id) AS num
-                              FROM {pimenko_quest_choice} c2, {".self::response_table()."} a2
+                              FROM {pimenko_quest_choice} c2, {" . self::response_table() . "} a2
                               WHERE c2.question_id = ? AND a2.question_id = ? AND a2.choice_id = c2.id AND a2.rankvalue >= 0{$rsql}
                               GROUP BY c2.id) a ON a.id = c.id
                               order by c.id";
-                $results = $DB->get_records_sql($sql, array_merge(array($this->question->id, $this->question->id), $params));
+                $results = $DB->get_records_sql($sql, array_merge([$this->question->id, $this->question->id], $params));
                 if (!empty ($rankvalue)) {
                     foreach ($results as $key => $result) {
                         $result->averagevalue = $value[$key] / $result->num;
@@ -159,10 +160,10 @@ class rank extends base {
                         FROM {pimenko_quest_choice} c
                         INNER JOIN
                              (SELECT c2.id, SUM(a2.rankvalue+1) AS sum, COUNT(a2.response_id) AS num
-                              FROM {pimenko_quest_choice} c2, {".self::response_table()."} a2
+                              FROM {pimenko_quest_choice} c2, {" . self::response_table() . "} a2
                               WHERE c2.question_id = ? AND a2.question_id = ? AND a2.choice_id = c2.id AND a2.rankvalue >= 0{$rsql}
                               GROUP BY c2.id) a ON a.id = c.id";
-                $results = $DB->get_records_sql($sql, array_merge(array($this->question->id, $this->question->id), $params));
+                $results = $DB->get_records_sql($sql, array_merge([$this->question->id, $this->question->id], $params));
                 // Formula to calculate the best ranking order.
                 $nbresponses = count($rids);
                 foreach ($results as $key => $result) {
@@ -174,19 +175,21 @@ class rank extends base {
             }
         } else {
             $sql = 'SELECT A.rankvalue, COUNT(A.response_id) AS num ' .
-                   'FROM {'.self::response_table().'} A ' .
-                   'WHERE A.question_id= ? ' . $rsql . ' ' .
-                   'GROUP BY A.rankvalue';
-            return $DB->get_records_sql($sql, array_merge(array($this->question->id), $params));
+                    'FROM {' . self::response_table() . '} A ' .
+                    'WHERE A.question_id= ? ' . $rsql . ' ' .
+                    'GROUP BY A.rankvalue';
+            return $DB->get_records_sql($sql, array_merge([$this->question->id], $params));
         }
     }
 
     /**
      * Provide the feedback scores for all requested response id's. This should be provided only by questions that provide feedback.
+     *
      * @param array $rids
+     *
      * @return array | boolean
      */
-    public function get_feedback_scores(array $rids) {
+    public function get_feedback_scores( array $rids ) {
         global $DB;
 
         $rsql = '';
@@ -199,16 +202,16 @@ class rank extends base {
         $params[] = 'y';
 
         $sql = 'SELECT r.id, r.response_id as rid, r.question_id AS qid, r.choice_id AS cid, r.rankvalue ' .
-            'FROM {'.$this->response_table().'} r ' .
-            'INNER JOIN {pimenko_quest_choice} c ON r.choice_id = c.id ' .
-            'WHERE r.question_id= ? ' . $rsql . ' ' .
-            'ORDER BY rid,cid ASC';
+                'FROM {' . $this->response_table() . '} r ' .
+                'INNER JOIN {pimenko_quest_choice} c ON r.choice_id = c.id ' .
+                'WHERE r.question_id= ? ' . $rsql . ' ' .
+                'ORDER BY rid,cid ASC';
         $responses = $DB->get_recordset_sql($sql, $params);
 
         $sql = 'SELECT id, value ' .
-            'FROM {pimenko_quest_choice} ' .
-            'WHERE question_id = ? AND value IS NOT NULL ' .
-            'ORDER BY id ASC ';
+                'FROM {pimenko_quest_choice} ' .
+                'WHERE question_id = ? AND value IS NOT NULL ' .
+                'ORDER BY id ASC ';
         $scorerecs = $DB->get_records_sql($sql, $params);
 
         // Reindex $scores as a zero starting array.
@@ -233,12 +236,13 @@ class rank extends base {
     }
 
     /**
-     * @param bool $rids
+     * @param bool   $rids
      * @param string $sort
-     * @param bool $anonymous
+     * @param bool   $anonymous
+     *
      * @return string
      */
-    public function display_results($rids=false, $sort='', $anonymous=false) {
+    public function display_results( $rids = false, $sort = '', $anonymous = false ) {
         $output = '';
 
         if (is_array($rids)) {
@@ -262,7 +266,7 @@ class rank extends base {
                             $osgood = true;
                         }
                         if ($stravgvalue == '' && !$osgood) {
-                            $stravgvalue = ' ('.get_string('andaveragevalues', 'pimenkoquestionnaire').')';
+                            $stravgvalue = ' (' . get_string('andaveragevalues', 'pimenkoquestionnaire') . ')';
                         }
                     } else {
                         $avgvalue = null;
@@ -273,13 +277,14 @@ class rank extends base {
                 $this->counts[$ccontent]->avg = $avg;
                 $this->counts[$ccontent]->avgvalue = $avgvalue;
             }
-            $output .= \mod_pimenkoquestionnaire\response\display_support::mkresavg($this->counts, count($rids), $this->question->choices,
-                $this->question->precise, $prtotal, $this->question->length, $sort, $stravgvalue);
+            $output .= \mod_pimenkoquestionnaire\response\display_support::mkresavg($this->counts, count($rids),
+                    $this->question->choices,
+                    $this->question->precise, $prtotal, $this->question->length, $sort, $stravgvalue);
 
             $output .= \mod_pimenkoquestionnaire\response\display_support::mkrescount($this->counts, $rids, $rows, $this->question,
-                $this->question->precise, $this->question->length, $sort);
+                    $this->question->precise, $this->question->length, $sort);
         } else {
-            $output .= '<p class="generaltable">&nbsp;'.get_string('noresponsedata', 'pimenkoquestionnaire').'</p>';
+            $output .= '<p class="generaltable">&nbsp;' . get_string('noresponsedata', 'pimenkoquestionnaire') . '</p>';
         }
         return $output;
     }
@@ -287,22 +292,23 @@ class rank extends base {
     /**
      * Return an array of answers by question/choice for the given response. Must be implemented by the subclass.
      *
-     * @param int $rid The response id.
-     * @param null $col Other data columns to return.
-     * @param bool $csvexport Using for CSV export.
-     * @param int $choicecodes CSV choicecodes are required.
-     * @param int $choicetext CSV choicetext is required.
+     * @param int  $rid         The response id.
+     * @param null $col         Other data columns to return.
+     * @param bool $csvexport   Using for CSV export.
+     * @param int  $choicecodes CSV choicecodes are required.
+     * @param int  $choicetext  CSV choicetext is required.
+     *
      * @return array
      */
-    static public function response_select($rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1) {
+    static public function response_select( $rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1 ) {
         global $DB;
 
         $values = [];
-        $sql = 'SELECT a.id as aid, q.id AS qid, q.precise AS precise, c.id AS cid '.$col.', c.content as ccontent,
-                                a.rankvalue as arank '.
-            'FROM {'.self::response_table().'} a, {pimenko_question} q, {pimenko_quest_choice} c '.
-            'WHERE a.response_id= ? AND a.question_id=q.id AND a.choice_id=c.id '.
-            'ORDER BY aid, a.question_id, c.id';
+        $sql = 'SELECT a.id as aid, q.id AS qid, q.precise AS precise, c.id AS cid ' . $col . ', c.content as ccontent,
+                                a.rankvalue as arank ' .
+                'FROM {' . self::response_table() . '} a, {pimenko_question} q, {pimenko_quest_choice} c ' .
+                'WHERE a.response_id= ? AND a.question_id=q.id AND a.choice_id=c.id ' .
+                'ORDER BY aid, a.question_id, c.id';
         $records = $DB->get_records_sql($sql, [$rid]);
         foreach ($records as $row) {
             // Next two are 'qid' and 'cid', each with numeric and hash keys.
@@ -310,12 +316,12 @@ class rank extends base {
             if ($row->precise == 3) {
                 $osgood = true;
             }
-            $qid = $row->qid.'_'.$row->cid;
+            $qid = $row->qid . '_' . $row->cid;
             unset($row->aid); // Get rid of the answer id.
             unset($row->qid);
             unset($row->cid);
             unset($row->precise);
-            $row = (array)$row;
+            $row = (array) $row;
             $newrow = [];
             foreach ($row as $key => $val) {
                 if ($key != 'content') { // No need to keep question text - ony keep choice text and rank.
@@ -330,7 +336,7 @@ class rank extends base {
                             if ($contents->title) {
                                 $contentright = $contents->title;
                             }
-                            $val = strip_tags($contentleft.'|'.$contentright);
+                            $val = strip_tags($contentleft . '|' . $contentright);
                             $val = preg_replace("/[\r\n\t]/", ' ', $val);
                         } else {
                             $contents = pimenkoquestionnaire_choice_values($val);
@@ -355,6 +361,7 @@ class rank extends base {
 
     /**
      * Configure bulk sql
+     *
      * @return bulk_sql_config
      */
     protected function bulk_sql_config() {

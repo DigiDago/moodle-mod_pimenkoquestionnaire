@@ -17,10 +17,11 @@
 /**
  * A scheduled task for Questionnaire.
  *
- * @package mod_pimenkoquestionnaire
+ * @package   mod_pimenkoquestionnaire
  * @copyright 2015 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_pimenkoquestionnaire\task;
 
 defined('MOODLE_INTERNAL') || die();

@@ -8,19 +8,19 @@ Feature: In pimenkoquestionnaire, dropdown questions can be defined with scores 
   @javascript
   Scenario: Create a pimenkoquestionnaire with a dropdown question type and verify that feedback options exist.
     Given the following "users" exist:
-      | username | firstname | lastname | email |
-      | teacher1 | Teacher | 1 | teacher1@example.com |
-      | student1 | Student | 1 | student1@example.com |
+      | username | firstname | lastname | email                |
+      | teacher1 | Teacher   | 1        | teacher1@example.com |
+      | student1 | Student   | 1        | student1@example.com |
     And the following "courses" exist:
       | fullname | shortname | category |
-      | Course 1 | C1 | 0 |
+      | Course 1 | C1        | 0        |
     And the following "course enrolments" exist:
-      | user | course | role |
-      | teacher1 | C1 | editingteacher |
-      | student1 | C1 | student |
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+      | student1 | C1     | student        |
     And the following "activities" exist:
-      | activity | name | description | course | idnumber | resume | navigate |
-      | pimenkoquestionnaire | Test pimenkoquestionnaire | Test pimenkoquestionnaire description | C1 | questionnaire0 | 1 | 1 |
+      | activity             | name                      | description                           | course | idnumber       | resume | navigate |
+      | pimenkoquestionnaire | Test pimenkoquestionnaire | Test pimenkoquestionnaire description | C1     | questionnaire0 | 1      | 1        |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Test pimenkoquestionnaire"
@@ -29,9 +29,9 @@ Feature: In pimenkoquestionnaire, dropdown questions can be defined with scores 
     And I follow "Questions"
     Then I should see "Add questions"
     And I add a "Dropdown Box" question and I fill the form with:
-      | Question Name | Q3 |
-      | Yes | y |
-      | Question Text | Select one choice |
+      | Question Name    | Q3                         |
+      | Yes              | y                          |
+      | Question Text    | Select one choice          |
       | Possible answers | 1=One,2=Two,3=Three,4=Four |
     Then I should see "[Dropdown Box] (Q3)"
     And I follow "Feedback"

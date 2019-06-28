@@ -1,23 +1,23 @@
 @mod @mod_pimenkoquestionnaire
 Feature: Questionnaires can be anonymous
-  When anonymous questionnaires are viewed
-  The user name is dispplayed as "anonymous".
+When anonymous questionnaires are viewed
+The user name is dispplayed as "anonymous".
 
   Background: Add an anonymous pimenkoquestionnaire
     Given the following "users" exist:
-      | username | firstname | lastname | email |
-      | teacher1 | Teacher | 1 | teacher1@example.com |
-      | student1 | Student | 1 | student1@example.com |
+      | username | firstname | lastname | email                |
+      | teacher1 | Teacher   | 1        | teacher1@example.com |
+      | student1 | Student   | 1        | student1@example.com |
     And the following "courses" exist:
       | fullname | shortname | category |
-      | Course 1 | C1 | 0 |
+      | Course 1 | C1        | 0        |
     And the following "course enrolments" exist:
-      | user | course | role |
-      | teacher1 | C1 | editingteacher |
-      | student1 | C1 | student |
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+      | student1 | C1     | student        |
     And the following "activities" exist:
-      | activity | name | description | course | idnumber |
-      | pimenkoquestionnaire | Anonymous pimenkoquestionnaire | Anonymous pimenkoquestionnaire description | C1 | questionnaire0 |
+      | activity             | name                           | description                                | course | idnumber       |
+      | pimenkoquestionnaire | Anonymous pimenkoquestionnaire | Anonymous pimenkoquestionnaire description | C1     | questionnaire0 |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Anonymous pimenkoquestionnaire"
@@ -29,12 +29,12 @@ Feature: Questionnaires can be anonymous
     Then I should see "Anonymous pimenkoquestionnaire"
     And I navigate to "Questions" in current page administration
     And I add a "Yes/No" question and I fill the form with:
-      | Question Name | Q1 |
-      | Yes | y |
+      | Question Name | Q1                      |
+      | Yes           | y                       |
       | Question Text | Do you like this course |
     And I log out
 
-@javascript
+  @javascript
   Scenario: Student completes an anonymous pimenkoquestionnaire
     And I log in as "student1"
     And I am on "Course 1" course homepage

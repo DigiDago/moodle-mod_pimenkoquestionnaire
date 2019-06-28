@@ -48,20 +48,20 @@
 }}
 <!-- Begin HTML generated from response_radio template. -->
 <div class="pimenko_response pimenkoquestionnaire_radio">
-{{#choices}}
-    {{#horizontal}}<span style="white-space:nowrap;">{{/horizontal}}
-    {{#selected}}
-    <span class="selected">
-        <input type="radio" name="{{name}}" checked="checked" disabled="disabled" />
-        {{{content}}}{{#othercontent}} <span class="response text">{{.}}</span>{{/othercontent}}
+    {{#choices}}
+        {{#horizontal}}<span style="white-space:nowrap;">{{/horizontal}}
+        {{#selected}}
+            <span class="selected">
+        <input type="radio" name="{{name}}" checked="checked" disabled="disabled"/>
+                {{{content}}}{{#othercontent}} <span class="response text">{{.}}</span>{{/othercontent}}
     </span>
-    {{/selected}}
-    {{^selected}}
-    <span class="unselected"><input type="radio" name="{{name}}" disabled="disabled" />
-        {{{content}}}</span>&nbsp;
-    {{/selected}}
-    {{#horizontal}}</span>{{/horizontal}}
-    {{^horizontal}}<br />{{/horizontal}}
-{{/choices}}
+        {{/selected}}
+        {{^selected}}
+            <span class="unselected"><input type="radio" name="{{name}}" disabled="disabled"/>
+                {{{content}}}</span>&nbsp;
+        {{/selected}}
+        {{#horizontal}}</span>{{/horizontal}}
+        {{^horizontal}}<br/>{{/horizontal}}
+    {{/choices}}
 </div>
 <!-- End HTML generated from response_radio template. -->

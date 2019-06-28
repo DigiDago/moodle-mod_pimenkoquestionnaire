@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod_pimenkoquestionnaire
+ * @package    mod_pimenkoquestionnaire
  * @copyright  2016 Mike Churchward (mike.churchward@poetgroup.org)
  * @author     Mike Churchward
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -23,7 +23,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
+function xmldb_pimenkoquestionnaire_upgrade( $oldversion = 0 ) {
     global $CFG, $DB;
 
     $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
@@ -44,9 +44,9 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         $field = new xmldb_field('required');
         $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, false, null, 'n');
         $dbman->change_field_enum($table, $field);
-        $DB->set_field('pimenko_question', 'required', 'y', array('required' => 'Y'));
-        $DB->set_field('pimenko_question', 'required', 'n', array('required' => 'N'));
-        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, array('y', 'n'), 'n');
+        $DB->set_field('pimenko_question', 'required', 'y', ['required' => 'Y']);
+        $DB->set_field('pimenko_question', 'required', 'n', ['required' => 'N']);
+        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, ['y', 'n'], 'n');
         $dbman->change_field_enum($table, $field);
         $dbman->change_field_default($table, $field);
         unset($field);
@@ -54,9 +54,9 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         $field = new xmldb_field('deleted');
         $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, false, null, 'n');
         $dbman->change_field_enum($table, $field);
-        $DB->set_field('pimenko_question', 'deleted', 'y', array('deleted' => 'Y'));
-        $DB->set_field('pimenko_question', 'deleted', 'n', array('deleted' => 'N'));
-        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, array('y', 'n'), 'n');
+        $DB->set_field('pimenko_question', 'deleted', 'y', ['deleted' => 'Y']);
+        $DB->set_field('pimenko_question', 'deleted', 'n', ['deleted' => 'N']);
+        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, ['y', 'n'], 'n');
         $dbman->change_field_enum($table, $field);
         $dbman->change_field_default($table, $field);
         unset($field);
@@ -64,9 +64,9 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         $field = new xmldb_field('public');
         $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, false, null, 'n');
         $dbman->change_field_enum($table, $field);
-        $DB->set_field('pimenko_question', 'public', 'y', array('public' => 'Y'));
-        $DB->set_field('pimenko_question', 'public', 'n', array('public' => 'N'));
-        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, array('y', 'n'), 'y');
+        $DB->set_field('pimenko_question', 'public', 'y', ['public' => 'Y']);
+        $DB->set_field('pimenko_question', 'public', 'n', ['public' => 'N']);
+        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, ['y', 'n'], 'y');
         $dbman->change_field_enum($table, $field);
         $dbman->change_field_default($table, $field);
         unset($field);
@@ -78,9 +78,9 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         $field = new xmldb_field('has_choices');
         $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, false, null, 'n');
         $dbman->change_field_enum($table, $field);
-        $DB->set_field('pimenko_question_type', 'has_choices', 'y', array('has_choices' => 'Y'));
-        $DB->set_field('pimenko_question_type', 'has_choices', 'n', array('has_choices' => 'N'));
-        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, array('y', 'n'), 'y');
+        $DB->set_field('pimenko_question_type', 'has_choices', 'y', ['has_choices' => 'Y']);
+        $DB->set_field('pimenko_question_type', 'has_choices', 'n', ['has_choices' => 'N']);
+        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, ['y', 'n'], 'y');
         $dbman->change_field_enum($table, $field);
         $dbman->change_field_default($table, $field);
         unset($field);
@@ -92,9 +92,9 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         $field = new xmldb_field('complete');
         $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, false, null, 'n');
         $dbman->change_field_enum($table, $field);
-        $DB->set_field('pimenko_response', 'complete', 'y', array('complete' => 'Y'));
-        $DB->set_field('pimenko_response', 'complete', 'n', array('complete' => 'N'));
-        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, array('y', 'n'), 'n');
+        $DB->set_field('pimenko_response', 'complete', 'y', ['complete' => 'Y']);
+        $DB->set_field('pimenko_response', 'complete', 'n', ['complete' => 'N']);
+        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, ['y', 'n'], 'n');
         $dbman->change_field_enum($table, $field);
         $dbman->change_field_default($table, $field);
         unset($field);
@@ -106,9 +106,9 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         $field = new xmldb_field('choice_id');
         $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, false, null, 'n');
         $dbman->change_field_enum($table, $field);
-        $DB->set_field('pimenko_response_bool', 'choice_id', 'y', array('choice_id' => 'Y'));
-        $DB->set_field('pimenko_response_bool', 'choice_id', 'n', array('choice_id' => 'N'));
-        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, array('y', 'n'), 'y');
+        $DB->set_field('pimenko_response_bool', 'choice_id', 'y', ['choice_id' => 'Y']);
+        $DB->set_field('pimenko_response_bool', 'choice_id', 'n', ['choice_id' => 'N']);
+        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, ['y', 'n'], 'y');
         $dbman->change_field_enum($table, $field);
         $dbman->change_field_default($table, $field);
         unset($field);
@@ -120,18 +120,18 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         $field = new xmldb_field('public');
         $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, false, null, 'n');
         $dbman->change_field_enum($table, $field);
-        $DB->set_field('pimenkoquestionnaire_survey', 'public', 'y', array('public' => 'Y'));
-        $DB->set_field('pimenkoquestionnaire_survey', 'public', 'n', array('public' => 'N'));
-        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, array('y', 'n'), 'y');
+        $DB->set_field('pimenkoquestionnaire_survey', 'public', 'y', ['public' => 'Y']);
+        $DB->set_field('pimenkoquestionnaire_survey', 'public', 'n', ['public' => 'N']);
+        $field->set_attributes(XMLDB_TYPE_CHAR, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, XMLDB_ENUM, ['y', 'n'], 'y');
         $dbman->change_field_enum($table, $field);
         $dbman->change_field_default($table, $field);
         unset($field);
 
         // Upgrade question_type table with corrected 'response_table' fields.
         $DB->set_field('pimenko_question_type', 'response_table', 'resp_single',
-                        array('response_table' => 'response_single'));
+                ['response_table' => 'response_single']);
         $DB->set_field('pimenko_question_type', 'response_table', 'resp_multiple',
-                        array('response_table' => 'response_multiple'));
+                ['response_table' => 'response_multiple']);
 
         // Questionnaire savepoint reached..
         upgrade_mod_savepoint(true, 2007120102, 'pimenkoquestionnaire');
@@ -159,9 +159,9 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
                 FROM {pimenkoquestionnaire} q, {course_modules} cm, {modules} m
                 WHERE m.name='pimenkoquestionnaire' AND m.id=cm.module AND cm.instance=q.id";
         if ($rs = $DB->get_recordset_sql($sql)) {
-            $studentroleid = $DB->get_field('role', 'id', array('shortname' => 'student'));
-            $editteacherroleid = $DB->get_field('role', 'id', array('shortname' => 'editingteacher'));
-            $teacherroleid = $DB->get_field('role', 'id', array('shortname' => 'teacher'));
+            $studentroleid = $DB->get_field('role', 'id', ['shortname' => 'student']);
+            $editteacherroleid = $DB->get_field('role', 'id', ['shortname' => 'editingteacher']);
+            $teacherroleid = $DB->get_field('role', 'id', ['shortname' => 'teacher']);
             $capview = 'mod/pimenkoquestionnaire:view';
             $capsubmit = 'mod/pimenkoquestionnaire:submit';
 
@@ -232,7 +232,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
     if ($oldversion < 2008070703) {
         $table = new xmldb_table('pimenko_resp_multiple');
         $index = new xmldb_index('response_question');
-        $index->set_attributes(XMLDB_INDEX_NOTUNIQUE, array('response_id', 'question_id', 'choice_id'));
+        $index->set_attributes(XMLDB_INDEX_NOTUNIQUE, ['response_id', 'question_id', 'choice_id']);
         if (!$dbman->index_exists($table, $index)) {
             $dbman->add_index($table, $index);
         }
@@ -343,7 +343,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         // First drop the index.
         $table = new xmldb_table('pimenkoquestionnaire_survey');
         $index = new xmldb_index('name');
-        $index->set_attributes(XMLDB_INDEX_NOTUNIQUE, array('name'));
+        $index->set_attributes(XMLDB_INDEX_NOTUNIQUE, ['name']);
         $dbman->drop_index($table, $index);
 
         // Launch change of precision for field name.
@@ -353,7 +353,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         // Add back in the index.
         $table = new xmldb_table('pimenkoquestionnaire_survey');
         $index = new xmldb_index('name');
-        $index->set_attributes(XMLDB_INDEX_NOTUNIQUE, array('name'));
+        $index->set_attributes(XMLDB_INDEX_NOTUNIQUE, ['name']);
         $dbman->add_index($table, $index);
 
         // Questionnaire savepoint reached.
@@ -396,7 +396,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
 
         // Replace the = separator with :: separator in quest_choice content.
         // This fixes radio button options using old "value"="display" formats.
-        require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/locallib.php');
+        require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
         $choices = $DB->get_recordset('pimenko_quest_choice', null);
         $total = $DB->count_records('pimenko_quest_choice');
         if ($total > 0) {
@@ -404,7 +404,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
             $i = 1;
             foreach ($choices as $choice) {
                 if (($choice->value == null || $choice->value == 'NULL')
-                                && !preg_match("/^([0-9]{1,3}=.*|!other=.*)$/", $choice->content)) {
+                        && !preg_match("/^([0-9]{1,3}=.*|!other=.*)$/", $choice->content)) {
                     $content = pimenkoquestionnaire_choice_values($choice->content);
                     if (strpos($content->text, '=')) {
                         $newcontent = str_replace('=', '::', $content->text);
@@ -465,7 +465,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         $table->add_field('sectionheadingformat', XMLDB_TYPE_INTEGER, '2', null, null, null, '1');
 
         // Adding keys to table pimenko_fb_sections.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         // Conditionally launch create table for assign_user_mapping.
         if (!$dbman->table_exists($table)) {
@@ -485,7 +485,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         $table->add_field('maxscore', XMLDB_TYPE_NUMBER, '10,5', null, null, null, '101.00000');
 
         // Adding keys to table pimenko_fb_sections.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         // Conditionally launch create table for assign_user_mapping.
         if (!$dbman->table_exists($table)) {
@@ -514,7 +514,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         }
 
         // Questionnaire savepoint reached.
-         upgrade_mod_savepoint(true, 2014010300, 'pimenkoquestionnaire');
+        upgrade_mod_savepoint(true, 2014010300, 'pimenkoquestionnaire');
     }
 
     if ($oldversion < 2015051101) {
@@ -530,7 +530,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
     if ($oldversion < 2015051102) {
         // Conditionally add an index to the question_id field.
         $table = new xmldb_table('pimenko_quest_choice');
-        $index = new xmldb_index('quest_choice_quesidx', XMLDB_INDEX_NOTUNIQUE, array('question_id'));
+        $index = new xmldb_index('quest_choice_quesidx', XMLDB_INDEX_NOTUNIQUE, ['question_id']);
         // Only add the index if it does not exist.
         if (!$dbman->index_exists($table, $index)) {
             $dbman->add_index($table, $index);
@@ -558,7 +558,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         $dbman->change_field_precision($table, $field);
 
         // Questionnaire savepoint reached.
-         upgrade_mod_savepoint(true, 2016020204, 'pimenkoquestionnaire');
+        upgrade_mod_savepoint(true, 2016020204, 'pimenkoquestionnaire');
     }
 
     // Ensuring database matches XML state for some known anomalies.
@@ -572,7 +572,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         }
 
         // Questionnaire savepoint reached.
-         upgrade_mod_savepoint(true, 2016111105, 'pimenkoquestionnaire');
+        upgrade_mod_savepoint(true, 2016111105, 'pimenkoquestionnaire');
     }
 
     // Redoing the 2017050100 upgrade in 2017050101. If it already completed in 2017050100, skip it.
@@ -584,9 +584,9 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         if ($dbman->field_exists($table, $field)) {
             // Before we change the field 'username' to an int, ensure there are only numeric values there.
             $sql = 'SELECT qr.id, qr.username, qa.rid, qa.userid ' .
-                   'FROM {pimenko_response} qr ' .
-                   'INNER JOIN {pimenkoquestionnaire_attempts} qa ON qr.id = qa.rid ' .
-                   'WHERE qr.username = ?';
+                    'FROM {pimenko_response} qr ' .
+                    'INNER JOIN {pimenkoquestionnaire_attempts} qa ON qr.id = qa.rid ' .
+                    'WHERE qr.username = ?';
             $rs = $DB->get_recordset_sql($sql, ["Anonymous"]);
             // Set all "Anonymous" records to the userid in the matching attempt record.
             foreach ($rs as $record) {
@@ -647,10 +647,10 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         $table->add_field('dependandor', XMLDB_TYPE_CHAR, '4', null, XMLDB_NOTNULL, null, null);
 
         // Adding keys to table pimenkoquestionnaire_depenencies.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         // Adding indexes to table pimenko_dependency.
-        $table->add_index('quest_dependency_quesidx', XMLDB_INDEX_NOTUNIQUE, array('questionid'));
+        $table->add_index('quest_dependency_quesidx', XMLDB_INDEX_NOTUNIQUE, ['questionid']);
 
         // Conditionally launch create table for pimenkoquestionnaire_dependencies.
         if (!$dbman->table_exists($table)) {
@@ -658,7 +658,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
 
             // Copy all existing branching data into new branching structure.
             $branchingrs = $DB->get_recordset_select('pimenko_question', 'dependquestion > 0 AND deleted = \'n\'',
-                null, '', 'id, survey_id, dependquestion, dependchoice');
+                    null, '', 'id, survey_id, dependquestion, dependchoice');
             foreach ($branchingrs as $qid => $qinfo) {
                 $newrec = new stdClass();
                 $newrec->questionid = $qid;
@@ -733,7 +733,8 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
         // Get all of the response records with a '0' pimenkoquestionnaireid, and extract the pimenkoquestionnaireid from the survey_id field.
         $rs = $DB->get_recordset('pimenko_response', ['pimenkoquestionnaireid' => 0]);
         foreach ($rs as $response) {
-            if ($pimenkoquestionnaire = $DB->get_record('pimenkoquestionnaire', ['sid' => $response->survey_id], 'id,sid', IGNORE_MULTIPLE)) {
+            if ($pimenkoquestionnaire =
+                    $DB->get_record('pimenkoquestionnaire', ['sid' => $response->survey_id], 'id,sid', IGNORE_MULTIPLE)) {
                 $DB->set_field('pimenko_response', 'pimenkoquestionnaireid', $pimenkoquestionnaire->id, ['id' => $response->id]);
             }
         }
@@ -774,7 +775,7 @@ function xmldb_pimenkoquestionnaire_upgrade($oldversion=0) {
                 $rankoldfieldname = $DB->get_manager()->generator->getEncQuoted('rank');
                 $ranknewfieldname = $DB->get_manager()->generator->getEncQuoted('rankvalue');
                 $sql = 'ALTER TABLE {pimenko_response_rank} ' .
-                    'CHANGE ' . $rankoldfieldname . ' ' . $ranknewfieldname . ' BIGINT(11) NOT NULL';
+                        'CHANGE ' . $rankoldfieldname . ' ' . $ranknewfieldname . ' BIGINT(11) NOT NULL';
                 $DB->execute($sql);
             }
         }
@@ -840,9 +841,9 @@ function pimenkoquestionnaire_upgrade_2007120101() {
         $recstart = 0;
         $recstoget = 100;
         while ($recstart < $numrecs) {
-            if ($records = $dbman->get_records('pimenko_question_type', array(), '', '*', $recstart, $recstoget)) {
+            if ($records = $dbman->get_records('pimenko_question_type', [], '', '*', $recstart, $recstoget)) {
                 foreach ($records as $record) {
-                    $dbman->set_field('pimenko_question_type', 'typeid', $record->id, array('id' => $record->id));
+                    $dbman->set_field('pimenko_question_type', 'typeid', $record->id, ['id' => $record->id]);
                 }
             }
             $recstart += $recstoget;

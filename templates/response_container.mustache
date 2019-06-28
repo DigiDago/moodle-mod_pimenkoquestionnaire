@@ -54,47 +54,48 @@
     }}
 <!-- Begin fieldset generated from response_container template. -->
 <div class="box individualresp">
-<fieldset id="{{fieldset.id}}" class="{{fieldset.class}}">
-    {{#qnum}}
-    <legend class="accesshide">{{# str }}questionnum, mod_pimenkoquestionnaire{{/ str}}{{{qnum}}}</legend>
-    <div class="qn-legend">
-        <div class="qn-info">
-            <h2 class="qn-number">{{{.}}}</h2>
-        </div>
-        {{{required}}}
-    </div>
-    {{/qnum}}
-    <div class="qn-content">
-        <div class="qn-question {{skippedclass}}">
-            {{#label}}<label for="{{label.for}}">{{/label}}
-            {{{qcontent}}}
-            {{#label}}</label>{{/label}}
-        </div>
-        <div class="qn-answer">
-            {{#responses}}
-            {{#respdate}}<div class="respdate">{{respdate}}</div>{{/respdate}}
-            <fieldset id="{{fieldset.id}}" class="{{fieldset.class}}">
-                <legend class="accesshide">{{# str }}questionnum, mod_pimenkoquestionnaire{{/ str}}</legend>
-                <div class="qn-legend">
-                    <div class="qn-info">
-                        <div class="accesshide">{{# str }}questionnum, mod_pimenkoquestionnaire{{/ str}}</div>
-                    </div>
-                    {{{required}}}
+    <fieldset id="{{fieldset.id}}" class="{{fieldset.class}}">
+        {{#qnum}}
+            <legend class="accesshide">{{# str }}questionnum, mod_pimenkoquestionnaire{{/ str}}{{{qnum}}}</legend>
+            <div class="qn-legend">
+                <div class="qn-info">
+                    <h2 class="qn-number">{{{.}}}</h2>
                 </div>
-                <div class="qn-content">
-                    <div class="qn-question {{skippedclass}}">
-                        {{#label}}<label for="{{label.for}}">{{/label}}
-                        {{{qcontent}}}
-                        {{#label}}</label>{{/label}}
-                    </div>
-                    <div class="qn-answer">
-                    {{{qformelement}}}
-                    </div>
-                </div>
-            </fieldset>
-            {{/responses}}
+                {{{required}}}
+            </div>
+        {{/qnum}}
+        <div class="qn-content">
+            <div class="qn-question {{skippedclass}}">
+                {{#label}}<label for="{{label.for}}">{{/label}}
+                {{{qcontent}}}
+                {{#label}}</label>{{/label}}
+            </div>
+            <div class="qn-answer">
+                {{#responses}}
+                    {{#respdate}}
+                        <div class="respdate">{{respdate}}</div>{{/respdate}}
+                    <fieldset id="{{fieldset.id}}" class="{{fieldset.class}}">
+                        <legend class="accesshide">{{# str }}questionnum, mod_pimenkoquestionnaire{{/ str}}</legend>
+                        <div class="qn-legend">
+                            <div class="qn-info">
+                                <div class="accesshide">{{# str }}questionnum, mod_pimenkoquestionnaire{{/ str}}</div>
+                            </div>
+                            {{{required}}}
+                        </div>
+                        <div class="qn-content">
+                            <div class="qn-question {{skippedclass}}">
+                                {{#label}}<label for="{{label.for}}">{{/label}}
+                                {{{qcontent}}}
+                                {{#label}}</label>{{/label}}
+                            </div>
+                            <div class="qn-answer">
+                                {{{qformelement}}}
+                            </div>
+                        </div>
+                    </fieldset>
+                {{/responses}}
+            </div>
         </div>
-    </div>
-</fieldset>
+    </fieldset>
 </div>
 <!-- End fieldset generated from response_container template. -->

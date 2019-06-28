@@ -8,57 +8,57 @@ Feature: In pimenkoquestionnaire, personality tests can be constructed using fee
   @javascript
   Scenario: Create a pimenkoquestionnaire with a with feeback question types and add more than one feedback section.
     Given the following "users" exist:
-      | username | firstname | lastname | email |
-      | teacher1 | Teacher | 1 | teacher1@example.com |
-      | student1 | Student | 1 | student1@example.com |
+      | username | firstname | lastname | email                |
+      | teacher1 | Teacher   | 1        | teacher1@example.com |
+      | student1 | Student   | 1        | student1@example.com |
     And the following "courses" exist:
       | fullname | shortname | category |
-      | Course 1 | C1 | 0 |
+      | Course 1 | C1        | 0        |
     And the following "course enrolments" exist:
-      | user | course | role |
-      | teacher1 | C1 | editingteacher |
-      | student1 | C1 | student |
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+      | student1 | C1     | student        |
     And the following "activities" exist:
-      | activity | name | description | course | idnumber | resume | navigate |
-      | pimenkoquestionnaire | Test pimenkoquestionnaire | Test pimenkoquestionnaire description | C1 | questionnaire0 | 1 | 1 |
+      | activity             | name                      | description                           | course | idnumber       | resume | navigate |
+      | pimenkoquestionnaire | Test pimenkoquestionnaire | Test pimenkoquestionnaire description | C1     | questionnaire0 | 1      | 1        |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Test pimenkoquestionnaire"
     And I navigate to "Questions" in current page administration
     Then I should see "Add questions"
     And I add a "Dropdown Box" question and I fill the form with:
-      | Question Name | Q1 |
-      | Yes | y |
-      | Question Text | Select one dropdown |
+      | Question Name    | Q1                         |
+      | Yes              | y                          |
+      | Question Text    | Select one dropdown        |
       | Possible answers | 1=One,2=Two,3=Three,4=Four |
     Then I should see "[Dropdown Box] (Q1)"
     And I add a "Radio Buttons" question and I fill the form with:
-      | Question Name | Q2 |
-      | Yes | y |
-      | Horizontal | Checked |
-      | Question Text | Select one radio |
+      | Question Name    | Q2                         |
+      | Yes              | y                          |
+      | Horizontal       | Checked                    |
+      | Question Text    | Select one radio           |
       | Possible answers | 1=One,2=Two,3=Three,4=Four |
     Then I should see "[Radio Buttons] (Q2)"
     And I add a "Rate (scale 1..5)" question and I fill the form with:
-      | Question Name | Q3 |
-      | Yes | y |
-      | Nb of scale items | 4 |
-      | Type of rate scale | Normal |
-      | Question Text | Rate these |
-      | Possible answers | 1=One,2=Two,3=Three,4=Four,Cheese,Bread,Meat,Fruit |
+      | Question Name      | Q3                                                 |
+      | Yes                | y                                                  |
+      | Nb of scale items  | 4                                                  |
+      | Type of rate scale | Normal                                             |
+      | Question Text      | Rate these                                         |
+      | Possible answers   | 1=One,2=Two,3=Three,4=Four,Cheese,Bread,Meat,Fruit |
     Then I should see "[Rate (scale 1..5)] (Q3)"
     And I add a "Yes/No" question and I fill the form with:
-      | Question Name | Q4 |
-      | Yes | y |
+      | Question Name | Q4        |
+      | Yes           | y         |
       | Question Text | Yes or no |
     Then I should see "[Yes/No] (Q4)"
     And I add a "Rate (scale 1..5)" question and I fill the form with:
-      | Question Name | Q5 |
-      | Yes | y |
-      | Nb of scale items | 5 |
-      | Type of rate scale | Normal |
-      | Question Text | Rate these |
-      | Possible answers | 0=Zero,2=Two,4=Four,8=Eight,16=Sixteen,Clubs,Diamonds,Hearts,Spades |
+      | Question Name      | Q5                                                                  |
+      | Yes                | y                                                                   |
+      | Nb of scale items  | 5                                                                   |
+      | Type of rate scale | Normal                                                              |
+      | Question Text      | Rate these                                                          |
+      | Possible answers   | 0=Zero,2=Two,4=Four,8=Eight,16=Sixteen,Clubs,Diamonds,Hearts,Spades |
     Then I should see "[Rate (scale 1..5)] (Q5)"
     And I follow "Feedback"
     And I should see "Feedback options"

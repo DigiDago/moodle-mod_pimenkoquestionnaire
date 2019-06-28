@@ -16,6 +16,7 @@
 
 /**
  * Test performance of pimenkoquestionnaire.
+ *
  * @author    Guy Thomas
  * @copyright Copyright (c) 2015 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,39 +26,20 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Performance test for pimenkoquestionnaire module.
- * @group mod_pimenkoquestionnaire
+ *
+ * @group      mod_pimenkoquestionnaire
  * @author     Guy Thomas
- * @copyright Copyright (c) 2015 Moodlerooms Inc. (http://www.moodlerooms.com)
+ * @copyright  Copyright (c) 2015 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class mod_pimenkoquestionnaire_csvexport_test extends advanced_testcase {
 
     public function setUp() {
         global $CFG;
 
-        require_once($CFG->dirroot.'/lib/testing/generator/data_generator.php');
-        require_once($CFG->dirroot.'/lib/testing/generator/component_generator_base.php');
-        require_once($CFG->dirroot.'/lib/testing/generator/module_generator.php');
-    }
-
-    /**
-     * Get csv text
-     *
-     * @param array $rows
-     * @return string
-     */
-    private function get_csv_text(array $rows) {
-        $lines = [];
-        foreach ($rows as $row) {
-            // Remove the id and date fields.
-            unset($row[0]);
-            unset($row[1]);
-            unset($row[6]);
-            $text = implode("\t", $row);
-            $lines[] = $text;
-        }
-        return $lines;
+        require_once($CFG->dirroot . '/lib/testing/generator/data_generator.php');
+        require_once($CFG->dirroot . '/lib/testing/generator/component_generator_base.php');
+        require_once($CFG->dirroot . '/lib/testing/generator/module_generator.php');
     }
 
     public function test_csvexport() {
@@ -69,7 +51,8 @@ class mod_pimenkoquestionnaire_csvexport_test extends advanced_testcase {
         // The following line simply.
         $pimenkoquestionnaires = $qdg->pimenkoquestionnaires();
         foreach ($pimenkoquestionnaires as $pimenkoquestionnaire) {
-            list ($course, $cm) = get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
+            list ($course, $cm) = get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire',
+                    $pimenkoquestionnaire->course);
             $pimenkoquestionnaireinst = new pimenkoquestionnaire(0, $pimenkoquestionnaire, $course, $cm);
 
             // Test for only complete responses.
@@ -88,44 +71,64 @@ class mod_pimenkoquestionnaire_csvexport_test extends advanced_testcase {
         }
     }
 
+    /**
+     * Get csv text
+     *
+     * @param array $rows
+     *
+     * @return string
+     */
+    private function get_csv_text( array $rows ) {
+        $lines = [];
+        foreach ($rows as $row) {
+            // Remove the id and date fields.
+            unset($row[0]);
+            unset($row[1]);
+            unset($row[6]);
+            $text = implode("\t", $row);
+            $lines[] = $text;
+        }
+        return $lines;
+    }
+
     private function expected_complete_output() {
         return ["Institution	Department	Course	Group	Full name	Username	Q01_Text Box 1000	Q02_Essay Box 1002	" .
-            "Q03_Numeric 1004	Q04_Date 1006	Q05_Radio Buttons 1008	Q06_Drop Down 1010	Q07_Check Boxes 1012->four	" .
-            "Q07_Check Boxes 1012->five	Q07_Check Boxes 1012->six	Q07_Check Boxes 1012->seven	Q07_Check Boxes 1012->eight	" .
-            "Q07_Check Boxes 1012->nine	Q07_Check Boxes 1012->ten	Q07_Check Boxes 1012->eleven	" .
-            "Q07_Check Boxes 1012->twelve	Q07_Check Boxes 1012->thirteen	Q08_Rate Scale 1014->fourteen	" .
-            "Q08_Rate Scale 1014->fifteen	Q08_Rate Scale 1014->sixteen	Q08_Rate Scale 1014->seventeen	" .
-            "Q08_Rate Scale 1014->eighteen	Q08_Rate Scale 1014->nineteen	Q08_Rate Scale 1014->twenty	" .
-            "Q08_Rate Scale 1014->happy	Q08_Rate Scale 1014->sad	Q08_Rate Scale 1014->jealous",
-            "		Test course 1		Testy Lastname1	username1	Test answer	Some header textSome paragraph text	83	" .
-            "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
-            "		Test course 1		Testy Lastname2	username2	Test answer	Some header textSome paragraph text	83	" .
-            "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
-            "		Test course 1		Testy Lastname3	username3	Test answer	Some header textSome paragraph text	83	" .
-            "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
-            "		Test course 1		Testy Lastname4	username4	Test answer	Some header textSome paragraph text	83	" .
-            "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	"];
+                "Q03_Numeric 1004	Q04_Date 1006	Q05_Radio Buttons 1008	Q06_Drop Down 1010	Q07_Check Boxes 1012->four	" .
+                "Q07_Check Boxes 1012->five	Q07_Check Boxes 1012->six	Q07_Check Boxes 1012->seven	Q07_Check Boxes 1012->eight	" .
+                "Q07_Check Boxes 1012->nine	Q07_Check Boxes 1012->ten	Q07_Check Boxes 1012->eleven	" .
+                "Q07_Check Boxes 1012->twelve	Q07_Check Boxes 1012->thirteen	Q08_Rate Scale 1014->fourteen	" .
+                "Q08_Rate Scale 1014->fifteen	Q08_Rate Scale 1014->sixteen	Q08_Rate Scale 1014->seventeen	" .
+                "Q08_Rate Scale 1014->eighteen	Q08_Rate Scale 1014->nineteen	Q08_Rate Scale 1014->twenty	" .
+                "Q08_Rate Scale 1014->happy	Q08_Rate Scale 1014->sad	Q08_Rate Scale 1014->jealous",
+                "		Test course 1		Testy Lastname1	username1	Test answer	Some header textSome paragraph text	83	" .
+                "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
+                "		Test course 1		Testy Lastname2	username2	Test answer	Some header textSome paragraph text	83	" .
+                "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
+                "		Test course 1		Testy Lastname3	username3	Test answer	Some header textSome paragraph text	83	" .
+                "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
+                "		Test course 1		Testy Lastname4	username4	Test answer	Some header textSome paragraph text	83	" .
+                "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	"];
     }
 
     private function expected_incomplete_output() {
         return ["Institution	Department	Course	Group	Full name	Username	Complete	Q01_Text Box 1000	" .
-            "Q02_Essay Box 1002	" .
-            "Q03_Numeric 1004	Q04_Date 1006	Q05_Radio Buttons 1008	Q06_Drop Down 1010	Q07_Check Boxes 1012->four	" .
-            "Q07_Check Boxes 1012->five	Q07_Check Boxes 1012->six	Q07_Check Boxes 1012->seven	Q07_Check Boxes 1012->eight	" .
-            "Q07_Check Boxes 1012->nine	Q07_Check Boxes 1012->ten	Q07_Check Boxes 1012->eleven	" .
-            "Q07_Check Boxes 1012->twelve	Q07_Check Boxes 1012->thirteen	Q08_Rate Scale 1014->fourteen	" .
-            "Q08_Rate Scale 1014->fifteen	Q08_Rate Scale 1014->sixteen	Q08_Rate Scale 1014->seventeen	" .
-            "Q08_Rate Scale 1014->eighteen	Q08_Rate Scale 1014->nineteen	Q08_Rate Scale 1014->twenty	" .
-            "Q08_Rate Scale 1014->happy	Q08_Rate Scale 1014->sad	Q08_Rate Scale 1014->jealous",
-            "		Test course 1		Testy Lastname1	username1	y	Test answer	Some header textSome paragraph text	83	" .
-            "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
-            "		Test course 1		Testy Lastname2	username2	y	Test answer	Some header textSome paragraph text	83	" .
-            "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
-            "		Test course 1		Testy Lastname3	username3	y	Test answer	Some header textSome paragraph text	83	" .
-            "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
-            "		Test course 1		Testy Lastname4	username4	y	Test answer	Some header textSome paragraph text	83	" .
-            "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
-            "		Test course 1		Testy Lastname5	username5	n	Test answer	Some header textSome paragraph text	83	" .
-            "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	"];
+                "Q02_Essay Box 1002	" .
+                "Q03_Numeric 1004	Q04_Date 1006	Q05_Radio Buttons 1008	Q06_Drop Down 1010	Q07_Check Boxes 1012->four	" .
+                "Q07_Check Boxes 1012->five	Q07_Check Boxes 1012->six	Q07_Check Boxes 1012->seven	Q07_Check Boxes 1012->eight	" .
+                "Q07_Check Boxes 1012->nine	Q07_Check Boxes 1012->ten	Q07_Check Boxes 1012->eleven	" .
+                "Q07_Check Boxes 1012->twelve	Q07_Check Boxes 1012->thirteen	Q08_Rate Scale 1014->fourteen	" .
+                "Q08_Rate Scale 1014->fifteen	Q08_Rate Scale 1014->sixteen	Q08_Rate Scale 1014->seventeen	" .
+                "Q08_Rate Scale 1014->eighteen	Q08_Rate Scale 1014->nineteen	Q08_Rate Scale 1014->twenty	" .
+                "Q08_Rate Scale 1014->happy	Q08_Rate Scale 1014->sad	Q08_Rate Scale 1014->jealous",
+                "		Test course 1		Testy Lastname1	username1	y	Test answer	Some header textSome paragraph text	83	" .
+                "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
+                "		Test course 1		Testy Lastname2	username2	y	Test answer	Some header textSome paragraph text	83	" .
+                "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
+                "		Test course 1		Testy Lastname3	username3	y	Test answer	Some header textSome paragraph text	83	" .
+                "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
+                "		Test course 1		Testy Lastname4	username4	y	Test answer	Some header textSome paragraph text	83	" .
+                "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	",
+                "		Test course 1		Testy Lastname5	username5	n	Test answer	Some header textSome paragraph text	83	" .
+                "27/12/2017	wind	three	0	0	0	0	0	0	0	0	0	1	1	2	3	4	5	1	2	3	4	"];
     }
 }

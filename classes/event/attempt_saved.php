@@ -69,7 +69,7 @@ class attempt_saved extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url("/mod/pimenkoquestionnaire/view.php", array('id' => $this->contextinstanceid));
+        return new \moodle_url("/mod/pimenkoquestionnaire/view.php", ['id' => $this->contextinstanceid]);
     }
 
     /**
@@ -78,15 +78,15 @@ class attempt_saved extends \core\event\base {
      * @return array
      */
     protected function get_legacy_logdata() {
-        return array($this->courseid, "pimenkoquestionnaire", "save", "view.php?id=" .
-                        $this->contextinstanceid, $this->other['pimenkoquestionnaireid'], $this->contextinstanceid);
+        return [$this->courseid, "pimenkoquestionnaire", "save", "view.php?id=" .
+                $this->contextinstanceid, $this->other['pimenkoquestionnaireid'], $this->contextinstanceid];
     }
 
     /**
      * Custom validation.
      *
-     * @throws \coding_exception
      * @return void
+     * @throws \coding_exception
      */
     protected function validate_data() {
         parent::validate_data();

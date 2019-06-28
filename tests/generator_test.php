@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Unit tests for {@link pimenkoquestionnaire_generator_testcase}.
+ *
  * @group mod_pimenkoquestionnaire
  */
 class mod_pimenkoquestionnaire_generator_testcase extends advanced_testcase {
@@ -36,14 +37,14 @@ class mod_pimenkoquestionnaire_generator_testcase extends advanced_testcase {
         $this->resetAfterTest(true);
 
         $course = $this->getDataGenerator()->create_course();
-        $this->assertFalse($DB->record_exists('pimenkoquestionnaire', array('course' => $course->id)));
+        $this->assertFalse($DB->record_exists('pimenkoquestionnaire', ['course' => $course->id]));
 
         /** @var mod_pimenkoquestionnaire_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
         $this->assertInstanceOf('mod_pimenkoquestionnaire_generator', $generator);
         $this->assertEquals('pimenkoquestionnaire', $generator->get_modulename());
 
-        $pimenkoquestionnaire = $generator->create_instance(array('course' => $course->id));
+        $pimenkoquestionnaire = $generator->create_instance(['course' => $course->id]);
         $this->assertEquals(1, $DB->count_records('pimenkoquestionnaire'));
 
         $cm = get_coursemodule_from_instance('pimenkoquestionnaire', $pimenkoquestionnaire->id);
@@ -54,7 +55,7 @@ class mod_pimenkoquestionnaire_generator_testcase extends advanced_testcase {
         $context = context_module::instance($cm->id);
         $this->assertEquals($pimenkoquestionnaire->cmid, $context->instanceid);
 
-        $survey = $DB->get_record('pimenkoquestionnaire_survey', array('id' => $pimenkoquestionnaire->sid));
+        $survey = $DB->get_record('pimenkoquestionnaire_survey', ['id' => $pimenkoquestionnaire->sid]);
         $this->assertEquals($survey->id, $pimenkoquestionnaire->sid);
         $this->assertEquals($pimenkoquestionnaire->name, $survey->name);
         $this->assertEquals($pimenkoquestionnaire->name, $survey->title);
@@ -71,22 +72,22 @@ class mod_pimenkoquestionnaire_generator_testcase extends advanced_testcase {
 
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
-        $pimenkoquestionnaire = $generator->create_instance(array('course' => $course->id));
+        $pimenkoquestionnaire = $generator->create_instance(['course' => $course->id]);
         $cm = get_coursemodule_from_instance('pimenkoquestionnaire', $pimenkoquestionnaire->id);
         $pimenkoquestionnaire = new pimenkoquestionnaire($pimenkoquestionnaire->id, null, $course, $cm, false);
 
-        $newcontent = array(
-            'title'         => 'New title',
-            'email'         => 'test@email.com',
-            'subtitle'      => 'New subtitle',
-            'info'          => 'New info',
-            'thanks_page'   => 'http://thankurl.com',
-            'thank_head'    => 'New thank header',
-            'thank_body'    => 'New thank body',
-        );
+        $newcontent = [
+                'title' => 'New title',
+                'email' => 'test@email.com',
+                'subtitle' => 'New subtitle',
+                'info' => 'New info',
+                'thanks_page' => 'http://thankurl.com',
+                'thank_head' => 'New thank header',
+                'thank_body' => 'New thank body',
+        ];
         $sid = $generator->create_content($pimenkoquestionnaire, $newcontent);
         $this->assertEquals($sid, $pimenkoquestionnaire->sid);
-        $survey = $DB->get_record('pimenkoquestionnaire_survey', array('id' => $sid));
+        $survey = $DB->get_record('pimenkoquestionnaire_survey', ['id' => $sid]);
         foreach ($newcontent as $name => $value) {
             $this->assertEquals($survey->{$name}, $value);
         }

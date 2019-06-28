@@ -32,30 +32,29 @@ use coding_exception;
 /**
  * Class for describing a feedback section's feedback definition.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @package feedback
  */
-
 class sectionfeedback {
 
+    const TABLE = 'pimenkoquestionnaire_feedback';
     public $id = 0;
-    public $sectionid = 0;
-    public $feedbacklabel = ''; // I don't think this is actually used?
+    public $sectionid = 0; // I don't think this is actually used?
+    public $feedbacklabel = '';
     public $feedbacktext = '';
     public $feedbacktextformat = FORMAT_HTML;
     public $minscore = 0.0;
     public $maxscore = 0.0;
 
-    const TABLE = 'pimenkoquestionnaire_feedback';
-
     /**
-     * @param int $id
+     * @param int         $id
      * @param null|object $record
+     *
      * @throws \dml_exception
      * @throws coding_exception
      * @throws invalid_parameter_exception
      */
-    public function __construct($id = 0, $record = null) {
+    public function __construct( $id = 0, $record = null ) {
         // Return a new section based on the data id.
         if ($id != 0) {
             $record = $this->get_sectionfeedback($id);
@@ -69,10 +68,35 @@ class sectionfeedback {
     }
 
     /**
+     * @param $id
+     *
+     * @return mixed
+     * @throws \dml_exception
+     */
+    protected function get_sectionfeedback( $id ) {
+        global $DB;
+
+        return $DB->get_record(self::TABLE, ['id' => $id]);
+    }
+
+    /**
+     * Load object properties from a provided record for any properties defined in that record.
+     *
+     * @param object $record
+     */
+    protected function loadproperties( $record ) {
+        foreach ($this as $property => $value) {
+            if (isset($record->$property)) {
+                $this->$property = $record->$property;
+            }
+        }
+    }
+
+    /**
      * Factory method to create a new sectionfeedback from the provided data and return an instance.
      *
      */
-    public static function new_sectionfeedback($data) {
+    public static function new_sectionfeedback( $data ) {
         global $DB;
         $newsf = new self();
         $newsf->sectionid = $data->sectionid;
@@ -99,37 +123,14 @@ class sectionfeedback {
     }
 
     /**
-     * @param $id
-     * @return mixed
-     * @throws \dml_exception
-     */
-    protected function get_sectionfeedback($id) {
-        global $DB;
-
-        return $DB->get_record(self::TABLE, ['id' => $id]);
-    }
-
-    /**
-     * Load object properties from a provided record for any properties defined in that record.
-     *
-     * @param object $record
-     */
-    protected function loadproperties($record) {
-        foreach ($this as $property => $value) {
-            if (isset($record->$property)) {
-                $this->$property = $record->$property;
-            }
-        }
-    }
-
-    /**
      * Get the data for this section's feedback from the database.
      *
      * @param int $id
+     *
      * @return mixed
      * @throws \dml_exception
      */
-    protected function get_section($id) {
+    protected function get_section( $id ) {
         global $DB;
 
         return $DB->get_record(self::TABLE, ['id' => $id]);

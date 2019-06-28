@@ -17,29 +17,29 @@
 /**
  * This file contains the parent class for pimenkoquestionnaire question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
 
 namespace mod_pimenkoquestionnaire\response;
 defined('MOODLE_INTERNAL') || die();
+
 use \html_writer;
 use \html_table;
 
 /**
  * Class for response display support.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @package display_support
  */
-
 class display_support {
 
     /* {{{ proto void mkresavg(array weights, int total, int precision, bool show_totals)
         Builds HTML showing AVG results. */
 
-    public static function mkresavg($counts, $total, $choices, $precision, $showtotals, $length, $sort, $stravgvalue='') {
+    public static function mkresavg( $counts, $total, $choices, $precision, $showtotals, $length, $sort, $stravgvalue = '' ) {
         global $CFG;
         $stravgrank = get_string('averagerank', 'pimenkoquestionnaire');
         $osgood = false;
@@ -47,11 +47,11 @@ class display_support {
             $osgood = true;
             $stravgrank = get_string('averageposition', 'pimenkoquestionnaire');
         }
-        $stravg = '<div style="text-align:right">'.$stravgrank.$stravgvalue.'</div>';
+        $stravg = '<div style="text-align:right">' . $stravgrank . $stravgvalue . '</div>';
 
         $isna = $precision == 1;
         $isnahead = '';
-        $nbchoices = count ($counts);
+        $nbchoices = count($counts);
         $isrestricted = ($length < $nbchoices) && $precision == 2;
 
         if ($isna) {
@@ -59,29 +59,29 @@ class display_support {
         }
         $table = new html_table();
 
-        $table->align = array('', '', 'center', 'right');
+        $table->align = ['', '', 'center', 'right'];
         $table->width = '    99%';
         if ($isna) {
-            $table->head = array('', $stravg, '&dArr;', $isnahead);
+            $table->head = ['', $stravg, '&dArr;', $isnahead];
         } else {
             if ($osgood) {
-                $stravg = '<div style="text-align:center">'.$stravgrank.'</div>';
-                $table->head = array('', $stravg, '');
+                $stravg = '<div style="text-align:center">' . $stravgrank . '</div>';
+                $table->head = ['', $stravg, ''];
             } else {
-                $table->head = array('', $stravg, '&dArr;');
+                $table->head = ['', $stravg, '&dArr;'];
             }
         }
         // TODO JR please calculate the correct width of the question text column (col #1).
         $rightcolwidth = '5%';
-        $table->size = array('60%', '*', $rightcolwidth);
+        $table->size = ['60%', '*', $rightcolwidth];
         if ($isna) {
-            $table->size = array('55%', '*', $rightcolwidth, $rightcolwidth);
+            $table->size = ['55%', '*', $rightcolwidth, $rightcolwidth];
         }
         if ($osgood) {
-            $table->size = array('25%', '50%', '25%');
+            $table->size = ['25%', '50%', '25%'];
         }
 
-        $imageurl = $CFG->wwwroot.'/mod/pimenkoquestionnaire/images/';
+        $imageurl = $CFG->wwwroot . '/mod/pimenkoquestionnaire/images/';
         $llength = $length;
         if (!$llength) {
             $llength = 5;
@@ -89,7 +89,7 @@ class display_support {
         // Add an extra column to accomodate lower ranks in this case.
         $llength += $isrestricted;
         $width = 100 / $llength;
-        $n = array();
+        $n = [];
         $nameddegrees = 0;
         foreach ($choices as $choice) {
             // To take into account languages filter.
@@ -117,10 +117,10 @@ class display_support {
             if ($isrestricted && $i == $llength - 1) {
                 $str = "...";
             }
-            $out .= '<td style="text-align: center; width:'.$width.'%" class="smalltext">'.$str.'</td>';
+            $out .= '<td style="text-align: center; width:' . $width . '%" class="smalltext">' . $str . '</td>';
         }
         $out .= '</tr></table>';
-        $table->data[] = array('', $out, '');
+        $table->data[] = ['', $out, ''];
 
         switch ($sort) {
             case 'ascending':
@@ -130,7 +130,7 @@ class display_support {
                 uasort($counts, 'self::sortavgdesc');
                 break;
         }
-        reset ($counts);
+        reset($counts);
 
         if (!empty($counts) && is_array($counts)) {
             foreach ($counts as $content => $contentobj) {
@@ -152,22 +152,22 @@ class display_support {
                     if ($avg) {
                         $out = '';
                         if (($j = $avg * $width) > 0) {
-                            $marginposition = ($avg - 0.5 ) / ($length + $isrestricted) * 100;
+                            $marginposition = ($avg - 0.5) / ($length + $isrestricted) * 100;
                         }
                         if (!right_to_left()) {
-                            $out .= '<img style="height:12px; width: 6px; margin-left: '.$marginposition.
-                                '%;" alt="" src="'.$imageurl.'hbar.gif" />';
+                            $out .= '<img style="height:12px; width: 6px; margin-left: ' . $marginposition .
+                                    '%;" alt="" src="' . $imageurl . 'hbar.gif" />';
                         } else {
-                            $out .= '<img style="height:12px; width: 6px; margin-right: '.$marginposition.
-                                '%;" alt="" src="'.$imageurl.'hbar.gif" />';
+                            $out .= '<img style="height:12px; width: 6px; margin-right: ' . $marginposition .
+                                    '%;" alt="" src="' . $imageurl . 'hbar.gif" />';
                         }
                     } else {
-                            $out = '';
+                        $out = '';
                     }
 
                     if ($osgood) {
                         // Ensure there are two bits of content.
-                        list($content, $contentright) = array_merge(preg_split('/[|]/', $content), array(' '));
+                        list($content, $contentright) = array_merge(preg_split('/[|]/', $content), [' ']);
                     } else {
                         $contents = pimenkoquestionnaire_choice_values($content);
                         if ($contents->modname) {
@@ -175,36 +175,36 @@ class display_support {
                         }
                     }
                     if ($osgood) {
-                        $table->data[] = array('<div class="mdl-right">'.
-                            format_text($content, FORMAT_HTML, ['noclean' => true]).'</div>', $out,
-                            '<div class="mdl-left">'.format_text($contentright, FORMAT_HTML, ['noclean' => true]).'</div>');
+                        $table->data[] = ['<div class="mdl-right">' .
+                                format_text($content, FORMAT_HTML, ['noclean' => true]) . '</div>', $out,
+                                '<div class="mdl-left">' . format_text($contentright, FORMAT_HTML, ['noclean' => true]) . '</div>'];
                         // JR JUNE 2012 do not display meaningless average rank values for Osgood.
                     } else {
                         if ($avg) {
                             $stravgval = '';
                             if ($stravgvalue) {
-                                $stravgval = '('.sprintf('%.1f', $avgvalue).')';
+                                $stravgval = '(' . sprintf('%.1f', $avgvalue) . ')';
                             }
                             if ($isna) {
                                 $table->data[] = [format_text($content, FORMAT_HTML, ['noclean' => true]), $out,
-                                    sprintf('%.1f', $avg).'&nbsp;'.$stravgval, $nbna];
+                                        sprintf('%.1f', $avg) . '&nbsp;' . $stravgval, $nbna];
                             } else {
                                 $table->data[] = [format_text($content, FORMAT_HTML, ['noclean' => true]), $out,
-                                    sprintf('%.1f', $avg).'&nbsp;'.$stravgval];
+                                        sprintf('%.1f', $avg) . '&nbsp;' . $stravgval];
                             }
                         } else if ($nbna != 0) {
-                            $table->data[] = array(format_text($content, FORMAT_HTML, ['noclean' => true]), $out, '', $nbna);
+                            $table->data[] = [format_text($content, FORMAT_HTML, ['noclean' => true]), $out, '', $nbna];
                         }
                     }
                 } // End if named degrees.
             } // End foreach.
         } else {
-            $table->data[] = array('', get_string('noresponsedata', 'pimenkoquestionnaire'));
+            $table->data[] = ['', get_string('noresponsedata', 'pimenkoquestionnaire')];
         }
         return html_writer::table($table);
     }
 
-    public static function mkrescount($counts, $rids, $rows, $question, $precision, $length, $sort) {
+    public static function mkrescount( $counts, $rids, $rows, $question, $precision, $length, $sort ) {
         // Display number of responses to Rate questions - see http://moodle.org/mod/forum/discuss.php?d=185106.
         global $DB;
         $nbresponses = count($rids);
@@ -220,7 +220,7 @@ class display_support {
         array_unshift($params, $question->id); // This is question_id.
         $sql = 'SELECT r.id, c.content, r.rankvalue, c.id AS choiceid ' .
                 'FROM {pimenko_quest_choice} c , ' .
-                     '{pimenko_response_rank} r ' .
+                '{pimenko_response_rank} r ' .
                 'WHERE c.question_id = ?' .
                 ' AND r.question_id = c.question_id' .
                 ' AND r.choice_id = c.id ' .
@@ -230,11 +230,11 @@ class display_support {
 
         // Sort rows (results) by average value.
         if ($sort != 'default') {
-            $sortarray = array();
+            $sortarray = [];
             foreach ($rows as $row) {
                 foreach ($row as $key => $value) {
                     if (!isset($sortarray[$key])) {
-                        $sortarray[$key] = array();
+                        $sortarray[$key] = [];
                     }
                     $sortarray[$key][] = $value;
                 }
@@ -250,7 +250,7 @@ class display_support {
             }
         }
         $nbranks = $length;
-        $ranks = array();
+        $ranks = [];
         foreach ($rows as $row) {
             $choiceid = $row->id;
             foreach ($choices as $choice) {
@@ -270,7 +270,7 @@ class display_support {
         }
 
         // Psettings for display.
-        $strtotal = '<strong>'.get_string('total', 'pimenkoquestionnaire').'</strong>';
+        $strtotal = '<strong>' . get_string('total', 'pimenkoquestionnaire') . '</strong>';
         $isna = $precision == 1;
         $isnahead = '';
         $osgood = false;
@@ -278,7 +278,7 @@ class display_support {
             $osgood = true;
         }
         if ($isna) {
-            $isnahead = get_string('notapplicable', 'pimenkoquestionnaire').'<br />(#)';
+            $isnahead = get_string('notapplicable', 'pimenkoquestionnaire') . '<br />(#)';
         }
         if ($precision == 1) {
             $na = get_string('notapplicable', 'pimenkoquestionnaire');
@@ -286,7 +286,7 @@ class display_support {
             $na = '';
         }
         $nameddegrees = 0;
-        $n = array();
+        $n = [];
         foreach ($question->choices as $choice) {
             $content = $choice->content;
             // Check for number from 1 to 3 digits, followed by the equal sign = (to accomodate named degrees).
@@ -301,11 +301,11 @@ class display_support {
             }
         }
 
-        $headings = array('<span class="smalltext">'.get_string('responses', 'pimenkoquestionnaire').'</span>');
+        $headings = ['<span class="smalltext">' . get_string('responses', 'pimenkoquestionnaire') . '</span>'];
         if ($osgood) {
-            $align = array('right');
+            $align = ['right'];
         } else {
-            $align = array('left');
+            $align = ['left'];
         }
 
         // Display the column titles.
@@ -315,7 +315,7 @@ class display_support {
             } else {
                 $str = $j + 1;
             }
-            array_push($headings, '<span class="smalltext">'.$str.'</span>');
+            array_push($headings, '<span class="smalltext">' . $str . '</span>');
             array_push($align, 'center');
         }
         if ($osgood) {
@@ -339,7 +339,7 @@ class display_support {
         $table->attributes['class'] = 'generaltable';
         // Now display the responses.
         foreach ($ranks as $content => $rank) {
-            $data = array();
+            $data = [];
             // Eliminate potential named degrees on Likert scale.
             if (!preg_match("/^[0-9]{1,3}=/", $content)) {
                 // First display the list of degrees (named or un-named)
@@ -347,10 +347,10 @@ class display_support {
                 $nbna = $counts[$content]->nbna;
                 // TOTAL number of responses for this possible answer.
                 $total = $counts[$content]->num;
-                $nbresp = '<strong>'.$total.'<strong>';
+                $nbresp = '<strong>' . $total . '<strong>';
                 if ($osgood) {
                     // Ensure there are two bits of content.
-                    list($content, $contentright) = array_merge(preg_split('/[|]/', $content), array(' '));
+                    list($content, $contentright) = array_merge(preg_split('/[|]/', $content), [' ']);
                     $data[] = format_text($content, FORMAT_HTML, ['noclean' => true]);
                 } else {
                     // Eliminate potentially short-named choices.
@@ -367,16 +367,16 @@ class display_support {
                     if (isset($rank[$i])) {
                         $str = $rank[$i];
                         if ($total !== 0 && $str !== 0) {
-                            $percent = ' (<span class="percent">'.number_format(($str * 100) / $total).'%</span>)';
+                            $percent = ' (<span class="percent">' . number_format(($str * 100) / $total) . '%</span>)';
                         }
                         // Emphasize responses with max rank value.
                         if ($str == $maxrank) {
-                            $str = '<strong>'.$str.'</strong>';
+                            $str = '<strong>' . $str . '</strong>';
                         }
                     } else {
                         $str = 0;
                     }
-                    $data[] = $str.$percent;
+                    $data[] = $str . $percent;
                 }
                 if ($osgood) {
                     $data[] = format_text($contentright, FORMAT_HTML, ['noclean' => true]);
@@ -400,11 +400,11 @@ class display_support {
      * Sorting functions for ascending and descending.
      *
      */
-    static private function sortavgasc($a, $b) {
+    static private function sortavgasc( $a, $b ) {
         if (isset($a->avg) && isset($b->avg)) {
-            if ( $a->avg < $b->avg ) {
+            if ($a->avg < $b->avg) {
                 return -1;
-            } else if ($a->avg > $b->avg ) {
+            } else if ($a->avg > $b->avg) {
                 return 1;
             } else {
                 return 0;
@@ -412,9 +412,9 @@ class display_support {
         }
     }
 
-    static private function sortavgdesc($a, $b) {
+    static private function sortavgdesc( $a, $b ) {
         if (isset($a->avg) && isset($b->avg)) {
-            if ( $a->avg > $b->avg ) {
+            if ($a->avg > $b->avg) {
                 return -1;
             } else if ($a->avg < $b->avg) {
                 return 1;

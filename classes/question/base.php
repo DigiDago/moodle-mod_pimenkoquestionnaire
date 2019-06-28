@@ -15,17 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_pimenkoquestionnaire\question;
+
 use mod_pimenkoquestionnaire\edit_question_form;
 use \pimenkoquestionnaire;
 use context_course;
 
 defined('MOODLE_INTERNAL') || die();
+
 use \html_writer;
 
 /**
  * This file contains the parent class for pimenkoquestionnaire question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
@@ -33,11 +35,11 @@ use \html_writer;
 /**
  * Class for describing a question
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @package questiontypes
  */
 
- // Constants.
+// Constants.
 define('QUESCHOOSE', 0);
 define('QUESYESNO', 1);
 define('QUESTEXT', 2);
@@ -55,69 +57,54 @@ define('QUESSECTIONTEXT', 100);
 global $idcounter, $CFG;
 $idcounter = 0;
 
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/locallib.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
 
 abstract class base {
 
     // Class Properties.
-    /** @var int $id The database id of this question. */
-    public $id          = 0;
-
-    /** @var int $surveyid The database id of the survey this question belongs to. */
-    public $surveyid   = 0;
-
-    /** @var string $name The name of this question. */
-    public $name        = '';
-
-    /** @var string $type The name of the question type. */
-    public $type        = '';
-
-    /** @var array $choices Array holding any choices for this question. */
-    public $choices     = [];
-
-    /** @var array $dependencies Array holding any dependencies for this question. */
-    public $dependencies = [];
-
-    /** @var string $responsetable The table name for responses. */
-    public $responsetable = '';
-
-    /** @var int $length The length field. */
-    public $length      = 0;
-
-    /** @var int $precise The precision field. */
-    public $precise     = 0;
-
-    /** @var int $position Position in the pimenkoquestionnaire */
-    public $position    = 0;
-
-    /** @var string $content The question's content. */
-    public $content     = '';
-
-    /** @var string $allchoices The list of all question's choices. */
-    public $allchoices  = '';
-
-    /** @var boolean $required The required flag. */
-    public $required    = 'n';
-
-    /** @var boolean $deleted The deleted flag. */
-    public $deleted     = 'n';
-
     /** @var array $qtypenames List of all question names. */
     private static $qtypenames = [
-        QUESYESNO => 'yesno',
-        QUESTEXT => 'text',
-        QUESESSAY => 'essay',
-        QUESRADIO => 'radio',
-        QUESCHECK => 'check',
-        QUESDROP => 'drop',
-        QUESRATE => 'rate',
-        QUESDATE => 'date',
-        QUESNUMERIC => 'numerical',
-        QUESPAGEBREAK => 'pagebreak',
-        QUESSECTIONTEXT => 'sectiontext',
-        QUESTEACHERSELECT => 'teacherselect'
+            QUESYESNO => 'yesno',
+            QUESTEXT => 'text',
+            QUESESSAY => 'essay',
+            QUESRADIO => 'radio',
+            QUESCHECK => 'check',
+            QUESDROP => 'drop',
+            QUESRATE => 'rate',
+            QUESDATE => 'date',
+            QUESNUMERIC => 'numerical',
+            QUESPAGEBREAK => 'pagebreak',
+            QUESSECTIONTEXT => 'sectiontext',
+            QUESTEACHERSELECT => 'teacherselect'
     ];
-
+    /** @var int $id The database id of this question. */
+    public $id = 0;
+    /** @var int $surveyid The database id of the survey this question belongs to. */
+    public $surveyid = 0;
+    /** @var string $name The name of this question. */
+    public $name = '';
+    /** @var string $type The name of the question type. */
+    public $type = '';
+    /** @var array $choices Array holding any choices for this question. */
+    public $choices = [];
+    /** @var array $dependencies Array holding any dependencies for this question. */
+    public $dependencies = [];
+    /** @var string $responsetable The table name for responses. */
+    public $responsetable = '';
+    /** @var int $length The length field. */
+    public $length = 0;
+    /** @var int $precise The precision field. */
+    public $precise = 0;
+    /** @var int $position Position in the pimenkoquestionnaire */
+    public $position = 0;
+    /** @var string $content The question's content. */
+    public $content = '';
+    /** @var string $allchoices The list of all question's choices. */
+    public $allchoices = '';
+    /** @var boolean $required The required flag. */
+    public $required = 'n';
+    /** @var boolean $deleted The deleted flag. */
+    public $deleted = 'n';
     /** @var array $notifications Array of extra messages for display purposes. */
     private $notifications = [];
 
@@ -127,13 +114,13 @@ abstract class base {
      * The class constructor
      *
      */
-    public function __construct($id = 0, $question = null, $context = null, $params = []) {
+    public function __construct( $id = 0, $question = null, $context = null, $params = [] ) {
         global $DB;
         static $qtypes = null;
 
         if ($qtypes === null) {
             $qtypes = $DB->get_records('pimenko_question_type', [], 'typeid',
-                                       'typeid, type, has_choices, response_table');
+                    'typeid, type, has_choices, response_table');
         }
 
         if ($id) {
@@ -171,49 +158,6 @@ abstract class base {
         }
     }
 
-    /**
-     * Short name for this question type - no spaces, etc..
-     * @return string
-     */
-    abstract public function helpname();
-
-    /**
-     * Build a question from data.
-     * @var int $qtype The question type code.
-     * @var int|array|object $qdata Either the id of the record, or a structure containing the question data, or null.
-     * @var object $context The context for the question.
-     * @return A question object.
-     */
-    static public function question_builder($qtype, $qdata = null, $context = null) {
-        $qclassname = '\\mod_pimenkoquestionnaire\\question\\'.self::qtypename($qtype);
-        $qid = 0;
-        if (!empty($qdata) && is_array($qdata)) {
-            $qdata = (object)$qdata;
-        } else if (!empty($qdata) && is_int($qdata)) {
-            $qid = $qdata;
-        }
-        return new $qclassname($qid, $qdata, $context, ['type_id' => $qtype]);
-    }
-
-    /**
-     * Return the different question type names.
-     * @return array
-     */
-    static public function qtypename($qtype) {
-        if (array_key_exists($qtype, self::$qtypenames)) {
-            return self::$qtypenames[$qtype];
-        } else {
-            return('');
-        }
-    }
-
-    /**
-     * Override and return true if the question has choices.
-     */
-    public function has_choices() {
-        return false;
-    }
-
     private function get_choices() {
         global $DB;
 
@@ -228,36 +172,12 @@ abstract class base {
         }
     }
 
-    /**
-     * Return true if this question has been marked as required.
-     * @return boolean
-     */
-    public function required() {
-        return ($this->required == 'y');
-    }
-
-    /**
-     * Return true if the question has defined dependencies.
-     * @return boolean
-     */
-    public function has_dependencies() {
-        return !empty($this->dependencies);
-    }
-
-    /**
-     * Override this and return true if the question type allows dependent questions.
-     * @return boolean
-     */
-    public function allows_dependents() {
-        return false;
-    }
-
     private function get_dependencies() {
         global $DB;
 
         $this->dependencies = [];
         $dependencies = $DB->get_records('pimenko_dependency',
-            ['questionid' => $this->id , 'surveyid' => $this->surveyid], 'id ASC');
+                ['questionid' => $this->id, 'surveyid' => $this->surveyid], 'id ASC');
         foreach ($dependencies as $dependency) {
             $this->dependencies[$dependency->id] = new \stdClass();
             $this->dependencies[$dependency->id]->dependquestionid = $dependency->dependquestionid;
@@ -268,35 +188,66 @@ abstract class base {
     }
 
     /**
-     * Returns an array of dependency options for the question as an array of id value / display value pairs. Override in specific
-     * question types that support this differently.
-     * @return array An array of valid pair options.
+     * Each question type must define its response class.
+     *
+     * @return object The response object based off of pimenko_response_base.
+     *
      */
-    protected function get_dependency_options() {
-        $options = [];
-        if ($this->allows_dependents() && $this->has_choices()) {
-            foreach ($this->choices as $key => $choice) {
-                $contents = pimenkoquestionnaire_choice_values($choice->content);
-                if (!empty($contents->modname)) {
-                    $choice->content = $contents->modname;
-                } else if (!empty($contents->title)) { // Must be an image; use its title for the dropdown list.
-                    $choice->content = $contents->title;
-                } else {
-                    $choice->content = $contents->text;
-                }
-                $options[$this->id . ',' . $key] = $this->name . '->' . $choice->content;
-            }
+    abstract protected function responseclass();
+
+    /**
+     * Build a question from data.
+     *
+     * @return A question object.
+     * @var int|array|object $qdata   Either the id of the record, or a structure containing the question data, or null.
+     * @var object           $context The context for the question.
+     * @var int              $qtype   The question type code.
+     */
+    static public function question_builder( $qtype, $qdata = null, $context = null ) {
+        $qclassname = '\\mod_pimenkoquestionnaire\\question\\' . self::qtypename($qtype);
+        $qid = 0;
+        if (!empty($qdata) && is_array($qdata)) {
+            $qdata = (object) $qdata;
+        } else if (!empty($qdata) && is_int($qdata)) {
+            $qid = $qdata;
         }
-        return $options;
+        return new $qclassname($qid, $qdata, $context, ['type_id' => $qtype]);
+    }
+
+    /**
+     * Return the different question type names.
+     *
+     * @return array
+     */
+    static public function qtypename( $qtype ) {
+        if (array_key_exists($qtype, self::$qtypenames)) {
+            return self::$qtypenames[$qtype];
+        } else {
+            return ('');
+        }
+    }
+
+    static public function form_length_hidden( \MoodleQuickForm $mform, $value = 0 ) {
+        $mform->addElement('hidden', 'length', $value);
+        $mform->setType('length', PARAM_INT);
+        return $mform;
+    }
+
+    static public function form_precise_hidden( \MoodleQuickForm $mform, $value = 0 ) {
+        $mform->addElement('hidden', 'precise', $value);
+        $mform->setType('precise', PARAM_INT);
+        return $mform;
     }
 
     /**
      * Return true if all dependencies or this question have been fulfilled, or there aren't any.
-     * @param int $rid The response ID to check.
+     *
+     * @param int   $rid       The response ID to check.
      * @param array $questions An array containing all possible parent question objects.
+     *
      * @return bool
      */
-    public function dependency_fulfilled($rid, $questions) {
+    public function dependency_fulfilled( $rid, $questions ) {
         if (!$this->has_dependencies()) {
             $fulfilled = true;
         } else {
@@ -352,29 +303,40 @@ abstract class base {
         return $fulfilled;
     }
 
+    /**
+     * Return true if the question has defined dependencies.
+     *
+     * @return boolean
+     */
+    public function has_dependencies() {
+        return !empty($this->dependencies);
+    }
+
+    /**
+     * Return true if the specified response for this question contains the specified choice.
+     *
+     * @param $rid
+     * @param $choiceid
+     *
+     * @return bool
+     */
+    public function response_has_choice( $rid, $choiceid ) {
+        global $DB;
+        $choiceval = $this->response->transform_choiceid($choiceid);
+        return $DB->record_exists($this->response_table(),
+                ['response_id' => $rid, 'question_id' => $this->id, 'choice_id' => $choiceval]);
+    }
+
     public function response_table() {
         return $this->response->response_table();
     }
 
     /**
-     * Return true if the specified response for this question contains the specified choice.
-     * @param $rid
-     * @param $choiceid
-     * @return bool
-     */
-    public function response_has_choice($rid, $choiceid) {
-        global $DB;
-        $choiceval = $this->response->transform_choiceid($choiceid);
-        return $DB->record_exists($this->response_table(),
-            ['response_id' => $rid, 'question_id' => $this->id, 'choice_id' => $choiceval]);
-    }
-
-    /**
      * Insert response data method.
      */
-    public function insert_response($rid, $val) {
+    public function insert_response( $rid, $val ) {
         if (isset ($this->response) && is_object($this->response) &&
-            is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
+                is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
             return $this->response->insert_response($rid, $val);
         } else {
             return false;
@@ -384,9 +346,9 @@ abstract class base {
     /**
      * Get results data method.
      */
-    public function get_results($rids = false) {
+    public function get_results( $rids = false ) {
         if (isset ($this->response) && is_object($this->response) &&
-            is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
+                is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
             return $this->response->get_results($rids);
         } else {
             return false;
@@ -396,9 +358,9 @@ abstract class base {
     /**
      * Display results method.
      */
-    public function display_results($rids=false, $sort='', $anonymous=false) {
+    public function display_results( $rids = false, $sort = '', $anonymous = false ) {
         if (isset ($this->response) && is_object($this->response) &&
-            is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
+                is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
             return $this->response->display_results($rids, $sort, $anonymous);
         } else {
             return false;
@@ -407,14 +369,16 @@ abstract class base {
 
     /**
      * Add a notification.
+     *
      * @param string $message
      */
-    public function add_notification($message) {
+    public function add_notification( $message ) {
         $this->notifications[] = $message;
     }
 
     /**
      * Get any notifications.
+     *
      * @return array | boolean The notifications array or false.
      */
     public function get_notifications() {
@@ -426,18 +390,17 @@ abstract class base {
     }
 
     /**
-     * Each question type must define its response class.
-     *
-     * @return object The response object based off of pimenko_response_base.
-     *
-     */
-    abstract protected function responseclass();
-
-    /**
      * True if question type allows responses.
      */
     public function supports_responses() {
         return !empty($this->responseclass());
+    }
+
+    /**
+     * True if question type supports feedback scores and weights. Same as supports_feedback() by default.
+     */
+    public function supports_feedback_scores() {
+        return $this->supports_feedback();
     }
 
     /**
@@ -448,10 +411,19 @@ abstract class base {
     }
 
     /**
-     * True if question type supports feedback scores and weights. Same as supports_feedback() by default.
+     * Provide the feedback scores for all requested response id's. This should be provided only by questions that provide feedback.
+     *
+     * @param array $rids
+     *
+     * @return array | boolean
      */
-    public function supports_feedback_scores() {
-        return $this->supports_feedback();
+    public function get_feedback_scores( array $rids ) {
+        if ($this->valid_feedback() && isset($this->response) && is_object($this->response) &&
+                is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
+            return $this->response->get_feedback_scores($rids);
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -470,21 +442,17 @@ abstract class base {
     }
 
     /**
-     * Provide the feedback scores for all requested response id's. This should be provided only by questions that provide feedback.
-     * @param array $rids
-     * @return array | boolean
+     * Return true if this question has been marked as required.
+     *
+     * @return boolean
      */
-    public function get_feedback_scores(array $rids) {
-        if ($this->valid_feedback() && isset($this->response) && is_object($this->response) &&
-            is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
-            return $this->response->get_feedback_scores($rids);
-        } else {
-            return false;
-        }
+    public function required() {
+        return ($this->required == 'y');
     }
 
     /**
      * Get the maximum score possible for feedback if appropriate. Override if default behaviour is not correct.
+     *
      * @return int | boolean
      */
     public function get_feedback_maxscore() {
@@ -507,212 +475,23 @@ abstract class base {
      * Check question's form data for complete response.
      *
      * @param object $responsedata The data entered into the response.
+     *
      * @return boolean
      */
-    public function response_complete($responsedata) {
+    public function response_complete( $responsedata ) {
         return !($this->required() && ($this->deleted == 'n') &&
-                 (!isset($responsedata->{'q'.$this->id}) || $responsedata->{'q'.$this->id} == ''));
+                (!isset($responsedata->{'q' . $this->id}) || $responsedata->{'q' . $this->id} == ''));
     }
 
     /**
      * Check question's form data for valid response. Override this if type has specific format requirements.
      *
      * @param object $responsedata The data entered into the response.
+     *
      * @return boolean
      */
-    public function response_valid($responsedata) {
+    public function response_valid( $responsedata ) {
         return true;
-    }
-
-    /**
-     * Update data record from object or optional question data.
-     *
-     * @param object $questionrecord An object with all updated question record data.
-     * @param boolean $updatechoices True if choices should also be updated.
-     */
-    public function update($questionrecord = null, $updatechoices = true) {
-        global $DB;
-
-        if ($questionrecord === null) {
-            $questionrecord = new \stdClass();
-            $questionrecord->id = $this->id;
-            $questionrecord->surveyid = $this->surveyid;
-            $questionrecord->name = $this->name;
-            $questionrecord->type_id = $this->type_id;
-            $questionrecord->result_id = $this->result_id;
-            $questionrecord->length = $this->length;
-            $questionrecord->precise = $this->precise;
-            $questionrecord->position = $this->position;
-            $questionrecord->content = $this->content;
-            $questionrecord->required = $this->required;
-            $questionrecord->deleted = $this->deleted;
-            $questionrecord->dependquestion = $this->dependquestion;
-            $questionrecord->dependchoice = $this->dependchoice;
-        } else {
-            // Make sure the "id" field is this question's.
-            if (isset($this->qid) && ($this->qid > 0)) {
-                $questionrecord->id = $this->qid;
-            } else {
-                $questionrecord->id = $this->id;
-            }
-        }
-        $DB->update_record('pimenko_question', $questionrecord);
-
-        if ($updatechoices && $this->has_choices()) {
-            $this->update_choices();
-        }
-    }
-
-    /**
-     * Add the question to the database from supplied arguments.
-     * @param object $questionrecord The required data for adding the question.
-     * @param array $choicerecords An array of choice records with 'content' and 'value' properties.
-     * @param boolean $calcposition Whether or not to calculate the next available position in the survey.
-     */
-    public function add($questionrecord, array $choicerecords = null, $calcposition = true) {
-        global $DB, $COURSE;
-
-        // Create new question.
-        if ($calcposition) {
-            // Set the position to the end.
-            $sql = 'SELECT MAX(position) as maxpos '.
-                   'FROM {pimenko_question} '.
-                   'WHERE surveyid = ? AND deleted = ?';
-            $params = ['surveyid' => $questionrecord->surveyid, 'deleted' => 'n'];
-            if ($record = $DB->get_record_sql($sql, $params)) {
-                $questionrecord->position = $record->maxpos + 1;
-            } else {
-                $questionrecord->position = 1;
-            }
-        }
-
-        // Make sure we add all necessary data.
-        if (!isset($questionrecord->type_id) || empty($questionrecord->type_id)) {
-            $questionrecord->type_id = $this->type_id;
-        }
-
-        $this->qid = $DB->insert_record('pimenko_question', $questionrecord);
-        if ($this->has_choices() && !empty($choicerecords)) {
-            foreach ($choicerecords as $choicerecord) {
-                $choicerecord->question_id = $this->qid;
-                $this->add_choice($choicerecord);
-            }
-        } elseif ($questionrecord->type_id == 11) {
-            $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
-            $context  = context_course::instance($COURSE->id);
-            $teachers = get_role_users($role->id, $context);
-            foreach($teachers as $teacher){
-                $choicerecord = new \stdClass();
-                $choicerecord->question_id = $this->qid;
-                $choicerecord->content = $teacher->firstname . ' ' . $teacher->lastname;
-                $this->add_choice($choicerecord);
-            }
-        }
-    }
-
-    public function update_choices() {
-        $retvalue = true;
-        if ($this->has_choices() && isset($this->choices)) {
-            // Need to fix this messed-up qid/id issue.
-            if (isset($this->qid) && ($this->qid > 0)) {
-                $qid = $this->qid;
-            } else {
-                $qid = $this->id;
-            }
-            foreach ($this->choices as $key => $choice) {
-                $choicerecord = new \stdClass();
-                $choicerecord->id = $key;
-                $choicerecord->question_id = $qid;
-                $choicerecord->content = $choice->content;
-                $choicerecord->value = $choice->value;
-                $retvalue &= $this->update_choice($choicerecord);
-            }
-        }
-        return $retvalue;
-    }
-
-    public function update_choice($choicerecord) {
-        global $DB;
-        return $DB->update_record('pimenko_quest_choice', $choicerecord);
-    }
-
-    public function add_choice($choicerecord) {
-        global $DB;
-        $retvalue = true;
-
-        if ($cid = $DB->insert_record('pimenko_quest_choice', $choicerecord)) {
-            $this->choices[$cid] = new \stdClass();
-            $this->choices[$cid]->content = $choicerecord->content;
-            $this->choices[$cid]->value = isset($choicerecord->value) ? $choicerecord->value : null;
-        } else {
-            $retvalue = false;
-        }
-        return $retvalue;
-    }
-
-    /**
-     * Delete the choice from the question object and the database.
-     *
-     * @param integer|object $choice Either the integer id of the choice, or the choice record.
-     */
-    public function delete_choice($choice) {
-        global $DB;
-
-        $retvalue = true;
-        if (is_int($choice)) {
-            $cid = $choice;
-        } else {
-            $cid = $choice->id;
-        }
-        if ($DB->delete_records('pimenko_quest_choice', ['id' => $cid])) {
-            unset($this->choices[$cid]);
-        } else {
-            $retvalue = false;
-        }
-        return $retvalue;
-    }
-
-    public function update_dependency($dependencyrecord) {
-        global $DB;
-        return $DB->update_record('pimenko_dependency', $dependencyrecord);
-    }
-
-    public function add_dependency($dependencyrecord) {
-        global $DB;
-
-        $retvalue = true;
-        if ($did = $DB->insert_record('pimenko_dependency', $dependencyrecord)) {
-            $this->dependencies[$did] = new \stdClass();
-            $this->dependencies[$did]->dependquestionid = $dependencyrecord->dependquestionid;
-            $this->dependencies[$did]->dependchoiceid = $dependencyrecord->dependchoiceid;
-            $this->dependencies[$did]->dependlogic = $dependencyrecord->dependlogic;
-            $this->dependencies[$did]->dependandor = $dependencyrecord->dependandor;
-        } else {
-            $retvalue = false;
-        }
-        return $retvalue;
-    }
-
-    /**
-     * Delete the dependency from the question object and the database.
-     *
-     * @param integer|object $dependency Either the integer id of the dependency, or the dependency record.
-     */
-    public function delete_dependency($dependency) {
-        global $DB;
-
-        $retvalue = true;
-        if (is_int($dependency)) {
-            $did = $dependency;
-        } else {
-            $did = $dependency->id;
-        }
-        if ($DB->delete_records('pimenko_dependency', ['id' => $did])) {
-            unset($this->dependencies[$did]);
-        } else {
-            $retvalue = false;
-        }
-        return $retvalue;
     }
 
     /**
@@ -720,7 +499,7 @@ abstract class base {
      *
      * @param boolean $required Whether question should be required or not.
      */
-    public function set_required($required) {
+    public function set_required( $required ) {
         global $DB;
         $rval = $required ? 'y' : 'n';
         // Need to fix this messed-up qid/id issue.
@@ -734,26 +513,8 @@ abstract class base {
     }
 
     /**
-     * Question specific display method.
-     *
-     * @param object $formdata
-     * @param array $descendantdata
-     * @param boolean $blankpimenkoquestionnaire
-     *
-     */
-    abstract protected function question_survey_display($formdata, $descendantsdata, $blankpimenkoquestionnaire);
-
-    /**
-     * Question specific response display method.
-     *
-     * @param object $data
-     * @param integer $qnum
-     *
-     */
-    abstract protected function response_survey_display($data);
-
-    /**
      * Override and return a form template if provided. Output of question_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function question_template() {
@@ -762,6 +523,7 @@ abstract class base {
 
     /**
      * Override and return a form template if provided. Output of response_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function response_template() {
@@ -770,11 +532,12 @@ abstract class base {
 
     /**
      * Override and return a form template if provided. Output of results_output is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function results_template() {
         if (isset ($this->response) && is_object($this->response) &&
-            is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
+                is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
             return $this->response->results_template();
         } else {
             return false;
@@ -783,36 +546,25 @@ abstract class base {
 
     /**
      * Get the output for question renderers / templates.
-     * @param object $formdata
-     * @param array $dependants Array of all questions/choices depending on this question.
+     *
+     * @param object  $formdata
+     * @param array   $dependants Array of all questions/choices depending on this question.
      * @param integer $qnum
      * @param boolean $blankpimenkoquestionnaire
      */
-    public function question_output($formdata, $dependants=[], $qnum='', $blankpimenkoquestionnaire) {
+    public function question_output( $formdata, $dependants = [], $qnum = '', $blankpimenkoquestionnaire ) {
         $pagetags = $this->questionstart_survey_display($qnum, $formdata);
         $pagetags->qformelement = $this->question_survey_display($formdata, $dependants, $blankpimenkoquestionnaire);
         return $pagetags;
     }
 
     /**
-     * Get the output for question renderers / templates.
-     * @param object $formdata
-     * @param string $descendantdata
-     * @param integer $qnum
-     * @param boolean $blankpimenkoquestionnaire
-     */
-    public function response_output($data, $qnum='') {
-        $pagetags = $this->questionstart_survey_display($qnum, $data);
-        $pagetags->qformelement = $this->response_survey_display($data);
-        return $pagetags;
-    }
-
-    /**
      * Get the output for the start of the questions in a survey.
+     *
      * @param integer $qnum
-     * @param object $formdata
+     * @param object  $formdata
      */
-    public function questionstart_survey_display($qnum, $formdata='') {
+    public function questionstart_survey_display( $qnum, $formdata = '' ) {
         global $OUTPUT, $SESSION, $pimenkoquestionnaire, $PAGE;
 
         $pagetags = new \stdClass();
@@ -829,18 +581,18 @@ abstract class base {
         }
         // If we are on report page and this pimenkoquestionnaire has dependquestions and this question was skipped.
         if (($pagetype == 'mod-pimenkoquestionnaire-myreport' || $pagetype == 'mod-pimenkoquestionnaire-report') &&
-            ($nonumbering == false) && !empty($formdata) && !empty($this->dependencies) &&
-            !array_key_exists('q'.$this->id, $formdata)) {
+                ($nonumbering == false) && !empty($formdata) && !empty($this->dependencies) &&
+                !array_key_exists('q' . $this->id, $formdata)) {
             $skippedquestion = true;
             $skippedclass = ' unselected';
-            $qnum = '<span class="'.$skippedclass.'">('.$qnum.')</span>';
+            $qnum = '<span class="' . $skippedclass . '">(' . $qnum . ')</span>';
         }
         // In preview mode, hide children questions that have not been answered.
         // In report mode, If pimenkoquestionnaire is set to no numbering,
         // also hide answers to questions that have not been answered.
         $displayclass = 'qn-container';
         if ($pagetype == 'mod-pimenkoquestionnaire-preview' || ($nonumbering &&
-            ($currenttab == 'mybyresponse' || $currenttab == 'individualresp'))) {
+                        ($currenttab == 'mybyresponse' || $currenttab == 'individualresp'))) {
             // This needs to be done to ensure all dependency data is loaded.
             // TODO - Perhaps this should be a function called by the pimenkoquestionnaire after it loads all questions?
             $pimenkoquestionnaire->load_parents($this);
@@ -848,7 +600,7 @@ abstract class base {
             $pagetags->dependencylist = $pimenkoquestionnaire->renderer->get_dependency_html($this->id, $this->dependencies);
         }
 
-        $pagetags->fieldset = (object)['id' => $this->id, 'class' => $displayclass];
+        $pagetags->fieldset = (object) ['id' => $this->id, 'class' => $displayclass];
 
         // Do not display the info box for the label question type.
         if ($this->type_id != QUESSECTIONTEXT) {
@@ -860,8 +612,9 @@ abstract class base {
                 $required = html_writer::start_tag('div', ['class' => 'accesshide']);
                 $required .= get_string('required', 'pimenkoquestionnaire');
                 $required .= html_writer::end_tag('div');
-                $required .= html_writer::empty_tag('img', ['class' => 'req', 'title' => get_string('required', 'pimenkoquestionnaire'),
-                    'alt' => get_string('required', 'pimenkoquestionnaire'), 'src' => $OUTPUT->image_url('req')]);
+                $required .= html_writer::empty_tag('img',
+                        ['class' => 'req', 'title' => get_string('required', 'pimenkoquestionnaire'),
+                                'alt' => get_string('required', 'pimenkoquestionnaire'), 'src' => $OUTPUT->image_url('req')]);
             }
             $pagetags->required = $required; // Need to replace this with better renderer / template?
         }
@@ -871,33 +624,63 @@ abstract class base {
         }
         $pagetags->skippedclass = $skippedclass;
         if ($this->type_id == QUESNUMERIC || $this->type_id == QUESTEXT) {
-            $pagetags->label = (object)['for' => self::qtypename($this->type_id) . $this->id];
+            $pagetags->label = (object) ['for' => self::qtypename($this->type_id) . $this->id];
         } else if ($this->type_id == QUESDROP || $this->type_id == QUESTEACHERSELECT) {
-            $pagetags->label = (object)['for' => self::qtypename($this->type_id) . $this->name];
+            $pagetags->label = (object) ['for' => self::qtypename($this->type_id) . $this->name];
         } else if ($this->type_id == QUESESSAY) {
-            $pagetags->label = (object)['for' => 'edit-q' . $this->id];
+            $pagetags->label = (object) ['for' => 'edit-q' . $this->id];
         }
         $options = ['noclean' => true, 'para' => false, 'filter' => true, 'context' => $this->context, 'overflowdiv' => true];
         $content = format_text(file_rewrite_pluginfile_urls($this->content, 'pluginfile.php',
-            $this->context->id, 'mod_pimenkoquestionnaire', 'question', $this->id), FORMAT_HTML, $options);
+                $this->context->id, 'mod_pimenkoquestionnaire', 'question', $this->id), FORMAT_HTML, $options);
         $pagetags->qcontent = $content;
 
         return $pagetags;
     }
 
-    // This section contains functions for editing the specific question types.
-    // There are required methods that must be implemented, and helper functions that can be used.
+    /**
+     * Question specific display method.
+     *
+     * @param object  $formdata
+     * @param array   $descendantdata
+     * @param boolean $blankpimenkoquestionnaire
+     *
+     */
+    abstract protected function question_survey_display( $formdata, $descendantsdata, $blankpimenkoquestionnaire );
 
-    // Required functions that can be overridden by the question type.
+    /**
+     * Get the output for question renderers / templates.
+     *
+     * @param object  $formdata
+     * @param string  $descendantdata
+     * @param integer $qnum
+     * @param boolean $blankpimenkoquestionnaire
+     */
+    public function response_output( $data, $qnum = '' ) {
+        $pagetags = $this->questionstart_survey_display($qnum, $data);
+        $pagetags->qformelement = $this->response_survey_display($data);
+        return $pagetags;
+    }
+
+    /**
+     * Question specific response display method.
+     *
+     * @param object  $data
+     * @param integer $qnum
+     *
+     */
+    abstract protected function response_survey_display( $data );
 
     /**
      * Override this, or any of the internal methods, to provide specific form data for editing the question type.
      * The structure of the elements here is the default layout for the question form.
-     * @param edit_question_form $form The main moodleform object.
+     *
+     * @param edit_question_form   $form                 The main moodleform object.
      * @param pimenkoquestionnaire $pimenkoquestionnaire The pimenkoquestionnaire being edited.
+     *
      * @return bool
      */
-    public function edit_form(edit_question_form $form, pimenkoquestionnaire $pimenkoquestionnaire) {
+    public function edit_form( edit_question_form $form, pimenkoquestionnaire $pimenkoquestionnaire ) {
         $mform =& $form->_form;
         $this->form_header($mform);
         $this->form_name($mform);
@@ -941,7 +724,7 @@ abstract class base {
         return true;
     }
 
-    protected function form_header(\MoodleQuickForm $mform, $helpname = '') {
+    protected function form_header( \MoodleQuickForm $mform, $helpname = '' ) {
         // Display different messages for new question creation and existing question modification.
         if (isset($this->qid) && !empty($this->qid)) {
             $header = get_string('editquestion', 'pimenkoquestionnaire', pimenkoquestionnaire_get_type($this->type_id));
@@ -956,15 +739,22 @@ abstract class base {
         $mform->addHelpButton('questionhdredit', $helpname, 'pimenkoquestionnaire');
     }
 
-    protected function form_name(\MoodleQuickForm $mform) {
+    /**
+     * Short name for this question type - no spaces, etc..
+     *
+     * @return string
+     */
+    abstract public function helpname();
+
+    protected function form_name( \MoodleQuickForm $mform ) {
         $mform->addElement('text', 'name', get_string('optionalname', 'pimenkoquestionnaire'),
-                        ['size' => '30', 'maxlength' => '30']);
+                ['size' => '30', 'maxlength' => '30']);
         $mform->setType('name', PARAM_TEXT);
         $mform->addHelpButton('name', 'optionalname', 'pimenkoquestionnaire');
         return $mform;
     }
 
-    protected function form_required(\MoodleQuickForm $mform) {
+    protected function form_required( \MoodleQuickForm $mform ) {
         $reqgroup = [];
         $reqgroup[] =& $mform->createElement('radio', 'required', '', get_string('yes'), 'y');
         $reqgroup[] =& $mform->createElement('radio', 'required', '', get_string('no'), 'n');
@@ -973,21 +763,78 @@ abstract class base {
         return $mform;
     }
 
-    protected function form_length(\MoodleQuickForm $mform, $helpname = '') {
+    protected function form_length( \MoodleQuickForm $mform, $helpname = '' ) {
         self::form_length_text($mform, $helpname);
     }
 
-    protected function form_precise(\MoodleQuickForm $mform, $helpname = '') {
+    static public function form_length_text( \MoodleQuickForm $mform, $helpname = '', $value = 0 ) {
+        $mform->addElement('text', 'length', get_string($helpname, 'pimenkoquestionnaire'), ['size' => '1'], $value);
+        $mform->setType('length', PARAM_INT);
+        if (!empty($helpname)) {
+            $mform->addHelpButton('length', $helpname, 'pimenkoquestionnaire');
+        }
+        return $mform;
+    }
+
+    protected function form_precise( \MoodleQuickForm $mform, $helpname = '' ) {
         self::form_precise_text($mform, $helpname);
     }
 
+    static public function form_precise_text( \MoodleQuickForm $mform, $helpname = '', $value = 0 ) {
+        $mform->addElement('text', 'precise', get_string($helpname, 'pimenkoquestionnaire'), ['size' => '1']);
+        $mform->setType('precise', PARAM_INT);
+        if (!empty($helpname)) {
+            $mform->addHelpButton('precise', $helpname, 'pimenkoquestionnaire');
+        }
+        return $mform;
+    }
+
+    protected function form_question_text( \MoodleQuickForm $mform, $context ) {
+        $editoroptions = ['maxfiles' => EDITOR_UNLIMITED_FILES, 'trusttext' => true, 'context' => $context];
+        $mform->addElement('editor', 'content', get_string('text', 'pimenkoquestionnaire'), null, $editoroptions);
+        $mform->setType('content', PARAM_RAW);
+        $mform->addRule('content', null, 'required', null, 'client');
+        return $mform;
+    }
+
+    protected function form_choices( \MoodleQuickForm $mform, array $choices, $helpname = '' ) {
+        $numchoices = count($choices);
+        $allchoices = '';
+        foreach ($choices as $choice) {
+            if (!empty($allchoices)) {
+                $allchoices .= "\n";
+            }
+            $allchoices .= $choice->content;
+        }
+        if (empty($helpname)) {
+            $helpname = $this->helpname();
+        }
+
+        $mform->addElement('html', '<div class="qoptcontainer">');
+        $options = ['wrap' => 'virtual', 'class' => 'qopts'];
+        $mform->addElement('textarea', 'allchoices', get_string('possibleanswers', 'pimenkoquestionnaire'), $options);
+        $mform->setType('allchoices', PARAM_RAW);
+        $mform->addRule('allchoices', null, 'required', null, 'client');
+        $mform->addHelpButton('allchoices', $helpname, 'pimenkoquestionnaire');
+        $mform->addElement('html', '</div>');
+        $mform->addElement('hidden', 'num_choices', $numchoices);
+        $mform->setType('num_choices', PARAM_INT);
+        return $allchoices;
+    }
+
+    // This section contains functions for editing the specific question types.
+    // There are required methods that must be implemented, and helper functions that can be used.
+
+    // Required functions that can be overridden by the question type.
+
     /**
      * @param \MoodleQuickForm $mform The moodle form to add elements to.
-     * @param $pimenkoquestionnaire
-     * @param $editquestionformobject
+     * @param                  $pimenkoquestionnaire
+     * @param                  $editquestionformobject
+     *
      * @return bool
      */
-    protected function form_dependencies($form, $questions) {
+    protected function form_dependencies( $form, $questions ) {
         // Create a new area for multiple dependencies.
         $mform = $form->_form;
         $position = ($this->position !== 0) ? $this->position : count($questions) + 1;
@@ -995,7 +842,7 @@ abstract class base {
         $dependencies[''][0] = get_string('choosedots');
         foreach ($questions as $question) {
             if (($question->position < $position) && !empty($question->name) &&
-                !empty($dependopts = $question->get_dependency_options())) {
+                    !empty($dependopts = $question->get_dependency_options())) {
                 $dependencies[$question->name] = $dependopts;
             }
         }
@@ -1039,106 +886,42 @@ abstract class base {
 
             // Area for "must"-criteria.
             $mform->addElement('static', 'mandatory', '',
-                '<div class="dimmed_text">' . get_string('mandatory', 'pimenkoquestionnaire') . '</div>');
+                    '<div class="dimmed_text">' . get_string('mandatory', 'pimenkoquestionnaire') . '</div>');
             $selectand = $mform->createElement('select', 'dependlogic_and', get_string('condition', 'pimenkoquestionnaire'),
-                [get_string('answernotgiven', 'pimenkoquestionnaire'), get_string('answergiven', 'pimenkoquestionnaire')]);
+                    [get_string('answernotgiven', 'pimenkoquestionnaire'), get_string('answergiven', 'pimenkoquestionnaire')]);
             $selectand->setSelected('1');
             $groupitemsand = [];
             $groupitemsand[] =& $mform->createElement('selectgroups', 'dependquestions_and',
-                get_string('parent', 'pimenkoquestionnaire'), $dependencies);
+                    get_string('parent', 'pimenkoquestionnaire'), $dependencies);
             $groupitemsand[] =& $selectand;
-            $groupand = $mform->createElement('group', 'selectdependencies_and', get_string('dependquestion', 'pimenkoquestionnaire'),
-                $groupitemsand, ' ', false);
+            $groupand =
+                    $mform->createElement('group', 'selectdependencies_and', get_string('dependquestion', 'pimenkoquestionnaire'),
+                            $groupitemsand, ' ', false);
             $form->repeat_elements([$groupand], $dependenciescountand + 1, [],
-                'numdependencies_and', 'adddependencies_and', 2, null, true);
+                    'numdependencies_and', 'adddependencies_and', 2, null, true);
 
             // Area for "can"-criteria.
             $mform->addElement('static', 'optional', '',
-                '<div class="dimmed_text">' . get_string('optional', 'pimenkoquestionnaire') . '</div>');
+                    '<div class="dimmed_text">' . get_string('optional', 'pimenkoquestionnaire') . '</div>');
             $selector = $mform->createElement('select', 'dependlogic_or', get_string('condition', 'pimenkoquestionnaire'),
-                [get_string('answernotgiven', 'pimenkoquestionnaire'), get_string('answergiven', 'pimenkoquestionnaire')]);
+                    [get_string('answernotgiven', 'pimenkoquestionnaire'), get_string('answergiven', 'pimenkoquestionnaire')]);
             $selector->setSelected('1');
             $groupitemsor = [];
             $groupitemsor[] =& $mform->createElement('selectgroups', 'dependquestions_or',
-                get_string('parent', 'pimenkoquestionnaire'), $dependencies);
+                    get_string('parent', 'pimenkoquestionnaire'), $dependencies);
             $groupitemsor[] =& $selector;
             $groupor = $mform->createElement('group', 'selectdependencies_or', get_string('dependquestion', 'pimenkoquestionnaire'),
-                $groupitemsor, ' ', false);
+                    $groupitemsor, ' ', false);
             $form->repeat_elements([$groupor], $dependenciescountor + 1, [], 'numdependencies_or',
-                'adddependencies_or', 2, null, true);
+                    'adddependencies_or', 2, null, true);
         }
         return true;
-    }
-
-    protected function form_question_text(\MoodleQuickForm $mform, $context) {
-        $editoroptions = ['maxfiles' => EDITOR_UNLIMITED_FILES, 'trusttext' => true, 'context' => $context];
-        $mform->addElement('editor', 'content', get_string('text', 'pimenkoquestionnaire'), null, $editoroptions);
-        $mform->setType('content', PARAM_RAW);
-        $mform->addRule('content', null, 'required', null, 'client');
-        return $mform;
-    }
-
-    protected function form_choices(\MoodleQuickForm $mform, array $choices, $helpname = '') {
-        $numchoices = count($choices);
-        $allchoices = '';
-        foreach ($choices as $choice) {
-            if (!empty($allchoices)) {
-                $allchoices .= "\n";
-            }
-            $allchoices .= $choice->content;
-        }
-        if (empty($helpname)) {
-            $helpname = $this->helpname();
-        }
-
-        $mform->addElement('html', '<div class="qoptcontainer">');
-        $options = ['wrap' => 'virtual', 'class' => 'qopts'];
-        $mform->addElement('textarea', 'allchoices', get_string('possibleanswers', 'pimenkoquestionnaire'), $options);
-        $mform->setType('allchoices', PARAM_RAW);
-        $mform->addRule('allchoices', null, 'required', null, 'client');
-        $mform->addHelpButton('allchoices', $helpname, 'pimenkoquestionnaire');
-        $mform->addElement('html', '</div>');
-        $mform->addElement('hidden', 'num_choices', $numchoices);
-        $mform->setType('num_choices', PARAM_INT);
-        return $allchoices;
-    }
-
-    // Helper functions for commonly used editing functions.
-
-    static public function form_length_hidden(\MoodleQuickForm $mform, $value = 0) {
-        $mform->addElement('hidden', 'length', $value);
-        $mform->setType('length', PARAM_INT);
-        return $mform;
-    }
-
-    static public function form_length_text(\MoodleQuickForm $mform, $helpname = '', $value = 0) {
-        $mform->addElement('text', 'length', get_string($helpname, 'pimenkoquestionnaire'), ['size' => '1'], $value);
-        $mform->setType('length', PARAM_INT);
-        if (!empty($helpname)) {
-            $mform->addHelpButton('length', $helpname, 'pimenkoquestionnaire');
-        }
-        return $mform;
-    }
-
-    static public function form_precise_hidden(\MoodleQuickForm $mform, $value = 0) {
-        $mform->addElement('hidden', 'precise', $value);
-        $mform->setType('precise', PARAM_INT);
-        return $mform;
-    }
-
-    static public function form_precise_text(\MoodleQuickForm $mform, $helpname = '', $value = 0) {
-        $mform->addElement('text', 'precise', get_string($helpname, 'pimenkoquestionnaire'), ['size' => '1']);
-        $mform->setType('precise', PARAM_INT);
-        if (!empty($helpname)) {
-            $mform->addHelpButton('precise', $helpname, 'pimenkoquestionnaire');
-        }
-        return $mform;
     }
 
     /**
      * Create and update question data from the forms.
      */
-    public function form_update($formdata, $pimenkoquestionnaire) {
+    public function form_update( $formdata, $pimenkoquestionnaire ) {
         global $DB;
 
         $this->form_preprocess_data($formdata);
@@ -1146,11 +929,12 @@ abstract class base {
 
             // Update existing question.
             // Handle any attachments in the content.
-            $formdata->itemid  = $formdata->content['itemid'];
-            $formdata->format  = $formdata->content['format'];
+            $formdata->itemid = $formdata->content['itemid'];
+            $formdata->format = $formdata->content['format'];
             $formdata->content = $formdata->content['text'];
-            $formdata->content = file_save_draft_area_files($formdata->itemid, $pimenkoquestionnaire->context->id, 'mod_pimenkoquestionnaire',
-                'question', $formdata->qid, ['subdirs' => true], $formdata->content);
+            $formdata->content =
+                    file_save_draft_area_files($formdata->itemid, $pimenkoquestionnaire->context->id, 'mod_pimenkoquestionnaire',
+                            'question', $formdata->qid, ['subdirs' => true], $formdata->content);
 
             $fields = ['name', 'type_id', 'length', 'precise', 'required', 'content'];
             $questionrecord = new \stdClass();
@@ -1182,11 +966,11 @@ abstract class base {
             $this->add($questionrecord);
 
             // Handle any attachments in the content.
-            $formdata->itemid  = $formdata->content['itemid'];
-            $formdata->format  = $formdata->content['format'];
+            $formdata->itemid = $formdata->content['itemid'];
+            $formdata->format = $formdata->content['format'];
             $formdata->content = $formdata->content['text'];
-            $content           = file_save_draft_area_files($formdata->itemid, $pimenkoquestionnaire->context->id, 'mod_pimenkoquestionnaire',
-                'question', $this->qid, ['subdirs' => true], $formdata->content);
+            $content = file_save_draft_area_files($formdata->itemid, $pimenkoquestionnaire->context->id, 'mod_pimenkoquestionnaire',
+                    'question', $this->qid, ['subdirs' => true], $formdata->content);
             $DB->set_field('pimenko_question', 'content', $content, ['id' => $this->qid]);
         }
         if ($this->has_choices()) {
@@ -1271,9 +1055,9 @@ abstract class base {
             }
             while (($nidx < $newcount) && ($cidx < $oldcount)) {
                 if ($formdata->dependquestion[$nidx] != $edependency->dependquestionid ||
-                    $formdata->dependchoice[$nidx] != $edependency->dependchoiceid ||
-                    $formdata->dependlogic_cleaned[$nidx] != $edependency->dependlogic ||
-                    $formdata->dependandor[$nidx] != $edependency->dependandor) {
+                        $formdata->dependchoice[$nidx] != $edependency->dependchoiceid ||
+                        $formdata->dependlogic_cleaned[$nidx] != $edependency->dependlogic ||
+                        $formdata->dependandor[$nidx] != $edependency->dependandor) {
 
                     $dependencyrecord = new \stdClass();
                     $dependencyrecord->id = $ekey;
@@ -1318,7 +1102,7 @@ abstract class base {
     /**
      * Any preprocessing of general data.
      */
-    protected function form_preprocess_data($formdata) {
+    protected function form_preprocess_data( $formdata ) {
         if ($this->has_choices()) {
             // Eliminate trailing blank lines.
             $formdata->allchoices = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $formdata->allchoices);
@@ -1330,7 +1114,7 @@ abstract class base {
         // Dependencies logic does not (yet) need preprocessing, might change with more complex conditions.
         // Check, if entries exist and whether they are not only 0 (form elements created but no value selected).
         if (isset($formdata->dependquestions_and) &&
-            !(count(array_keys($formdata->dependquestions_and, 0, true)) == count($formdata->dependquestions_and))) {
+                !(count(array_keys($formdata->dependquestions_and, 0, true)) == count($formdata->dependquestions_and))) {
             for ($i = 0; $i < count($formdata->dependquestions_and); $i++) {
                 $dependency = explode(",", $formdata->dependquestions_and[$i]);
 
@@ -1344,7 +1128,7 @@ abstract class base {
         }
 
         if (isset($formdata->dependquestions_or) &&
-            !(count(array_keys($formdata->dependquestions_or, 0, true)) == count($formdata->dependquestions_or))) {
+                !(count(array_keys($formdata->dependquestions_or, 0, true)) == count($formdata->dependquestions_or))) {
             for ($i = 0; $i < count($formdata->dependquestions_or); $i++) {
                 $dependency = explode(",", $formdata->dependquestions_or[$i]);
 
@@ -1362,10 +1146,244 @@ abstract class base {
     /**
      * Override this function for question specific choice preprocessing.
      */
-    protected function form_preprocess_choicedata($formdata) {
+    protected function form_preprocess_choicedata( $formdata ) {
         if (empty($formdata->allchoices)) {
-            error (get_string('enterpossibleanswers', 'pimenkoquestionnaire'));
+            error(get_string('enterpossibleanswers', 'pimenkoquestionnaire'));
         }
+        return false;
+    }
+
+    /**
+     * Update data record from object or optional question data.
+     *
+     * @param object  $questionrecord An object with all updated question record data.
+     * @param boolean $updatechoices  True if choices should also be updated.
+     */
+    public function update( $questionrecord = null, $updatechoices = true ) {
+        global $DB;
+
+        if ($questionrecord === null) {
+            $questionrecord = new \stdClass();
+            $questionrecord->id = $this->id;
+            $questionrecord->surveyid = $this->surveyid;
+            $questionrecord->name = $this->name;
+            $questionrecord->type_id = $this->type_id;
+            $questionrecord->result_id = $this->result_id;
+            $questionrecord->length = $this->length;
+            $questionrecord->precise = $this->precise;
+            $questionrecord->position = $this->position;
+            $questionrecord->content = $this->content;
+            $questionrecord->required = $this->required;
+            $questionrecord->deleted = $this->deleted;
+            $questionrecord->dependquestion = $this->dependquestion;
+            $questionrecord->dependchoice = $this->dependchoice;
+        } else {
+            // Make sure the "id" field is this question's.
+            if (isset($this->qid) && ($this->qid > 0)) {
+                $questionrecord->id = $this->qid;
+            } else {
+                $questionrecord->id = $this->id;
+            }
+        }
+        $DB->update_record('pimenko_question', $questionrecord);
+
+        if ($updatechoices && $this->has_choices()) {
+            $this->update_choices();
+        }
+    }
+
+    public function update_choices() {
+        $retvalue = true;
+        if ($this->has_choices() && isset($this->choices)) {
+            // Need to fix this messed-up qid/id issue.
+            if (isset($this->qid) && ($this->qid > 0)) {
+                $qid = $this->qid;
+            } else {
+                $qid = $this->id;
+            }
+            foreach ($this->choices as $key => $choice) {
+                $choicerecord = new \stdClass();
+                $choicerecord->id = $key;
+                $choicerecord->question_id = $qid;
+                $choicerecord->content = $choice->content;
+                $choicerecord->value = $choice->value;
+                $retvalue &= $this->update_choice($choicerecord);
+            }
+        }
+        return $retvalue;
+    }
+
+    public function update_choice( $choicerecord ) {
+        global $DB;
+        return $DB->update_record('pimenko_quest_choice', $choicerecord);
+    }
+
+    /**
+     * Add the question to the database from supplied arguments.
+     *
+     * @param object  $questionrecord The required data for adding the question.
+     * @param array   $choicerecords  An array of choice records with 'content' and 'value' properties.
+     * @param boolean $calcposition   Whether or not to calculate the next available position in the survey.
+     */
+    public function add( $questionrecord, array $choicerecords = null, $calcposition = true ) {
+        global $DB, $COURSE;
+
+        // Create new question.
+        if ($calcposition) {
+            // Set the position to the end.
+            $sql = 'SELECT MAX(position) as maxpos ' .
+                    'FROM {pimenko_question} ' .
+                    'WHERE surveyid = ? AND deleted = ?';
+            $params = ['surveyid' => $questionrecord->surveyid, 'deleted' => 'n'];
+            if ($record = $DB->get_record_sql($sql, $params)) {
+                $questionrecord->position = $record->maxpos + 1;
+            } else {
+                $questionrecord->position = 1;
+            }
+        }
+
+        // Make sure we add all necessary data.
+        if (!isset($questionrecord->type_id) || empty($questionrecord->type_id)) {
+            $questionrecord->type_id = $this->type_id;
+        }
+
+        $this->qid = $DB->insert_record('pimenko_question', $questionrecord);
+        if ($this->has_choices() && !empty($choicerecords)) {
+            foreach ($choicerecords as $choicerecord) {
+                $choicerecord->question_id = $this->qid;
+                $this->add_choice($choicerecord);
+            }
+        } else if ($questionrecord->type_id == 11) {
+            $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
+            $context = context_course::instance($COURSE->id);
+            $teachers = get_role_users($role->id, $context);
+            foreach ($teachers as $teacher) {
+                $choicerecord = new \stdClass();
+                $choicerecord->question_id = $this->qid;
+                $choicerecord->content = $teacher->firstname . ' ' . $teacher->lastname;
+                $this->add_choice($choicerecord);
+            }
+        }
+    }
+
+    public function add_choice( $choicerecord ) {
+        global $DB;
+        $retvalue = true;
+
+        if ($cid = $DB->insert_record('pimenko_quest_choice', $choicerecord)) {
+            $this->choices[$cid] = new \stdClass();
+            $this->choices[$cid]->content = $choicerecord->content;
+            $this->choices[$cid]->value = isset($choicerecord->value) ? $choicerecord->value : null;
+        } else {
+            $retvalue = false;
+        }
+        return $retvalue;
+    }
+
+    // Helper functions for commonly used editing functions.
+
+    /**
+     * Delete the choice from the question object and the database.
+     *
+     * @param integer|object $choice Either the integer id of the choice, or the choice record.
+     */
+    public function delete_choice( $choice ) {
+        global $DB;
+
+        $retvalue = true;
+        if (is_int($choice)) {
+            $cid = $choice;
+        } else {
+            $cid = $choice->id;
+        }
+        if ($DB->delete_records('pimenko_quest_choice', ['id' => $cid])) {
+            unset($this->choices[$cid]);
+        } else {
+            $retvalue = false;
+        }
+        return $retvalue;
+    }
+
+    public function update_dependency( $dependencyrecord ) {
+        global $DB;
+        return $DB->update_record('pimenko_dependency', $dependencyrecord);
+    }
+
+    public function add_dependency( $dependencyrecord ) {
+        global $DB;
+
+        $retvalue = true;
+        if ($did = $DB->insert_record('pimenko_dependency', $dependencyrecord)) {
+            $this->dependencies[$did] = new \stdClass();
+            $this->dependencies[$did]->dependquestionid = $dependencyrecord->dependquestionid;
+            $this->dependencies[$did]->dependchoiceid = $dependencyrecord->dependchoiceid;
+            $this->dependencies[$did]->dependlogic = $dependencyrecord->dependlogic;
+            $this->dependencies[$did]->dependandor = $dependencyrecord->dependandor;
+        } else {
+            $retvalue = false;
+        }
+        return $retvalue;
+    }
+
+    /**
+     * Delete the dependency from the question object and the database.
+     *
+     * @param integer|object $dependency Either the integer id of the dependency, or the dependency record.
+     */
+    public function delete_dependency( $dependency ) {
+        global $DB;
+
+        $retvalue = true;
+        if (is_int($dependency)) {
+            $did = $dependency;
+        } else {
+            $did = $dependency->id;
+        }
+        if ($DB->delete_records('pimenko_dependency', ['id' => $did])) {
+            unset($this->dependencies[$did]);
+        } else {
+            $retvalue = false;
+        }
+        return $retvalue;
+    }
+
+    /**
+     * Returns an array of dependency options for the question as an array of id value / display value pairs. Override in specific
+     * question types that support this differently.
+     *
+     * @return array An array of valid pair options.
+     */
+    protected function get_dependency_options() {
+        $options = [];
+        if ($this->allows_dependents() && $this->has_choices()) {
+            foreach ($this->choices as $key => $choice) {
+                $contents = pimenkoquestionnaire_choice_values($choice->content);
+                if (!empty($contents->modname)) {
+                    $choice->content = $contents->modname;
+                } else if (!empty($contents->title)) { // Must be an image; use its title for the dropdown list.
+                    $choice->content = $contents->title;
+                } else {
+                    $choice->content = $contents->text;
+                }
+                $options[$this->id . ',' . $key] = $this->name . '->' . $choice->content;
+            }
+        }
+        return $options;
+    }
+
+    /**
+     * Override this and return true if the question type allows dependent questions.
+     *
+     * @return boolean
+     */
+    public function allows_dependents() {
+        return false;
+    }
+
+    /**
+     * Override and return true if the question has choices.
+     */
+    public function has_choices() {
         return false;
     }
 }

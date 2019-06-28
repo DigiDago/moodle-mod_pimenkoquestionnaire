@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod_pimenkoquestionnaire
+ * @package    mod_pimenkoquestionnaire
  * @copyright  2016 Mike Churchward (mike.churchward@poetgroup.org)
- * @author Mike Churchward & Joseph Rézeau
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package pimenkoquestionnaire
+ * @author     Mike Churchward & Joseph Rézeau
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU Public License
+ * @package    pimenkoquestionnaire
  */
 
 namespace mod_pimenkoquestionnaire;
@@ -30,9 +30,10 @@ require_once($CFG->libdir . '/formslib.php');
 
 /**
  * Class edit_question_form
+ *
  * @package mod_pimenkoquestionnaire
  * @property \MoodleQuickForm _form
- * @property array _customdata
+ * @property array            _customdata
  */
 class edit_question_form extends \moodleform {
 
@@ -55,7 +56,7 @@ class edit_question_form extends \moodleform {
         }
     }
 
-    public function validation($data, $files) {
+    public function validation( $data, $files ) {
         $errors = parent::validation($data, $files);
 
         // If this is a rate question.
@@ -64,13 +65,13 @@ class edit_question_form extends \moodleform {
                 $errors["length"] = get_string('notenoughscaleitems', 'pimenkoquestionnaire');
             }
             // If this is a rate question with no duplicates option.
-            if ($data['precise'] == 2 ) {
+            if ($data['precise'] == 2) {
                 $allchoices = $data['allchoices'];
                 $allchoices = explode("\n", $allchoices);
                 $nbvalues = 0;
                 foreach ($allchoices as $choice) {
                     if ($choice && !preg_match("/^[0-9]{1,3}=/", $choice)) {
-                            $nbvalues++;
+                        $nbvalues++;
                     }
                 }
                 if ($nbvalues < 2) {
@@ -84,17 +85,19 @@ class edit_question_form extends \moodleform {
 
     /**
      * Magic method for getting the protected $_form MoodleQuickForm and $_customdata array properties.
+     *
      * @param string $name
+     *
      * @return mixed
      * @throws \coding_exception
      */
-    public function __get($name) {
+    public function __get( $name ) {
         if ($name == '_form') {
             return $this->_form;
         } else if ($name == '_customdata') {
             return $this->_customdata;
         } else {
-            throw new \coding_exception($name.' is not a publicly accessible property of '.get_class($this));
+            throw new \coding_exception($name . ' is not a publicly accessible property of ' . get_class($this));
         }
     }
 }

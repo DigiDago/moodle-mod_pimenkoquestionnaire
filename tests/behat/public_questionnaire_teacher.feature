@@ -1,31 +1,31 @@
 @mod @mod_pimenkoquestionnaire
 Feature: Public questionnaires gather all instance responses in one master course, but not in the instance courses.
-  When teachers view a course instance they will not see any student responses.
-  When teachers view the main public course pimenkoquestionnaire, they will see all instances' responses.
+When teachers view a course instance they will not see any student responses.
+When teachers view the main public course pimenkoquestionnaire, they will see all instances' responses.
 
   Background: Add a public pimenkoquestionnaire and use it in two different course.
     Given the following "users" exist:
-      | username | firstname | lastname | email |
-      | teacher1 | Teacher | 1 | teacher1@example.com |
-      | teacher2 | Teacher | 2 | teacher2@example.com |
-      | teacher3 | Teacher | 3 | teacher3@example.com |
-      | student1 | Student | 1 | student1@example.com |
-      | student2 | Student | 2 | student2@example.com |
+      | username | firstname | lastname | email                |
+      | teacher1 | Teacher   | 1        | teacher1@example.com |
+      | teacher2 | Teacher   | 2        | teacher2@example.com |
+      | teacher3 | Teacher   | 3        | teacher3@example.com |
+      | student1 | Student   | 1        | student1@example.com |
+      | student2 | Student   | 2        | student2@example.com |
     And the following "courses" exist:
       | fullname | shortname | category |
-      | Course 1 | C1 | 0 |
-      | Course 2 | C2 | 0 |
-      | Course 3 | C3 | 0 |
+      | Course 1 | C1        | 0        |
+      | Course 2 | C2        | 0        |
+      | Course 3 | C3        | 0        |
     And the following "course enrolments" exist:
-      | user | course | role |
-      | teacher1 | C1 | manager |
-      | teacher2 | C2 | editingteacher |
-      | student1 | C2 | student |
-      | teacher3 | C3 | editingteacher |
-      | student2 | C3 | student |
+      | user     | course | role           |
+      | teacher1 | C1     | manager        |
+      | teacher2 | C2     | editingteacher |
+      | student1 | C2     | student        |
+      | teacher3 | C3     | editingteacher |
+      | student2 | C3     | student        |
     And the following "activities" exist:
-      | activity | name | description | course | idnumber |
-      | pimenkoquestionnaire | Public pimenkoquestionnaire | Anonymous pimenkoquestionnaire description | C1 | questionnaire0 |
+      | activity             | name                        | description                                | course | idnumber       |
+      | pimenkoquestionnaire | Public pimenkoquestionnaire | Anonymous pimenkoquestionnaire description | C1     | questionnaire0 |
 
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -35,8 +35,8 @@ Feature: Public questionnaires gather all instance responses in one master cours
     And I press "Save and display"
     And I navigate to "Questions" in current page administration
     And I add a "Numeric" question and I fill the form with:
-      | Question Name | Q1 |
-      | Yes | y |
+      | Question Name | Q1             |
+      | Yes           | y              |
       | Question Text | Enter a number |
     And I log out
 

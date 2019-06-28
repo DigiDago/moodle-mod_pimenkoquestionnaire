@@ -17,7 +17,7 @@
 /**
  * This file contains the parent class for pimenkoquestionnaire question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
@@ -28,21 +28,20 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class for single response types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @package responsetypes
  */
-
 class single extends base {
     static public function response_table() {
         return 'pimenko_resp_single';
     }
 
-    public function insert_response($rid, $val) {
+    public function insert_response( $rid, $val ) {
         global $DB;
         if (!empty($val)) {
             foreach ($this->question->choices as $cid => $choice) {
                 if (strpos($choice->content, '!other') === 0) {
-                    $other = optional_param('q'.$this->question->id.'_'.$cid, null, PARAM_TEXT);
+                    $other = optional_param('q' . $this->question->id . '_' . $cid, null, PARAM_TEXT);
                     if (!isset($other)) {
                         continue;
                     }
@@ -62,7 +61,7 @@ class single extends base {
         if (preg_match("/other_q([0-9]+)/", (isset($val) ? $val : ''), $regs)) {
             $cid = $regs[1];
             if (!isset($other)) {
-                $other = optional_param('q'.$this->question->id.'_'.$cid, null, PARAM_TEXT);
+                $other = optional_param('q' . $this->question->id . '_' . $cid, null, PARAM_TEXT);
             }
             if (preg_match("/[^ \t\n]/", $other)) {
                 $record = new \stdClass();
@@ -89,11 +88,11 @@ class single extends base {
         }
     }
 
-    public function get_results($rids=false, $anonymous=false) {
+    public function get_results( $rids = false, $anonymous = false ) {
         global $DB;
 
         $rsql = '';
-        $params = array($this->question->id);
+        $params = [$this->question->id];
         if (!empty($rids)) {
             list($rsql, $rparams) = $DB->get_in_or_equal($rids);
             $params = array_merge($params, $rparams);
@@ -102,27 +101,27 @@ class single extends base {
 
         // Added qc.id to preserve original choices ordering.
         $sql = 'SELECT rt.id, qc.id as cid, qc.content ' .
-               'FROM {pimenko_quest_choice} qc, ' .
-               '{'.static::response_table().'} rt ' .
-               'WHERE qc.question_id= ? AND qc.content NOT LIKE \'!other%\' AND ' .
-                     'rt.question_id=qc.question_id AND rt.choice_id=qc.id' . $rsql . ' ' .
-               'ORDER BY qc.id';
+                'FROM {pimenko_quest_choice} qc, ' .
+                '{' . static::response_table() . '} rt ' .
+                'WHERE qc.question_id= ? AND qc.content NOT LIKE \'!other%\' AND ' .
+                'rt.question_id=qc.question_id AND rt.choice_id=qc.id' . $rsql . ' ' .
+                'ORDER BY qc.id';
 
         $rows = $DB->get_records_sql($sql, $params);
 
         // Handle 'other...'.
         $sql = 'SELECT rt.id, rt.response, qc.content ' .
-               'FROM {pimenko_response_other} rt, ' .
-                    '{pimenko_quest_choice} qc ' .
-               'WHERE rt.question_id= ? AND rt.choice_id=qc.id' . $rsql . ' ' .
-               'ORDER BY qc.id';
+                'FROM {pimenko_response_other} rt, ' .
+                '{pimenko_quest_choice} qc ' .
+                'WHERE rt.question_id= ? AND rt.choice_id=qc.id' . $rsql . ' ' .
+                'ORDER BY qc.id';
 
         if ($recs = $DB->get_records_sql($sql, $params)) {
             $i = 1;
             foreach ($recs as $rec) {
-                $rows['other'.$i] = new \stdClass();
-                $rows['other'.$i]->content = $rec->content;
-                $rows['other'.$i]->response = $rec->response;
+                $rows['other' . $i] = new \stdClass();
+                $rows['other' . $i]->content = $rec->content;
+                $rows['other' . $i]->response = $rec->response;
                 $i++;
             }
         }
@@ -132,10 +131,12 @@ class single extends base {
 
     /**
      * Provide the feedback scores for all requested response id's. This should be provided only by questions that provide feedback.
+     *
      * @param array $rids
+     *
      * @return array | boolean
      */
-    public function get_feedback_scores(array $rids) {
+    public function get_feedback_scores( array $rids ) {
         global $DB;
 
         $rsql = '';
@@ -148,15 +149,16 @@ class single extends base {
         $params[] = 'y';
 
         $sql = 'SELECT response_id as rid, c.value AS score ' .
-            'FROM {'.$this->response_table().'} r ' .
-            'INNER JOIN {pimenko_quest_choice} c ON r.choice_id = c.id ' .
-            'WHERE r.question_id= ? ' . $rsql . ' ' .
-            'ORDER BY response_id ASC';
+                'FROM {' . $this->response_table() . '} r ' .
+                'INNER JOIN {pimenko_quest_choice} c ON r.choice_id = c.id ' .
+                'WHERE r.question_id= ? ' . $rsql . ' ' .
+                'ORDER BY response_id ASC';
         return $DB->get_records_sql($sql, $params);
     }
 
     /**
      * Provide a template for results screen if defined.
+     *
      * @return mixed The template string or false/
      */
     public function results_template() {
@@ -166,12 +168,13 @@ class single extends base {
     /**
      * Return the JSON structure required for the template.
      *
-     * @param bool $rids
+     * @param bool   $rids
      * @param string $sort
-     * @param bool $anonymous
+     * @param bool   $anonymous
+     *
      * @return string
      */
-    public function display_results($rids=false, $sort='', $anonymous=false) {
+    public function display_results( $rids = false, $sort = '', $anonymous = false ) {
         global $DB;
 
         $rows = $this->get_results($rids, $anonymous);
@@ -183,8 +186,8 @@ class single extends base {
         $numresps = count($rids);
 
         $responsecountsql = 'SELECT COUNT(DISTINCT r.response_id) ' .
-            'FROM {' . $this->response_table() . '} r ' .
-            'WHERE r.question_id = ? ';
+                'FROM {' . $this->response_table() . '} r ' .
+                'WHERE r.question_id = ? ';
         $numrespondents = $DB->count_records_sql($responsecountsql, [$this->question->id]);
 
         if ($rows) {
@@ -192,14 +195,14 @@ class single extends base {
                 if (strpos($idx, 'other') === 0) {
                     $answer = $row->response;
                     $ccontent = $row->content;
-                    $content = preg_replace(array('/^!other=/', '/^!other/'),
-                        array('', get_string('other', 'pimenkoquestionnaire')), $ccontent);
+                    $content = preg_replace(['/^!other=/', '/^!other/'],
+                            ['', get_string('other', 'pimenkoquestionnaire')], $ccontent);
                     $content .= ' ' . clean_text($answer);
                     $textidx = $content;
                     $this->counts[$textidx] = !empty($this->counts[$textidx]) ? ($this->counts[$textidx] + 1) : 1;
                 } else {
                     $contents = pimenkoquestionnaire_choice_values($row->content);
-                    $this->choice = $contents->text.$contents->image;
+                    $this->choice = $contents->text . $contents->image;
                     $textidx = $this->choice;
                     $this->counts[$textidx] = !empty($this->counts[$textidx]) ? ($this->counts[$textidx] + 1) : 1;
                 }
@@ -214,20 +217,21 @@ class single extends base {
     /**
      * Return an array of answers by question/choice for the given response. Must be implemented by the subclass.
      *
-     * @param int $rid The response id.
-     * @param null $col Other data columns to return.
-     * @param bool $csvexport Using for CSV export.
-     * @param int $choicecodes CSV choicecodes are required.
-     * @param int $choicetext CSV choicetext is required.
+     * @param int  $rid         The response id.
+     * @param null $col         Other data columns to return.
+     * @param bool $csvexport   Using for CSV export.
+     * @param int  $choicecodes CSV choicecodes are required.
+     * @param int  $choicetext  CSV choicetext is required.
+     *
      * @return array
      */
-    static public function response_select($rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1) {
+    static public function response_select( $rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1 ) {
         global $DB;
 
         $values = [];
-        $sql = 'SELECT q.id '.$col.', q.type_id as q_type, c.content as ccontent,c.id as cid '.
-            'FROM {'.static::response_table().'} a, {pimenko_question} q, {pimenko_quest_choice} c '.
-            'WHERE a.response_id = ? AND a.question_id=q.id AND a.choice_id=c.id ';
+        $sql = 'SELECT q.id ' . $col . ', q.type_id as q_type, c.content as ccontent,c.id as cid ' .
+                'FROM {' . static::response_table() . '} a, {pimenko_question} q, {pimenko_quest_choice} c ' .
+                'WHERE a.response_id = ? AND a.question_id=q.id AND a.choice_id=c.id ';
         $records = $DB->get_records_sql($sql, [$rid]);
         foreach ($records as $qid => $row) {
             $cid = $row->cid;
@@ -270,7 +274,7 @@ class single extends base {
             if (preg_match('/^!other/', $row->ccontent)) {
                 $newrow[] = 'other_' . $cid;
             } else {
-                $newrow[] = (int)$cid;
+                $newrow[] = (int) $cid;
             }
             $values[$qid] = $newrow;
         }
@@ -280,13 +284,17 @@ class single extends base {
 
     /**
      * Return sql and params for getting responses in bulk.
-     * @author Guy Thomas
+     *
      * @param int|array $pimenkoquestionnaireids One id, or an array of ids.
-     * @param bool|int $responseid
-     * @param bool|int $userid
+     * @param bool|int  $responseid
+     * @param bool|int  $userid
+     *
      * @return array
+     * @author Guy Thomas
      */
-    public function get_bulk_sql($pimenkoquestionnaireids, $responseid = false, $userid = false, $groupid = false, $showincompletes = 0) {
+    public function get_bulk_sql(
+            $pimenkoquestionnaireids, $responseid = false, $userid = false, $groupid = false, $showincompletes = 0
+    ) {
         global $DB;
 
         $sql = $this->bulk_sql();
@@ -332,8 +340,9 @@ class single extends base {
 
     /**
      * Return sql for getting responses in bulk.
-     * @author Guy Thomas
+     *
      * @return string
+     * @author Guy Thomas
      */
     protected function bulk_sql() {
         global $DB;
@@ -343,11 +352,11 @@ class single extends base {
         $extraselect = 'qrs.choice_id, ' . $DB->sql_order_by_text('qro.response', 1000) . ' AS response, 0 AS rankvalue';
 
         return "
-            SELECT " . $DB->sql_concat_join("'_'", ['qr.id', "'".$this->question->helpname()."'", $alias.'.id']) . " AS id,
+            SELECT " . $DB->sql_concat_join("'_'", ['qr.id', "'" . $this->question->helpname() . "'", $alias . '.id']) . " AS id,
                    qr.submitted, qr.complete, qr.grade, qr.userid, $userfields, qr.id AS rid, $alias.question_id,
                    $extraselect
               FROM {pimenko_response} qr
-              JOIN {".static::response_table()."} $alias ON $alias.response_id = qr.id
+              JOIN {" . static::response_table() . "} $alias ON $alias.response_id = qr.id
         ";
     }
 }

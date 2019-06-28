@@ -16,6 +16,7 @@
 
 /**
  * Question response class
+ *
  * @author    gthomas2
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +29,7 @@ class question_response {
     public $questionid;
     public $response;
 
-    public function __construct($questionid, $response) {
+    public function __construct( $questionid, $response ) {
         $this->questionid = $questionid;
         $this->response = $response;
     }

@@ -28,79 +28,37 @@ defined('MOODLE_INTERNAL') || die();
 use mod_pimenkoquestionnaire\question\base;
 
 global $CFG;
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/locallib.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
 
 /**
  * Unit tests for {@link pimenko_questiontypes_testcase}.
+ *
  * @group mod_pimenkoquestionnaire
  */
 class mod_pimenko_questiontypes_testcase extends advanced_testcase {
     public function test_create_question_checkbox() {
         $this->create_test_question_with_choices(QUESCHECK,
-            '\\mod_pimenkoquestionnaire\\question\\check', array('content' => 'Check one'));
+                '\\mod_pimenkoquestionnaire\\question\\check', ['content' => 'Check one']);
     }
 
-    public function test_create_question_date() {
-        $this->create_test_question(QUESDATE, '\\mod_pimenkoquestionnaire\\question\\date', array('content' => 'Enter a date'));
+    private function create_test_question_with_choices( $qtype, $questionclass, $questiondata = [], $choicedata = null ) {
+        if ($choicedata === null) {
+            $choicedata = [
+                    (object) ['content' => 'One', 'value' => 1],
+                    (object) ['content' => 'Two', 'value' => 2],
+                    (object) ['content' => 'Three', 'value' => 3]];
+        }
+        $this->create_test_question($qtype, $questionclass, $questiondata, $choicedata);
     }
 
-    public function test_create_question_dropdown() {
-        $this->create_test_question_with_choices(QUESDROP, '\\mod_pimenkoquestionnaire\\question\\drop', array('content' => 'Select one'));
-    }
-
-    public function test_create_question_essay() {
-        $questiondata = array(
-            'content' => 'Enter an essay',
-            'length' => 0,
-            'precise' => 5);
-        $this->create_test_question(QUESESSAY, '\\mod_pimenkoquestionnaire\\question\\essay', $questiondata);
-    }
-
-    public function test_create_question_sectiontext() {
-        $this->create_test_question(QUESSECTIONTEXT, '\\mod_pimenkoquestionnaire\\question\\sectiontext',
-            array('name' => null, 'content' => 'This a section label.'));
-    }
-
-    public function test_create_question_numeric() {
-        $questiondata = array(
-            'content' => 'Enter a number',
-            'length' => 10,
-            'precise' => 0);
-        $this->create_test_question(QUESNUMERIC, '\\mod_pimenkoquestionnaire\\question\\numerical', $questiondata);
-    }
-
-    public function test_create_question_radiobuttons() {
-        $this->create_test_question_with_choices(QUESRADIO,
-            '\\mod_pimenkoquestionnaire\\question\\radio', array('content' => 'Choose one'));
-    }
-
-    public function test_create_question_ratescale() {
-        $this->create_test_question_with_choices(QUESRATE, '\\mod_pimenkoquestionnaire\\question\\rate', array('content' => 'Rate these'));
-    }
-
-    public function test_create_question_textbox() {
-        $questiondata = array(
-            'content' => 'Enter some text',
-            'length' => 20,
-            'precise' => 25);
-        $this->create_test_question(QUESTEXT, '\\mod_pimenkoquestionnaire\\question\\text', $questiondata);
-    }
-
-    public function test_create_question_yesno() {
-        $this->create_test_question(QUESYESNO, '\\mod_pimenkoquestionnaire\\question\\yesno', array('content' => 'Enter yes or no'));
-    }
-
-
-    // General tests to call from specific tests above.
-
-    private function create_test_question($qtype, $questionclass, $questiondata = array(), $choicedata = null) {
+    private function create_test_question( $qtype, $questionclass, $questiondata = [], $choicedata = null ) {
         global $DB;
 
         $this->resetAfterTest();
 
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
-        $pimenkoquestionnaire = $generator->create_instance(array('course' => $course->id));
+        $pimenkoquestionnaire = $generator->create_instance(['course' => $course->id]);
         $cm = get_coursemodule_from_instance('pimenkoquestionnaire', $pimenkoquestionnaire->id);
 
         $questiondata['type_id'] = $qtype;
@@ -121,7 +79,7 @@ class mod_pimenko_questiontypes_testcase extends advanced_testcase {
             $this->assertEquals(count($choicedata), count($question->choices));
             $choicedatum = reset($choicedata);
             foreach ($question->choices as $cid => $choice) {
-                $this->assertTrue($DB->record_exists('pimenko_quest_choice', array('id' => $cid)));
+                $this->assertTrue($DB->record_exists('pimenko_quest_choice', ['id' => $cid]));
                 $this->assertEquals($choice->content, $choicedatum->content);
                 $this->assertEquals($choice->value, $choicedatum->value);
                 $choicedatum = next($choicedata);
@@ -130,7 +88,7 @@ class mod_pimenko_questiontypes_testcase extends advanced_testcase {
 
         // Questionnaire object should now have question record(s).
         $pimenkoquestionnaire = new pimenkoquestionnaire($pimenkoquestionnaire->id, null, $course, $cm, true);
-        $this->assertTrue($DB->record_exists('pimenko_question', array('id' => $question->id)));
+        $this->assertTrue($DB->record_exists('pimenko_question', ['id' => $question->id]));
         $this->assertEquals('array', gettype($pimenkoquestionnaire->questions));
         $this->assertTrue(array_key_exists($question->id, $pimenkoquestionnaire->questions));
         $this->assertEquals(1, count($pimenkoquestionnaire->questions));
@@ -139,13 +97,57 @@ class mod_pimenko_questiontypes_testcase extends advanced_testcase {
         }
     }
 
-    private function create_test_question_with_choices($qtype, $questionclass, $questiondata = array(), $choicedata = null) {
-        if ($choicedata === null) {
-            $choicedata = array(
-                (object)array('content' => 'One', 'value' => 1),
-                (object)array('content' => 'Two', 'value' => 2),
-                (object)array('content' => 'Three', 'value' => 3));
-        }
-        $this->create_test_question($qtype, $questionclass, $questiondata, $choicedata);
+    public function test_create_question_date() {
+        $this->create_test_question(QUESDATE, '\\mod_pimenkoquestionnaire\\question\\date', ['content' => 'Enter a date']);
+    }
+
+    public function test_create_question_dropdown() {
+        $this->create_test_question_with_choices(QUESDROP, '\\mod_pimenkoquestionnaire\\question\\drop',
+                ['content' => 'Select one']);
+    }
+
+    public function test_create_question_essay() {
+        $questiondata = [
+                'content' => 'Enter an essay',
+                'length' => 0,
+                'precise' => 5];
+        $this->create_test_question(QUESESSAY, '\\mod_pimenkoquestionnaire\\question\\essay', $questiondata);
+    }
+
+    public function test_create_question_sectiontext() {
+        $this->create_test_question(QUESSECTIONTEXT, '\\mod_pimenkoquestionnaire\\question\\sectiontext',
+                ['name' => null, 'content' => 'This a section label.']);
+    }
+
+    public function test_create_question_numeric() {
+        $questiondata = [
+                'content' => 'Enter a number',
+                'length' => 10,
+                'precise' => 0];
+        $this->create_test_question(QUESNUMERIC, '\\mod_pimenkoquestionnaire\\question\\numerical', $questiondata);
+    }
+
+    public function test_create_question_radiobuttons() {
+        $this->create_test_question_with_choices(QUESRADIO,
+                '\\mod_pimenkoquestionnaire\\question\\radio', ['content' => 'Choose one']);
+    }
+
+    public function test_create_question_ratescale() {
+        $this->create_test_question_with_choices(QUESRATE, '\\mod_pimenkoquestionnaire\\question\\rate',
+                ['content' => 'Rate these']);
+    }
+
+    // General tests to call from specific tests above.
+
+    public function test_create_question_textbox() {
+        $questiondata = [
+                'content' => 'Enter some text',
+                'length' => 20,
+                'precise' => 25];
+        $this->create_test_question(QUESTEXT, '\\mod_pimenkoquestionnaire\\question\\text', $questiondata);
+    }
+
+    public function test_create_question_yesno() {
+        $this->create_test_question(QUESYESNO, '\\mod_pimenkoquestionnaire\\question\\yesno', ['content' => 'Enter yes or no']);
     }
 }

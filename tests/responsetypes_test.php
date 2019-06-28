@@ -28,12 +28,13 @@ defined('MOODLE_INTERNAL') || die();
 use mod_pimenkoquestionnaire\question\base;
 
 global $CFG;
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/locallib.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
 require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/tests/generator_test.php');
 require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/tests/questiontypes_test.php');
 
 /**
  * Unit tests for {@link pimenko_responsetypes_testcase}.
+ *
  * @group mod_pimenkoquestionnaire
  */
 class mod_pimenko_responsetypes_testcase extends advanced_testcase {
@@ -48,7 +49,7 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         // Set up a questinnaire with one boolean response question.
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
-        $pimenkoquestionnaire = $generator->create_test_pimenkoquestionnaire($course, QUESYESNO, array('content' => 'Enter yes or no'));
+        $pimenkoquestionnaire = $generator->create_test_pimenkoquestionnaire($course, QUESYESNO, ['content' => 'Enter yes or no']);
         $question = reset($pimenkoquestionnaire->questions);
         $response = $generator->create_question_response($pimenkoquestionnaire, $question, 'y', $userid);
 
@@ -56,11 +57,26 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         $this->response_tests($pimenkoquestionnaire->id, $response->id, $userid);
 
         // Retrieve the specific boolean response.
-        $booleanresponses = $DB->get_records('pimenko_response_bool', array('response_id' => $response->id));
+        $booleanresponses = $DB->get_records('pimenko_response_bool', ['response_id' => $response->id]);
         $this->assertEquals(1, count($booleanresponses));
         $booleanresponse = reset($booleanresponses);
         $this->assertEquals($question->id, $booleanresponse->question_id);
         $this->assertEquals('y', $booleanresponse->choice_id);
+    }
+
+    private function response_tests(
+            $pimenkoquestionnaireid, $responseid, $userid,
+            $attemptcount = 1, $responsecount = 1
+    ) {
+        global $DB;
+
+        $attempts = $DB->get_records('pimenko_response',
+                ['pimenkoquestionnaireid' => $pimenkoquestionnaireid, 'userid' => $userid, 'id' => $responseid, 'complete' => 'y']);
+        $this->assertEquals($attemptcount, count($attempts));
+        $responses = $DB->get_records('pimenko_response', ['pimenkoquestionnaireid' => $pimenkoquestionnaireid]);
+        $this->assertEquals($responsecount, count($responses));
+        $this->assertArrayHasKey($responseid, $responses);
+        $this->assertEquals($responseid, $responses[$responseid]->id);
     }
 
     public function test_create_response_text() {
@@ -74,10 +90,10 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         // Set up a pimenkoquestionnaire with one text response question.
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
-        $questiondata = array(
-            'content' => 'Enter some text',
-            'length' => 0,
-            'precise' => 5);
+        $questiondata = [
+                'content' => 'Enter some text',
+                'length' => 0,
+                'precise' => 5];
         $pimenkoquestionnaire = $generator->create_test_pimenkoquestionnaire($course, QUESESSAY, $questiondata);
         $question = reset($pimenkoquestionnaire->questions);
         $response = $generator->create_question_response($pimenkoquestionnaire, $question, 'This is my essay.', $userid);
@@ -86,7 +102,7 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         $this->response_tests($pimenkoquestionnaire->id, $response->id, $userid);
 
         // Retrieve the specific text response.
-        $textresponses = $DB->get_records('pimenko_response_text', array('response_id' => $response->id));
+        $textresponses = $DB->get_records('pimenko_response_text', ['response_id' => $response->id]);
         $this->assertEquals(1, count($textresponses));
         $textresponse = reset($textresponses);
         $this->assertEquals($question->id, $textresponse->question_id);
@@ -104,7 +120,7 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         // Set up a pimenkoquestionnaire with one text response question.
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
-        $pimenkoquestionnaire = $generator->create_test_pimenkoquestionnaire($course, QUESDATE, array('content' => 'Enter a date'));
+        $pimenkoquestionnaire = $generator->create_test_pimenkoquestionnaire($course, QUESDATE, ['content' => 'Enter a date']);
         $question = reset($pimenkoquestionnaire->questions);
         // Date format is configured per site. This won't work unless it matches the configured format.
         $response = $generator->create_question_response($pimenkoquestionnaire, $question, '2015-01-27', $userid);
@@ -113,7 +129,7 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         $this->response_tests($pimenkoquestionnaire->id, $response->id, $userid);
 
         // Retrieve the specific date response.
-        $dateresponses = $DB->get_records('pimenko_response_date', array('response_id' => $response->id));
+        $dateresponses = $DB->get_records('pimenko_response_date', ['response_id' => $response->id]);
         $this->assertEquals(1, count($dateresponses));
         $dateresponse = reset($dateresponses);
         $this->assertEquals($question->id, $dateresponse->question_id);
@@ -132,12 +148,13 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         // Set up a questinnaire with one question with choices including an "other" option.
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
-        $choicedata = array(
-            (object)array('content' => 'One', 'value' => 1),
-            (object)array('content' => 'Two', 'value' => 2),
-            (object)array('content' => 'Three', 'value' => 3),
-            (object)array('content' => '!other=Something else', 'value' => 4));
-        $pimenkoquestionnaire = $generator->create_test_pimenkoquestionnaire($course, QUESRADIO, array('content' => 'Select one'), $choicedata);
+        $choicedata = [
+                (object) ['content' => 'One', 'value' => 1],
+                (object) ['content' => 'Two', 'value' => 2],
+                (object) ['content' => 'Three', 'value' => 3],
+                (object) ['content' => '!other=Something else', 'value' => 4]];
+        $pimenkoquestionnaire =
+                $generator->create_test_pimenkoquestionnaire($course, QUESRADIO, ['content' => 'Select one'], $choicedata);
 
         // Create a response using one of the choices.
         $question = reset($pimenkoquestionnaire->questions);
@@ -153,7 +170,7 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         $this->response_tests($pimenkoquestionnaire->id, $response->id, $userid);
 
         // Retrieve the specific single response.
-        $singresponses = $DB->get_records('pimenko_resp_single', array('response_id' => $response->id));
+        $singresponses = $DB->get_records('pimenko_resp_single', ['response_id' => $response->id]);
         $this->assertEquals(1, count($singresponses));
         $singresponse = reset($singresponses);
         $this->assertEquals($question->id, $singresponse->question_id);
@@ -166,7 +183,7 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
             }
         }
         // Need an extra $_POST variable for an "other" response.
-        $_POST['q'.$question->id.'_'.$val] = 'Forty-four';
+        $_POST['q' . $question->id . '_' . $val] = 'Forty-four';
         $userid = 2;
         $response = $generator->create_question_response($pimenkoquestionnaire, $question, $val, $userid);
 
@@ -174,7 +191,7 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         $this->response_tests($pimenkoquestionnaire->id, $response->id, $userid, 1, 2);
 
         // Retrieve the specific single response.
-        $singresponses = $DB->get_records('pimenko_resp_single', array('response_id' => $response->id));
+        $singresponses = $DB->get_records('pimenko_resp_single', ['response_id' => $response->id]);
         $this->assertEquals(1, count($singresponses));
         $singresponse = reset($singresponses);
         $this->assertEquals($question->id, $singresponse->question_id);
@@ -182,7 +199,7 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
 
         // Retrieve the 'other' response data.
         $otherresponses = $DB->get_records('pimenko_response_other',
-            array('response_id' => $response->id, 'question_id' => $question->id));
+                ['response_id' => $response->id, 'question_id' => $question->id]);
         $this->assertEquals(1, count($otherresponses));
         $otherresponse = reset($otherresponses);
         $this->assertEquals($val, $otherresponse->choice_id);
@@ -200,15 +217,16 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         // Set up a pimenkoquestionnaire with one question with choices including an "other" option.
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
-        $choicedata = array(
-            (object)array('content' => 'One', 'value' => 1),
-            (object)array('content' => 'Two', 'value' => 2),
-            (object)array('content' => 'Three', 'value' => 3),
-            (object)array('content' => '!other=Another number', 'value' => 4));
-        $pimenkoquestionnaire = $generator->create_test_pimenkoquestionnaire($course, QUESCHECK, array('content' => 'Select any'), $choicedata);
+        $choicedata = [
+                (object) ['content' => 'One', 'value' => 1],
+                (object) ['content' => 'Two', 'value' => 2],
+                (object) ['content' => 'Three', 'value' => 3],
+                (object) ['content' => '!other=Another number', 'value' => 4]];
+        $pimenkoquestionnaire =
+                $generator->create_test_pimenkoquestionnaire($course, QUESCHECK, ['content' => 'Select any'], $choicedata);
 
         $question = reset($pimenkoquestionnaire->questions);
-        $val = array();
+        $val = [];
         foreach ($question->choices as $cid => $choice) {
             if (($choice->content == 'Two') || ($choice->content == 'Three')) {
                 $val[] = $cid;
@@ -216,14 +234,14 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
                 $val2 = $cid;
             }
         }
-        $_POST['q'.$question->id.'_'.$val2] = 'Forty-four';
+        $_POST['q' . $question->id . '_' . $val2] = 'Forty-four';
         $response = $generator->create_question_response($pimenkoquestionnaire, $question, $val, $userid);
 
         // Test the responses for this pimenkoquestionnaire.
         $this->response_tests($pimenkoquestionnaire->id, $response->id, $userid);
 
         // Retrieve the specific multiples responses.
-        $multresponses = $DB->get_records('pimenko_resp_multiple', array('response_id' => $response->id));
+        $multresponses = $DB->get_records('pimenko_resp_multiple', ['response_id' => $response->id]);
         $this->assertEquals(3, count($multresponses));
         $multresponse = reset($multresponses);
         $this->assertEquals($question->id, $multresponse->question_id);
@@ -234,12 +252,14 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
 
         // Retrieve the specific other response.
         $otherresponses = $DB->get_records('pimenko_response_other',
-            array('response_id' => $response->id, 'question_id' => $question->id));
+                ['response_id' => $response->id, 'question_id' => $question->id]);
         $this->assertEquals(1, count($otherresponses));
         $otherresponse = reset($otherresponses);
         $this->assertEquals($val2, $otherresponse->choice_id);
         $this->assertEquals('Forty-four', $otherresponse->response);
     }
+
+    // General tests to call from specific tests above.
 
     public function test_create_response_rank() {
         global $DB;
@@ -252,23 +272,23 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         // Set up a pimenkoquestionnaire with one ranking question.
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
-        $choicedata = array(
-            (object)array('content' => 'One', 'value' => 1),
-            (object)array('content' => 'Two', 'value' => 2),
-            (object)array('content' => 'Three', 'value' => 3));
-        $questiondata = array(
-            'content' => 'Rank these',
-            'length' => 5,
-            'precise' => 0);
+        $choicedata = [
+                (object) ['content' => 'One', 'value' => 1],
+                (object) ['content' => 'Two', 'value' => 2],
+                (object) ['content' => 'Three', 'value' => 3]];
+        $questiondata = [
+                'content' => 'Rank these',
+                'length' => 5,
+                'precise' => 0];
         $pimenkoquestionnaire = $generator->create_test_pimenkoquestionnaire($course, QUESRATE, $questiondata, $choicedata);
 
         // Create a response for each choice.
         $question = reset($pimenkoquestionnaire->questions);
-        $vals = array();
+        $vals = [];
         $i = 1;
         foreach ($question->choices as $cid => $choice) {
             $vals[$cid] = $i;
-            $_POST['q'.$question->id.'_'.$cid] = $i++;
+            $_POST['q' . $question->id . '_' . $cid] = $i++;
         }
         $response = $generator->create_question_response($pimenkoquestionnaire, $question, null, $userid);
 
@@ -276,7 +296,7 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         $this->response_tests($pimenkoquestionnaire->id, $response->id, $userid);
 
         // Retrieve the specific rank response.
-        $multresponses = $DB->get_records('pimenko_response_rank', array('response_id' => $response->id));
+        $multresponses = $DB->get_records('pimenko_response_rank', ['response_id' => $response->id]);
         $this->assertEquals(3, count($multresponses));
         foreach ($multresponses as $multresponse) {
             $this->assertEquals($question->id, $multresponse->question_id);
@@ -284,14 +304,12 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         }
     }
 
-    // General tests to call from specific tests above.
-
-    public function create_test_pimenkoquestionnaire($qtype, $questiondata = array(), $choicedata = null) {
+    public function create_test_pimenkoquestionnaire( $qtype, $questiondata = [], $choicedata = null ) {
         $this->resetAfterTest();
 
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
-        $pimenkoquestionnaire = $generator->create_instance(array('course' => $course->id));
+        $pimenkoquestionnaire = $generator->create_instance(['course' => $course->id]);
         $cm = get_coursemodule_from_instance('pimenkoquestionnaire', $pimenkoquestionnaire->id);
 
         $questiondata['type_id'] = $qtype;
@@ -303,18 +321,5 @@ class mod_pimenko_responsetypes_testcase extends advanced_testcase {
         $pimenkoquestionnaire = new pimenkoquestionnaire($pimenkoquestionnaire->id, null, $course, $cm, true);
 
         return $pimenkoquestionnaire;
-    }
-
-    private function response_tests($pimenkoquestionnaireid, $responseid, $userid,
-                                    $attemptcount = 1, $responsecount = 1) {
-        global $DB;
-
-        $attempts = $DB->get_records('pimenko_response',
-                    ['pimenkoquestionnaireid' => $pimenkoquestionnaireid, 'userid' => $userid, 'id' => $responseid, 'complete' => 'y']);
-        $this->assertEquals($attemptcount, count($attempts));
-        $responses = $DB->get_records('pimenko_response', ['pimenkoquestionnaireid' => $pimenkoquestionnaireid]);
-        $this->assertEquals($responsecount, count($responses));
-        $this->assertArrayHasKey($responseid, $responses);
-        $this->assertEquals($responseid, $responses[$responseid]->id);
     }
 }

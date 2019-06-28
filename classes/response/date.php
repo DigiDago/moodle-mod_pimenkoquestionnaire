@@ -17,7 +17,7 @@
 /**
  * This file contains the parent class for pimenkoquestionnaire question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
@@ -30,16 +30,15 @@ use mod_pimenkoquestionnaire\db\bulk_sql_config;
 /**
  * Class for date response types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @package responsetypes
  */
-
 class date extends base {
     static public function response_table() {
         return 'pimenko_response_date';
     }
 
-    public function insert_response($rid, $val) {
+    public function insert_response( $rid, $val ) {
         global $DB;
 
         if (!$this->question->check_date_format($val)) {
@@ -52,11 +51,11 @@ class date extends base {
         return $DB->insert_record(self::response_table(), $record);
     }
 
-    public function get_results($rids=false, $anonymous=false) {
+    public function get_results( $rids = false, $anonymous = false ) {
         global $DB;
 
         $rsql = '';
-        $params = array($this->question->id);
+        $params = [$this->question->id];
         if (!empty($rids)) {
             list($rsql, $rparams) = $DB->get_in_or_equal($rids);
             $params = array_merge($params, $rparams);
@@ -64,14 +63,15 @@ class date extends base {
         }
 
         $sql = 'SELECT id, response ' .
-               'FROM {'.self::response_table().'} ' .
-               'WHERE question_id= ? ' . $rsql;
+                'FROM {' . self::response_table() . '} ' .
+                'WHERE question_id= ? ' . $rsql;
 
         return $DB->get_records_sql($sql, $params);
     }
 
     /**
      * Provide a template for results screen if defined.
+     *
      * @return mixed The template string or false/
      */
     public function results_template() {
@@ -79,13 +79,14 @@ class date extends base {
     }
 
     /**
-     * @param bool $rids
+     * @param bool   $rids
      * @param string $sort
-     * @param bool $anonymous
+     * @param bool   $anonymous
+     *
      * @return string
      * @throws \coding_exception
      */
-    public function display_results($rids=false, $sort='', $anonymous=false) {
+    public function display_results( $rids = false, $sort = '', $anonymous = false ) {
         $numresps = count($rids);
         if ($rows = $this->get_results($rids, $anonymous)) {
             $numrespondents = count($rows);
@@ -109,15 +110,16 @@ class date extends base {
     /**
      * Override the results tags function for templates for questions with dates.
      *
-     * @param $weights
-     * @param $participants Number of pimenkoquestionnaire participants.
-     * @param $respondents Number of question respondents.
-     * @param $showtotals
+     * @param        $weights
+     * @param        $participants Number of pimenkoquestionnaire participants.
+     * @param        $respondents  Number of question respondents.
+     * @param        $showtotals
      * @param string $sort
+     *
      * @return \stdClass
      * @throws \coding_exception
      */
-    public function get_results_tags($weights, $participants, $respondents, $showtotals = 1, $sort = '') {
+    public function get_results_tags( $weights, $participants, $respondents, $showtotals = 1, $sort = '' ) {
         $dateformat = get_string('strfdate', 'pimenkoquestionnaire');
 
         $pagetags = new \stdClass();
@@ -128,13 +130,13 @@ class date extends base {
         if (!empty($weights) && is_array($weights)) {
             $pagetags->responses = [];
             $numresps = 0;
-            ksort ($weights); // Sort dates into chronological order.
+            ksort($weights); // Sort dates into chronological order.
             foreach ($weights as $content => $num) {
                 $response = new \stdClass();
                 $response->text = userdate($content, $dateformat, '', false);    // Change timestamp into readable dates.
                 $numresps += $num;
                 $response->total = $num;
-                $pagetags->responses[] = (object)['response' => $response];
+                $pagetags->responses[] = (object) ['response' => $response];
             }
 
             if ($showtotals == 1) {
@@ -149,26 +151,27 @@ class date extends base {
     /**
      * Return an array of answers by question/choice for the given response. Must be implemented by the subclass.
      *
-     * @param int $rid The response id.
-     * @param null $col Other data columns to return.
-     * @param bool $csvexport Using for CSV export.
-     * @param int $choicecodes CSV choicecodes are required.
-     * @param int $choicetext CSV choicetext is required.
+     * @param int  $rid         The response id.
+     * @param null $col         Other data columns to return.
+     * @param bool $csvexport   Using for CSV export.
+     * @param int  $choicecodes CSV choicecodes are required.
+     * @param int  $choicetext  CSV choicetext is required.
+     *
      * @return array
      */
-    static public function response_select($rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1) {
+    static public function response_select( $rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1 ) {
         global $DB;
 
         $values = [];
-        $sql = 'SELECT q.id '.$col.', a.response as aresponse '.
-            'FROM {'.self::response_table().'} a, {pimenko_question} q '.
-            'WHERE a.response_id=? AND a.question_id=q.id ';
+        $sql = 'SELECT q.id ' . $col . ', a.response as aresponse ' .
+                'FROM {' . self::response_table() . '} a, {pimenko_question} q ' .
+                'WHERE a.response_id=? AND a.question_id=q.id ';
         $records = $DB->get_records_sql($sql, [$rid]);
         $dateformat = get_string('strfdate', 'pimenkoquestionnaire');
         foreach ($records as $qid => $row) {
             unset ($row->id);
-            $row = (array)$row;
-            $newrow = array();
+            $row = (array) $row;
+            $newrow = [];
             foreach ($row as $key => $val) {
                 if (!is_numeric($key)) {
                     $newrow[] = $val;
@@ -192,6 +195,7 @@ class date extends base {
 
     /**
      * Configure bulk sql
+     *
      * @return bulk_sql_config
      */
     protected function bulk_sql_config() {

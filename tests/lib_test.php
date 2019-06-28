@@ -28,11 +28,12 @@ defined('MOODLE_INTERNAL') || die();
 use mod_pimenkoquestionnaire\question\base;
 
 global $CFG;
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/lib.php');
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/classes/question/base.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/lib.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/classes/question/base.php');
 
 /**
  * Unit tests for {@link pimenkoquestionnaire_lib_testcase}.
+ *
  * @group mod_pimenkoquestionnaire
  */
 class mod_pimenkoquestionnaire_lib_testcase extends advanced_testcase {
@@ -95,7 +96,7 @@ class mod_pimenkoquestionnaire_lib_testcase extends advanced_testcase {
         /** @var mod_pimenkoquestionnaire_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
         /** @var pimenkoquestionnaire $pimenkoquestionnaire */
-        $pimenkoquestionnaire = $generator->create_instance(array('course' => $course->id, 'sid' => 1));
+        $pimenkoquestionnaire = $generator->create_instance(['course' => $course->id, 'sid' => 1]);
 
         $qid = $pimenkoquestionnaire->id;
         $this->assertTrue($qid > 0);
@@ -126,7 +127,7 @@ class mod_pimenkoquestionnaire_lib_testcase extends advanced_testcase {
 
         $this->assertTrue(pimenkoquestionnaire_update_instance($qrow));
 
-        $questrecord = $DB->get_record('pimenkoquestionnaire', array('id' => $qid));
+        $questrecord = $DB->get_record('pimenkoquestionnaire', ['id' => $qid]);
         $this->assertNotEmpty($questrecord);
         $this->assertEquals($qrow->qtype, $questrecord->qtype);
         $this->assertEquals($qrow->respondenttype, $questrecord->respondenttype);
@@ -154,7 +155,7 @@ class mod_pimenkoquestionnaire_lib_testcase extends advanced_testcase {
         $this->setAdminUser();
 
         // Set up a new pimenkoquestionnaire.
-        $questiondata = array();
+        $questiondata = [];
         $questiondata['content'] = 'Enter yes or no';
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
@@ -166,16 +167,17 @@ class mod_pimenkoquestionnaire_lib_testcase extends advanced_testcase {
         $response = $generator->create_question_response($pimenkoquestionnaire, $question, 'y');
 
         // Get records for database deletion confirmation.
-        $survey = $DB->get_record('pimenkoquestionnaire_survey', array('id' => $pimenkoquestionnaire->sid));
+        $survey = $DB->get_record('pimenkoquestionnaire_survey', ['id' => $pimenkoquestionnaire->sid]);
 
         // Now delete it all.
         $this->assertTrue(pimenkoquestionnaire_delete_instance($pimenkoquestionnaire->id));
-        $this->assertEmpty($DB->get_record('pimenkoquestionnaire', array('id' => $pimenkoquestionnaire->id)));
-        $this->assertEmpty($DB->get_record('pimenkoquestionnaire_survey', array('id' => $pimenkoquestionnaire->sid)));
-        $this->assertEmpty($DB->get_records('pimenko_question', array('surveyid' => $survey->id)));
-        $this->assertEmpty($DB->get_records('pimenko_response', array('pimenkoquestionnaireid' => $pimenkoquestionnaire->id)));
-        $this->assertEmpty($DB->get_records('pimenko_response_bool', array('response_id' => $response->id)));
-        $this->assertEmpty($DB->get_records('event', array("modulename" => 'pimenkoquestionnaire', "instance" => $pimenkoquestionnaire->id)));
+        $this->assertEmpty($DB->get_record('pimenkoquestionnaire', ['id' => $pimenkoquestionnaire->id]));
+        $this->assertEmpty($DB->get_record('pimenkoquestionnaire_survey', ['id' => $pimenkoquestionnaire->sid]));
+        $this->assertEmpty($DB->get_records('pimenko_question', ['surveyid' => $survey->id]));
+        $this->assertEmpty($DB->get_records('pimenko_response', ['pimenkoquestionnaireid' => $pimenkoquestionnaire->id]));
+        $this->assertEmpty($DB->get_records('pimenko_response_bool', ['response_id' => $response->id]));
+        $this->assertEmpty($DB->get_records('event',
+                ["modulename" => 'pimenkoquestionnaire', "instance" => $pimenkoquestionnaire->id]));
     }
 
     public function test_pimenkoquestionnaire_user_outline() {
@@ -184,7 +186,7 @@ class mod_pimenkoquestionnaire_lib_testcase extends advanced_testcase {
         $user = $this->getDataGenerator()->create_user();
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_pimenkoquestionnaire');
-        $questiondata = array();
+        $questiondata = [];
         $questiondata['content'] = 'Enter yes or no';
         $pimenkoquestionnaire = $generator->create_test_pimenkoquestionnaire($course, QUESYESNO, $questiondata);
 
@@ -195,7 +197,7 @@ class mod_pimenkoquestionnaire_lib_testcase extends advanced_testcase {
         // Test for a user with one response.
         $generator->create_question_response($pimenkoquestionnaire, reset($pimenkoquestionnaire->questions), 'y', $user->id);
         $outline = pimenkoquestionnaire_user_outline($course, $user, null, $pimenkoquestionnaire);
-        $this->assertEquals('1 '.get_string("response", "pimenkoquestionnaire"), $outline->info);
+        $this->assertEquals('1 ' . get_string("response", "pimenkoquestionnaire"), $outline->info);
     }
 
     public function test_pimenkoquestionnaire_user_complete() {

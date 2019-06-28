@@ -41,12 +41,12 @@
     }}
 <!-- Begin HTML generated from question_date template. -->
 {{#qelements}}
-{{#choice}}
-<div class="qn-datemsg">{{# str }}strictdateformatting, mod_pimenkoquestionnaire{{/ str}}</div>
-<div class="qn-date">
-    <input type="{{type}}" name="{{choice.name}}" value="{{choice.value}}" />
-<!--    <input {{#choice.onkeypress}}onkeypress="{{.}}"{{/choice.onkeypress}} type="text" size="12" name="{{choice.name}}" maxlength="10" value="{{choice.value}}" /> -->
-</div>
-{{/choice}}
+    {{#choice}}
+        <div class="qn-datemsg">{{# str }}strictdateformatting, mod_pimenkoquestionnaire{{/ str}}</div>
+        <div class="qn-date">
+            <input type="{{type}}" name="{{choice.name}}" value="{{choice.value}}"/>
+            <!--    <input {{#choice.onkeypress}}onkeypress="{{.}}"{{/choice.onkeypress}} type="text" size="12" name="{{choice.name}}" maxlength="10" value="{{choice.value}}" /> -->
+        </div>
+    {{/choice}}
 {{/qelements}}
 <!-- End HTML generated from question_date template. -->

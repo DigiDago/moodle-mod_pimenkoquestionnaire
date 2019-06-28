@@ -17,7 +17,7 @@
 /**
  * This file contains the parent class for text question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
@@ -31,7 +31,7 @@ class text extends base {
      * Constructor. Use to set any default properties.
      *
      */
-    public function __construct($id = 0, $question = null, $context = null, $params = []) {
+    public function __construct( $id = 0, $question = null, $context = null, $params = [] ) {
         $this->length = 20;
         $this->precise = 25;
         return parent::__construct($id, $question, $context, $params);
@@ -47,6 +47,7 @@ class text extends base {
 
     /**
      * Override and return a form template if provided. Output of question_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function question_template() {
@@ -55,6 +56,7 @@ class text extends base {
 
     /**
      * Override and return a response template if provided. Output of response_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function response_template() {
@@ -63,24 +65,26 @@ class text extends base {
 
     /**
      * Return the context tags for the check question template.
-     * @param object $data
-     * @param string $descendantdata
+     *
+     * @param object  $data
+     * @param string  $descendantdata
      * @param boolean $blankpimenkoquestionnaire
+     *
      * @return object The check question context tags.
      *
      */
-    protected function question_survey_display($data, $descendantsdata, $blankpimenkoquestionnaire=false) {
+    protected function question_survey_display( $data, $descendantsdata, $blankpimenkoquestionnaire = false ) {
         // Text Box.
         $questiontags = new \stdClass();
         $questiontags->qelements = new \stdClass();
         $choice = new \stdClass();
         $choice->onkeypress = 'return event.keyCode != 13;';
         $choice->size = $this->length;
-        $choice->name = 'q'.$this->id;
+        $choice->name = 'q' . $this->id;
         if ($this->precise > 0) {
             $choice->maxlength = $this->precise;
         }
-        $choice->value = (isset($data->{'q'.$this->id}) ? stripslashes($data->{'q'.$this->id}) : '');
+        $choice->value = (isset($data->{'q' . $this->id}) ? stripslashes($data->{'q' . $this->id}) : '');
         $choice->id = self::qtypename($this->type_id) . $this->id;
         $questiontags->qelements->choice = $choice;
         return $questiontags;
@@ -88,23 +92,25 @@ class text extends base {
 
     /**
      * Return the context tags for the text response template.
+     *
      * @param object $data
+     *
      * @return object The radio question response context tags.
      *
      */
-    protected function response_survey_display($data) {
+    protected function response_survey_display( $data ) {
         $resptags = new \stdClass();
-        if (isset($data->{'q'.$this->id})) {
-            $resptags->content = format_text($data->{'q'.$this->id}, FORMAT_HTML);
+        if (isset($data->{'q' . $this->id})) {
+            $resptags->content = format_text($data->{'q' . $this->id}, FORMAT_HTML);
         }
         return $resptags;
     }
 
-    protected function form_length(\MoodleQuickForm $mform, $helptext = '') {
+    protected function form_length( \MoodleQuickForm $mform, $helptext = '' ) {
         return parent::form_length($mform, 'fieldlength');
     }
 
-    protected function form_precise(\MoodleQuickForm $mform, $helptext = '') {
+    protected function form_precise( \MoodleQuickForm $mform, $helptext = '' ) {
         return parent::form_precise($mform, 'maxtextlength');
     }
 }

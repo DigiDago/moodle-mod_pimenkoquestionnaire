@@ -70,7 +70,7 @@ class response_viewed extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        $params = array();
+        $params = [];
         $params['action'] = 'vresp';
         $params['individualresponse'] = 1;
         $params['rid'] = $this->other['rid'];
@@ -84,7 +84,8 @@ class response_viewed extends \core\event\base {
      * @return array
      */
     protected function get_legacy_logdata() {
-        return array($this->courseid, "pimenkoquestionnaire", "view report", "report.php?id=" . $this->contextinstanceid, $this->objectid,
-                     $this->contextinstanceid);
+        return [$this->courseid, "pimenkoquestionnaire", "view report", "report.php?id=" . $this->contextinstanceid,
+                $this->objectid,
+                $this->contextinstanceid];
     }
 }

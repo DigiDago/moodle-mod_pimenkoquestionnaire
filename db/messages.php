@@ -17,7 +17,7 @@
 /**
  * Defines message providers (types of messages being sent)
  *
- * @package mod_pimenkoquestionnaire
+ * @package    mod_pimenkoquestionnaire
  * @copyright  2010 onwards  Aparup Banerjee  http://moodle.com
  * @author     Mike Churchward
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $messageproviders = [
     // Message to nonrespondents.
-    'message' => [],
+        'message' => [],
     // Response submissions.
-    'notification' => []
+        'notification' => []
 ];

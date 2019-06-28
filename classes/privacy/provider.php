@@ -34,74 +34,75 @@ use \core_privacy\local\request\approved_contextlist;
 use \core_privacy\local\request\approved_userlist;
 
 class provider implements
-    // This plugin has data.
-    \core_privacy\local\metadata\provider,
+        // This plugin has data.
+        \core_privacy\local\metadata\provider,
 
-    // This plugin is capable of determining which users have data within it.
-    \core_privacy\local\request\core_userlist_provider,
+        // This plugin is capable of determining which users have data within it.
+        \core_privacy\local\request\core_userlist_provider,
 
-    // This plugin currently implements the original plugin_provider interface.
-    \core_privacy\local\request\plugin\provider {
+        // This plugin currently implements the original plugin_provider interface.
+        \core_privacy\local\request\plugin\provider {
 
     /**
      * Returns meta data about this system.
      *
-     * @param   collection $items The collection to add metadata to.
+     * @param collection $items The collection to add metadata to.
+     *
      * @return  collection  The array of metadata
      */
-    public static function get_metadata(collection $collection): collection {
+    public static function get_metadata( collection $collection ): collection {
 
         // Add all of the relevant tables and fields to the collection.
         $collection->add_database_table('pimenko_response', [
-            'userid' => 'privacy:metadata:pimenko_response:userid',
-            'pimenkoquestionnaireid' => 'privacy:metadata:pimenko_response:pimenkoquestionnaireid',
-            'complete' => 'privacy:metadata:pimenko_response:complete',
-            'grade' => 'privacy:metadata:pimenko_response:grade',
-            'submitted' => 'privacy:metadata:pimenko_response:submitted',
+                'userid' => 'privacy:metadata:pimenko_response:userid',
+                'pimenkoquestionnaireid' => 'privacy:metadata:pimenko_response:pimenkoquestionnaireid',
+                'complete' => 'privacy:metadata:pimenko_response:complete',
+                'grade' => 'privacy:metadata:pimenko_response:grade',
+                'submitted' => 'privacy:metadata:pimenko_response:submitted',
         ], 'privacy:metadata:pimenko_response');
 
         $collection->add_database_table('pimenko_response_bool', [
-            'response_id' => 'privacy:metadata:pimenko_response_bool:response_id',
-            'question_id' => 'privacy:metadata:pimenko_response_bool:question_id',
-            'choice_id' => 'privacy:metadata:pimenko_response_bool:choice_id',
+                'response_id' => 'privacy:metadata:pimenko_response_bool:response_id',
+                'question_id' => 'privacy:metadata:pimenko_response_bool:question_id',
+                'choice_id' => 'privacy:metadata:pimenko_response_bool:choice_id',
         ], 'privacy:metadata:pimenko_response_bool');
 
         $collection->add_database_table('pimenko_response_date', [
-            'response_id' => 'privacy:metadata:pimenko_response_date:response_id',
-            'question_id' => 'privacy:metadata:pimenko_response_date:question_id',
-            'response' => 'privacy:metadata:pimenko_response_date:response',
+                'response_id' => 'privacy:metadata:pimenko_response_date:response_id',
+                'question_id' => 'privacy:metadata:pimenko_response_date:question_id',
+                'response' => 'privacy:metadata:pimenko_response_date:response',
         ], 'privacy:metadata:pimenko_response_date');
 
         $collection->add_database_table('pimenko_response_other', [
-            'response_id' => 'privacy:metadata:pimenko_response_other:response_id',
-            'question_id' => 'privacy:metadata:pimenko_response_other:question_id',
-            'choice_id' => 'privacy:metadata:pimenko_response_other:choice_id',
-            'response' => 'privacy:metadata:pimenko_response_other:response',
+                'response_id' => 'privacy:metadata:pimenko_response_other:response_id',
+                'question_id' => 'privacy:metadata:pimenko_response_other:question_id',
+                'choice_id' => 'privacy:metadata:pimenko_response_other:choice_id',
+                'response' => 'privacy:metadata:pimenko_response_other:response',
         ], 'privacy:metadata:pimenko_response_other');
 
         $collection->add_database_table('pimenko_response_rank', [
-            'response_id' => 'privacy:metadata:pimenko_response_rank:response_id',
-            'question_id' => 'privacy:metadata:pimenko_response_rank:question_id',
-            'choice_id' => 'privacy:metadata:pimenko_response_rank:choice_id',
-            'rank' => 'privacy:metadata:pimenko_response_rank:rankvalue',
+                'response_id' => 'privacy:metadata:pimenko_response_rank:response_id',
+                'question_id' => 'privacy:metadata:pimenko_response_rank:question_id',
+                'choice_id' => 'privacy:metadata:pimenko_response_rank:choice_id',
+                'rank' => 'privacy:metadata:pimenko_response_rank:rankvalue',
         ], 'privacy:metadata:pimenko_response_rank');
 
         $collection->add_database_table('pimenko_response_text', [
-            'response_id' => 'privacy:metadata:pimenko_response_text:response_id',
-            'question_id' => 'privacy:metadata:pimenko_response_text:question_id',
-            'response' => 'privacy:metadata:pimenko_response_text:response',
+                'response_id' => 'privacy:metadata:pimenko_response_text:response_id',
+                'question_id' => 'privacy:metadata:pimenko_response_text:question_id',
+                'response' => 'privacy:metadata:pimenko_response_text:response',
         ], 'privacy:metadata:pimenko_response_text');
 
         $collection->add_database_table('pimenko_resp_multiple', [
-            'response_id' => 'privacy:metadata:pimenko_resp_multiple:response_id',
-            'question_id' => 'privacy:metadata:pimenko_resp_multiple:question_id',
-            'choice_id' => 'privacy:metadata:pimenko_resp_multiple:choice_id',
+                'response_id' => 'privacy:metadata:pimenko_resp_multiple:response_id',
+                'question_id' => 'privacy:metadata:pimenko_resp_multiple:question_id',
+                'choice_id' => 'privacy:metadata:pimenko_resp_multiple:choice_id',
         ], 'privacy:metadata:pimenko_resp_multiple');
 
         $collection->add_database_table('pimenko_resp_single', [
-            'response_id' => 'privacy:metadata:pimenko_resp_single:response_id',
-            'question_id' => 'privacy:metadata:pimenko_resp_single:question_id',
-            'choice_id' => 'privacy:metadata:pimenko_resp_single:choice_id',
+                'response_id' => 'privacy:metadata:pimenko_resp_single:response_id',
+                'question_id' => 'privacy:metadata:pimenko_resp_single:question_id',
+                'choice_id' => 'privacy:metadata:pimenko_resp_single:choice_id',
         ], 'privacy:metadata:pimenko_resp_single');
 
         return $collection;
@@ -110,10 +111,11 @@ class provider implements
     /**
      * Get the list of contexts that contain user information for the specified user.
      *
-     * @param   int $userid The user to search.
+     * @param int $userid The user to search.
+     *
      * @return  contextlist   $contextlist  The list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid(int $userid): contextlist {
+    public static function get_contexts_for_userid( int $userid ): contextlist {
         $contextlist = new contextlist();
 
         $sql = "SELECT c.id
@@ -126,9 +128,9 @@ class provider implements
        ";
 
         $params = [
-            'modname' => 'pimenkoquestionnaire',
-            'contextlevel' => CONTEXT_MODULE,
-            'attemptuserid' => $userid,
+                'modname' => 'pimenkoquestionnaire',
+                'contextlevel' => CONTEXT_MODULE,
+                'attemptuserid' => $userid,
         ];
 
         $contextlist->add_from_sql($sql, $params);
@@ -137,36 +139,11 @@ class provider implements
     }
 
     /**
-     * Get the list of users who have data within a context.
-     *
-     * @param \core_privacy\local\request\userlist $userlist The userlist containing the list of users who have data in this
-     * context/plugin combination.
-     */
-    public static function get_users_in_context(userlist $userlist) {
-
-        $context = $userlist->get_context();
-        if (!$context instanceof \context_module) {
-            return;
-        }
-
-        $params = ['modulename' => 'pimenkoquestionnaire', 'instanceid' => $context->instanceid];
-
-        // Questionnaire respondents.
-        $sql = "SELECT qr.userid
-              FROM {course_modules} cm
-              JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
-              JOIN {pimenkoquestionnaire} q ON q.id = cm.instance
-              JOIN {pimenko_response} qr ON qr.pimenkoquestionnaireid = q.id
-             WHERE cm.id = :instanceid";
-        $userlist->add_from_sql('userid', $sql, $params);
-    }
-
-    /**
      * Export all user data for the specified user, in the specified contexts, using the supplied exporter instance.
      *
-     * @param   approved_contextlist $contextlist The approved contexts to export information for.
+     * @param approved_contextlist $contextlist The approved contexts to export information for.
      */
-    public static function export_user_data(approved_contextlist $contextlist) {
+    public static function export_user_data( approved_contextlist $contextlist ) {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
@@ -204,7 +181,7 @@ class provider implements
                     // Fetch the generic module data for the pimenkoquestionnaire.
                     $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
                     // Merge with attempt data and write it.
-                    $contextdata = (object)array_merge((array)$contextdata, $responsedata);
+                    $contextdata = (object) array_merge((array) $contextdata, $responsedata);
                     \core_privacy\local\request\writer::with_context($context)->export_data([], $contextdata);
                 }
                 $responsedata = [];
@@ -214,9 +191,9 @@ class provider implements
                 $pimenkoquestionnaire = new \pimenkoquestionnaire($response->qid, null, $course, $cm);
             }
             $responsedata['responses'][] = [
-                'complete' => (($response->complete == 'y') ? get_string('yes') : get_string('no')),
-                'lastsaved' => \core_privacy\local\request\transform::datetime($response->lastsaved),
-                'questions' => $pimenkoquestionnaire->get_structured_response($response->responseid),
+                    'complete' => (($response->complete == 'y') ? get_string('yes') : get_string('no')),
+                    'lastsaved' => \core_privacy\local\request\transform::datetime($response->lastsaved),
+                    'questions' => $pimenkoquestionnaire->get_structured_response($response->responseid),
             ];
         }
         $responses->close();
@@ -227,7 +204,7 @@ class provider implements
             // Fetch the generic module data for the pimenkoquestionnaire.
             $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
             // Merge with attempt data and write it.
-            $contextdata = (object)array_merge((array)$contextdata, $responsedata);
+            $contextdata = (object) array_merge((array) $contextdata, $responsedata);
             \core_privacy\local\request\writer::with_context($context)->export_data([], $contextdata);
         }
     }
@@ -237,7 +214,7 @@ class provider implements
      *
      * @param context $context Context to delete data from.
      */
-    public static function delete_data_for_all_users_in_context(\context $context) {
+    public static function delete_data_for_all_users_in_context( \context $context ) {
         global $DB;
 
         if (!($context instanceof \context_module)) {
@@ -260,11 +237,30 @@ class provider implements
     }
 
     /**
+     * Helper function to delete all the response records for a recordset array of responses.
+     *
+     * @param recordset $responses The list of response records to delete for.
+     */
+    private static function delete_responses( \moodle_recordset $responses ) {
+        global $DB;
+
+        foreach ($responses as $response) {
+            $DB->delete_records('pimenko_response_bool', ['response_id' => $response->id]);
+            $DB->delete_records('pimenko_response_date', ['response_id' => $response->id]);
+            $DB->delete_records('pimenko_resp_multiple', ['response_id' => $response->id]);
+            $DB->delete_records('pimenko_response_other', ['response_id' => $response->id]);
+            $DB->delete_records('pimenko_response_rank', ['response_id' => $response->id]);
+            $DB->delete_records('pimenko_resp_single', ['response_id' => $response->id]);
+            $DB->delete_records('pimenko_response_text', ['response_id' => $response->id]);
+        }
+    }
+
+    /**
      * Delete all user data for the specified user, in the specified contexts.
      *
-     * @param   approved_contextlist $contextlist The approved contexts and user information to delete information for.
+     * @param approved_contextlist $contextlist The approved contexts and user information to delete information for.
      */
-    public static function delete_data_for_user(approved_contextlist $contextlist) {
+    public static function delete_data_for_user( approved_contextlist $contextlist ) {
         global $DB;
 
         if (empty($contextlist->count())) {
@@ -285,7 +281,7 @@ class provider implements
             }
 
             if ($responses = $DB->get_recordset('pimenko_response',
-                ['pimenkoquestionnaireid' => $pimenkoquestionnaire->id, 'userid' => $userid])) {
+                    ['pimenkoquestionnaireid' => $pimenkoquestionnaire->id, 'userid' => $userid])) {
                 self::delete_responses($responses);
             }
             $responses->close();
@@ -294,12 +290,37 @@ class provider implements
     }
 
     /**
+     * Get the list of users who have data within a context.
+     *
+     * @param \core_privacy\local\request\userlist $userlist The userlist containing the list of users who have data in this
+     *                                                       context/plugin combination.
+     */
+    public static function get_users_in_context( userlist $userlist ) {
+
+        $context = $userlist->get_context();
+        if (!$context instanceof \context_module) {
+            return;
+        }
+
+        $params = ['modulename' => 'pimenkoquestionnaire', 'instanceid' => $context->instanceid];
+
+        // Questionnaire respondents.
+        $sql = "SELECT qr.userid
+              FROM {course_modules} cm
+              JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+              JOIN {pimenkoquestionnaire} q ON q.id = cm.instance
+              JOIN {pimenko_response} qr ON qr.pimenkoquestionnaireid = q.id
+             WHERE cm.id = :instanceid";
+        $userlist->add_from_sql('userid', $sql, $params);
+    }
+
+    /**
      * Delete multiple users within a single context.
      *
      * @param \core_privacy\local\request\approved_userlist $userlist The approved context and user information to delete
-     * information for.
+     *                                                                information for.
      */
-    public static function delete_data_for_users(approved_userlist $userlist) {
+    public static function delete_data_for_users( approved_userlist $userlist ) {
         global $DB;
 
         $context = $userlist->get_context();
@@ -318,24 +339,5 @@ class provider implements
         }
         $responses->close();
         $DB->delete_records_select('pimenko_response', $select, $params);
-    }
-
-    /**
-     * Helper function to delete all the response records for a recordset array of responses.
-     *
-     * @param   recordset $responses The list of response records to delete for.
-     */
-    private static function delete_responses(\moodle_recordset $responses) {
-        global $DB;
-
-        foreach ($responses as $response) {
-            $DB->delete_records('pimenko_response_bool', ['response_id' => $response->id]);
-            $DB->delete_records('pimenko_response_date', ['response_id' => $response->id]);
-            $DB->delete_records('pimenko_resp_multiple', ['response_id' => $response->id]);
-            $DB->delete_records('pimenko_response_other', ['response_id' => $response->id]);
-            $DB->delete_records('pimenko_response_rank', ['response_id' => $response->id]);
-            $DB->delete_records('pimenko_resp_single', ['response_id' => $response->id]);
-            $DB->delete_records('pimenko_response_text', ['response_id' => $response->id]);
-        }
     }
 }

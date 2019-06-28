@@ -16,6 +16,7 @@
 
 /**
  * Question response rank class
+ *
  * @author    gthomas2
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +29,7 @@ class question_response_rank {
     public $choice;
     public $rankvalue;
 
-    public function __construct($choice, $rank) {
+    public function __construct( $choice, $rank ) {
         $this->choice = $choice;
         $this->rankvalue = $rank;
     }

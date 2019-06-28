@@ -32,12 +32,13 @@ use coding_exception;
 /**
  * Class for describing a feedback section.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @package feedback
  */
-
 class section {
 
+    const TABLE = 'pimenkoquestionnaire_fb_sections';
+    const NOSCORE = -1;
     public $id = 0;
     public $surveyid = 0;
     public $section = 1;
@@ -48,9 +49,6 @@ class section {
     public $sectionfeedback = [];
     public $questions = [];
 
-    const TABLE = 'pimenkoquestionnaire_fb_sections';
-    const NOSCORE = -1;
-
     /**
      * Section constructor.
      * if $params is provided, loads the entire feedback section record from the specified parameters. Parameters can be:
@@ -58,13 +56,14 @@ class section {
      *  'surveyid' - the surveyid field of the fb_sections table (required if no 'id' field),
      *  'sectionnum' - the section field of the fb_sections table (ignored if 'id' is present; defaults to 1).
      *
-     * @param array $params As above
+     * @param array $params    As above
      * @param array $questions Array of mod_pimenkoquestionnaire\question objects.
+     *
      * @throws \dml_exception
      * @throws coding_exception
      * @throws invalid_parameter_exception
      */
-    public function __construct($params = [], $questions) {
+    public function __construct( $params = [], $questions ) {
 
         if (!is_array($params) || !is_array($questions)) {
             throw new coding_exception('Invalid data provided.');
@@ -79,39 +78,18 @@ class section {
     }
 
     /**
-     * Factory method to create a new, empty section and return an instance.
-     *
-     */
-    public static function new_section($surveyid, $sectionlabel = '') {
-        global $DB;
-
-        $newsection = new self([], []);
-        if (empty($sectionlabel)) {
-            $sectionlabel = get_string('feedbackdefaultlabel', 'pimenkoquestionnaire');
-        }
-        $maxsection = $DB->get_field(self::TABLE, 'MAX(section)', ['surveyid' => $surveyid]);
-        $newsection->surveyid = $surveyid;
-        $newsection->section = $maxsection + 1;
-        $newsection->sectionlabel = $sectionlabel;
-        $newsection->scorecalculation = '';
-        $newsecid = $DB->insert_record(self::TABLE, $newsection);
-        $newsection->id = $newsecid;
-        $newsection->scorecalculation = [];
-        return $newsection;
-    }
-
-    /**
      * Loads the entire feedback section record from the specified parameters. Parameters can be:
      *  'id' - the id field of the fb_sections table (required if no 'surveyid' field),
      *  'surveyid' - the surveyid field of the fb_sections table (required if no 'id' field),
      *  'sectionnum' - the section field of the fb_sections table (ignored if 'id' is present; defaults to 1).
      *
      * @param array $params
+     *
      * @throws \dml_exception
      * @throws coding_exception
      * @throws invalid_parameter_exception
      */
-    public function load_section($params) {
+    public function load_section( $params ) {
         global $DB;
 
         if (!is_array($params)) {
@@ -152,15 +130,70 @@ class section {
     }
 
     /**
+     * @param string $codedstring
+     *
+     * @return mixed
+     * @throws coding_exception
+     */
+    protected function decode_scorecalculation( $codedstring ) {
+        // Expect a serialized data string.
+        if (($codedstring == null)) {
+            $codedstring = '';
+        }
+        if (!is_string($codedstring)) {
+            throw new coding_exception('Invalid scorecalculation format.');
+        }
+        if (!empty($codedstring)) {
+            $scorecalculation = unserialize($codedstring);
+        } else {
+            $scorecalculation = [];
+        }
+
+        // Check for deleted questions and questions that don't support scores.
+        foreach ($scorecalculation as $qid => $score) {
+            if (!isset($this->questions[$qid])) {
+                unset($scorecalculation[$qid]);
+            } else if (!$this->questions[$qid]->supports_feedback_scores()) {
+                $scorecalculation[$qid] = self::NOSCORE;
+            }
+        }
+
+        return $scorecalculation;
+    }
+
+    /**
+     * Factory method to create a new, empty section and return an instance.
+     *
+     */
+    public static function new_section( $surveyid, $sectionlabel = '' ) {
+        global $DB;
+
+        $newsection = new self([], []);
+        if (empty($sectionlabel)) {
+            $sectionlabel = get_string('feedbackdefaultlabel', 'pimenkoquestionnaire');
+        }
+        $maxsection = $DB->get_field(self::TABLE, 'MAX(section)', ['surveyid' => $surveyid]);
+        $newsection->surveyid = $surveyid;
+        $newsection->section = $maxsection + 1;
+        $newsection->sectionlabel = $sectionlabel;
+        $newsection->scorecalculation = '';
+        $newsecid = $DB->insert_record(self::TABLE, $newsection);
+        $newsection->id = $newsecid;
+        $newsection->scorecalculation = [];
+        return $newsection;
+    }
+
+    /**
      * Loads the section feedback record into the proper array location.
      *
      * @param $feedbackrec
+     *
      * @return int The id of the section feedback record.
      * @throws \dml_exception
      * @throws coding_exception
      * @throws invalid_parameter_exception
      */
-    public function load_sectionfeedback($feedbackrec) {
+    public function load_sectionfeedback( $feedbackrec ) {
         if (!isset($feedbackrec->id) || empty($feedbackrec->id)) {
             $sectionfeedback = sectionfeedback::new_sectionfeedback($feedbackrec);
             $this->sectionfeedback[$sectionfeedback->id] = $sectionfeedback;
@@ -172,13 +205,29 @@ class section {
     }
 
     /**
-     * Updates the object and data record with a new scorecalculation. If no new score provided, uses what's in the object.
+     * Removes the question from this section and updates the database.
      *
-     * @param $scorecalculation
+     * @param int $qid The question id and index.
+     *
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function set_new_scorecalculation($scorecalculation = null) {
+    public function remove_question( $qid ) {
+        if (isset($this->scorecalculation[$qid])) {
+            unset($this->scorecalculation[$qid]);
+            $this->set_new_scorecalculation();
+        }
+    }
+
+    /**
+     * Updates the object and data record with a new scorecalculation. If no new score provided, uses what's in the object.
+     *
+     * @param $scorecalculation
+     *
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public function set_new_scorecalculation( $scorecalculation = null ) {
         global $DB;
 
         if ($scorecalculation == null) {
@@ -195,17 +244,20 @@ class section {
     }
 
     /**
-     * Removes the question from this section and updates the database.
+     * @param string $scorearray
      *
-     * @param int $qid The question id and index.
-     * @throws \dml_exception
+     * @return mixed
      * @throws coding_exception
      */
-    public function remove_question($qid) {
-        if (isset($this->scorecalculation[$qid])) {
-            unset($this->scorecalculation[$qid]);
-            $this->set_new_scorecalculation();
+    protected function encode_scorecalculation( $scorearray ) {
+        // Expect an array.
+        if (!is_array($scorearray)) {
+            throw new coding_exception('Invalid scorearray format.');
         }
+
+        $scorecalculation = serialize($scorearray);
+
+        return $scorecalculation;
     }
 
     /**
@@ -258,52 +310,5 @@ class section {
         foreach ($this->sectionfeedback as $sectionfeedback) {
             $sectionfeedback->update();
         }
-    }
-
-    /**
-     * @param string $codedstring
-     * @return mixed
-     * @throws coding_exception
-     */
-    protected function decode_scorecalculation($codedstring) {
-        // Expect a serialized data string.
-        if (($codedstring == null)) {
-            $codedstring = '';
-        }
-        if (!is_string($codedstring)) {
-            throw new coding_exception('Invalid scorecalculation format.');
-        }
-        if (!empty($codedstring)) {
-            $scorecalculation = unserialize($codedstring);
-        } else {
-            $scorecalculation = [];
-        }
-
-        // Check for deleted questions and questions that don't support scores.
-        foreach ($scorecalculation as $qid => $score) {
-            if (!isset($this->questions[$qid])) {
-                unset($scorecalculation[$qid]);
-            } else if (!$this->questions[$qid]->supports_feedback_scores()) {
-                $scorecalculation[$qid] = self::NOSCORE;
-            }
-        }
-
-        return $scorecalculation;
-    }
-
-    /**
-     * @param string $scorearray
-     * @return mixed
-     * @throws coding_exception
-     */
-    protected function encode_scorecalculation($scorearray) {
-        // Expect an array.
-        if (!is_array($scorearray)) {
-            throw new coding_exception('Invalid scorearray format.');
-        }
-
-        $scorecalculation = serialize($scorearray);
-
-        return $scorecalculation;
     }
 }

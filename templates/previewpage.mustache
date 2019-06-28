@@ -66,7 +66,8 @@
     <div class="box generalbox">
         <h3 class="surveyTitle">{{{title}}}</h3>{{{printblank}}}
         {{#subtitle}}<h4 class="surveySubTitle">{{.}}</h4>{{/subtitle}}
-        {{#addinfo}}<div class="addInfo">{{{.}}}</div>{{/addinfo}}
+        {{#addinfo}}
+            <div class="addInfo">{{{.}}}</div>{{/addinfo}}
         {{#message}}{{{.}}}{{/message}}
         {{#questions}}{{{.}}}{{/questions}}
     </div>

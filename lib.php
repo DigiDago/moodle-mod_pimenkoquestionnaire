@@ -17,7 +17,7 @@
 // Library of functions and constants for module pimenkoquestionnaire.
 
 /**
- * @package mod_pimenkoquestionnaire
+ * @package    mod_pimenkoquestionnaire
  * @copyright  2016 Mike Churchward (mike.churchward@poetgroup.org)
  * @author     Mike Churchward
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,8 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 define('QUESTIONNAIRE_RESETFORM_RESET', 'pimenkoquestionnaire_reset_data_');
 define('QUESTIONNAIRE_RESETFORM_DROP', 'pimenkoquestionnaire_drop_pimenko_');
 
-function pimenkoquestionnaire_supports($feature) {
-    switch($feature) {
+function pimenkoquestionnaire_supports( $feature ) {
+    switch ($feature) {
         case FEATURE_BACKUP_MOODLE2:
             return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS:
@@ -58,17 +58,17 @@ function pimenkoquestionnaire_supports($feature) {
  * @return array all other caps used in module
  */
 function pimenkoquestionnaire_get_extra_capabilities() {
-    return array('moodle/site:accessallgroups');
+    return ['moodle/site:accessallgroups'];
 }
 
-function pimenkoquestionnaire_add_instance($pimenkoquestionnaire) {
+function pimenkoquestionnaire_add_instance( $pimenkoquestionnaire ) {
     // Given an object containing all the necessary data,
     // (defined by the form in mod.html) this function
     // will create a new instance and return the id number
     // of the new instance.
     global $DB, $CFG;
-    require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
-    require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/locallib.php');
+    require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+    require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
 
     // Check the realm and set it to the survey if it's set.
 
@@ -110,7 +110,7 @@ function pimenkoquestionnaire_add_instance($pimenkoquestionnaire) {
                 $sid = $qobject->sid = $qobject->survey_copy($course->id);
                 // All new pimenkoquestionnaires should be created as "private".
                 // Even if they are *copies* of public or template pimenkoquestionnaires.
-                $DB->set_field('pimenkoquestionnaire_survey', 'realm', 'private', array('id' => $sid));
+                $DB->set_field('pimenkoquestionnaire_survey', 'realm', 'private', ['id' => $sid]);
             }
             // If the survey has dependency data, need to set the pimenkoquestionnaire to allow dependencies.
             if ($DB->count_records('pimenko_dependency', ['surveyid' => $sid]) > 0) {
@@ -144,7 +144,7 @@ function pimenkoquestionnaire_add_instance($pimenkoquestionnaire) {
 
     $completiontimeexpected = !empty($pimenkoquestionnaire->completionexpected) ? $pimenkoquestionnaire->completionexpected : null;
     \core_completion\api::update_completion_date_event($pimenkoquestionnaire->coursemodule, 'pimenkoquestionnaire',
-        $pimenkoquestionnaire->id, $completiontimeexpected);
+            $pimenkoquestionnaire->id, $completiontimeexpected);
 
     return $pimenkoquestionnaire->id;
 }
@@ -152,13 +152,13 @@ function pimenkoquestionnaire_add_instance($pimenkoquestionnaire) {
 // Given an object containing all the necessary data,
 // (defined by the form in mod.html) this function
 // will update an existing instance with new data.
-function pimenkoquestionnaire_update_instance($pimenkoquestionnaire) {
+function pimenkoquestionnaire_update_instance( $pimenkoquestionnaire ) {
     global $DB, $CFG;
-    require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/locallib.php');
+    require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
 
     // Check the realm and set it to the survey if its set.
     if (!empty($pimenkoquestionnaire->sid) && !empty($pimenkoquestionnaire->realm)) {
-        $DB->set_field('pimenkoquestionnaire_survey', 'realm', $pimenkoquestionnaire->realm, array('id' => $pimenkoquestionnaire->sid));
+        $DB->set_field('pimenkoquestionnaire_survey', 'realm', $pimenkoquestionnaire->realm, ['id' => $pimenkoquestionnaire->sid]);
     }
 
     $pimenkoquestionnaire->timemodified = time();
@@ -185,7 +185,7 @@ function pimenkoquestionnaire_update_instance($pimenkoquestionnaire) {
 
     $completiontimeexpected = !empty($pimenkoquestionnaire->completionexpected) ? $pimenkoquestionnaire->completionexpected : null;
     \core_completion\api::update_completion_date_event($pimenkoquestionnaire->coursemodule, 'pimenkoquestionnaire',
-        $pimenkoquestionnaire->id, $completiontimeexpected);
+            $pimenkoquestionnaire->id, $completiontimeexpected);
 
     return $DB->update_record("pimenkoquestionnaire", $pimenkoquestionnaire);
 }
@@ -193,28 +193,28 @@ function pimenkoquestionnaire_update_instance($pimenkoquestionnaire) {
 // Given an ID of an instance of this module,
 // this function will permanently delete the instance
 // and any data that depends on it.
-function pimenkoquestionnaire_delete_instance($id) {
+function pimenkoquestionnaire_delete_instance( $id ) {
     global $DB, $CFG;
-    require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/locallib.php');
+    require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
 
-    if (! $pimenkoquestionnaire = $DB->get_record('pimenkoquestionnaire', array('id' => $id))) {
+    if (!$pimenkoquestionnaire = $DB->get_record('pimenkoquestionnaire', ['id' => $id])) {
         return false;
     }
 
     $result = true;
 
-    if ($events = $DB->get_records('event', array("modulename" => 'pimenkoquestionnaire', "instance" => $pimenkoquestionnaire->id))) {
+    if ($events = $DB->get_records('event', ["modulename" => 'pimenkoquestionnaire', "instance" => $pimenkoquestionnaire->id])) {
         foreach ($events as $event) {
             $event = calendar_event::load($event);
             $event->delete();
         }
     }
 
-    if (! $DB->delete_records('pimenkoquestionnaire', array('id' => $pimenkoquestionnaire->id))) {
+    if (!$DB->delete_records('pimenkoquestionnaire', ['id' => $pimenkoquestionnaire->id])) {
         $result = false;
     }
 
-    if ($survey = $DB->get_record('pimenkoquestionnaire_survey', array('id' => $pimenkoquestionnaire->sid))) {
+    if ($survey = $DB->get_record('pimenkoquestionnaire_survey', ['id' => $pimenkoquestionnaire->sid])) {
         // If this survey is owned by this course, delete all of the survey records and responses.
         if ($survey->courseid == $pimenkoquestionnaire->course) {
             $result = $result && pimenkoquestionnaire_delete_survey($pimenkoquestionnaire->sid, $pimenkoquestionnaire->id);
@@ -234,7 +234,7 @@ function pimenkoquestionnaire_delete_instance($id) {
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-function pimenkoquestionnaire_user_outline($course, $user, $mod, $pimenkoquestionnaire) {
+function pimenkoquestionnaire_user_outline( $course, $user, $mod, $pimenkoquestionnaire ) {
     global $CFG;
     require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
 
@@ -242,9 +242,9 @@ function pimenkoquestionnaire_user_outline($course, $user, $mod, $pimenkoquestio
     if ($responses = pimenkoquestionnaire_get_user_responses($pimenkoquestionnaire->id, $user->id, true)) {
         $n = count($responses);
         if ($n == 1) {
-            $result->info = $n.' '.get_string("response", "pimenkoquestionnaire");
+            $result->info = $n . ' ' . get_string("response", "pimenkoquestionnaire");
         } else {
-            $result->info = $n.' '.get_string("responses", "pimenkoquestionnaire");
+            $result->info = $n . ' ' . get_string("responses", "pimenkoquestionnaire");
         }
         $lastresponse = array_pop($responses);
         $result->time = $lastresponse->submitted;
@@ -261,16 +261,16 @@ function pimenkoquestionnaire_user_outline($course, $user, $mod, $pimenkoquestio
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-function pimenkoquestionnaire_user_complete($course, $user, $mod, $pimenkoquestionnaire) {
+function pimenkoquestionnaire_user_complete( $course, $user, $mod, $pimenkoquestionnaire ) {
     global $CFG;
     require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
 
     if ($responses = pimenkoquestionnaire_get_user_responses($pimenkoquestionnaire->id, $user->id, false)) {
         foreach ($responses as $response) {
             if ($response->complete == 'y') {
-                echo get_string('submitted', 'pimenkoquestionnaire').' '.userdate($response->submitted).'<br />';
+                echo get_string('submitted', 'pimenkoquestionnaire') . ' ' . userdate($response->submitted) . '<br />';
             } else {
-                echo get_string('attemptstillinprogress', 'pimenkoquestionnaire').' '.userdate($response->submitted).'<br />';
+                echo get_string('attemptstillinprogress', 'pimenkoquestionnaire') . ' ' . userdate($response->submitted) . '<br />';
             }
         }
     } else {
@@ -288,7 +288,7 @@ function pimenkoquestionnaire_user_complete($course, $user, $mod, $pimenkoquesti
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-function pimenkoquestionnaire_print_recent_activity($course, $isteacher, $timestart) {
+function pimenkoquestionnaire_print_recent_activity( $course, $isteacher, $timestart ) {
     return false;  // True if anything was printed, otherwise false.
 }
 
@@ -299,7 +299,7 @@ function pimenkoquestionnaire_print_recent_activity($course, $isteacher, $timest
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-function pimenkoquestionnaire_grades($pimenkoquestionnaireid) {
+function pimenkoquestionnaire_grades( $pimenkoquestionnaireid ) {
     return null;
 }
 
@@ -307,12 +307,13 @@ function pimenkoquestionnaire_grades($pimenkoquestionnaireid) {
  * Return grade for given user or all users.
  *
  * @param int $pimenkoquestionnaireid id of assignment
- * @param int $userid optional user id, 0 means all users
+ * @param int $userid                 optional user id, 0 means all users
+ *
  * @return array array of grades, false if none
  */
-function pimenkoquestionnaire_get_user_grades($pimenkoquestionnaire, $userid=0) {
+function pimenkoquestionnaire_get_user_grades( $pimenkoquestionnaire, $userid = 0 ) {
     global $DB;
-    $params = array();
+    $params = [];
     $usersql = '';
     if (!empty($userid)) {
         $usersql = "AND u.id = ?";
@@ -329,22 +330,22 @@ function pimenkoquestionnaire_get_user_grades($pimenkoquestionnaire, $userid=0) 
  * Update grades by firing grade_updated event
  *
  * @param object $assignment null means all assignments
- * @param int $userid specific user only, 0 mean all
+ * @param int    $userid     specific user only, 0 mean all
  *
  * $nullifnone is unused, but API requires it. Suppress PHPMD warning.
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-function pimenkoquestionnaire_update_grades($pimenkoquestionnaire=null, $userid=0, $nullifnone=true) {
+function pimenkoquestionnaire_update_grades( $pimenkoquestionnaire = null, $userid = 0, $nullifnone = true ) {
     global $CFG, $DB;
 
     if (!function_exists('grade_update')) { // Workaround for buggy PHP versions.
-        require_once($CFG->libdir.'/gradelib.php');
+        require_once($CFG->libdir . '/gradelib.php');
     }
 
     if ($pimenkoquestionnaire != null) {
         if ($graderecs = pimenkoquestionnaire_get_user_grades($pimenkoquestionnaire, $userid)) {
-            $grades = array();
+            $grades = [];
             foreach ($graderecs as $v) {
                 if (!isset($grades[$v->userid])) {
                     $grades[$v->userid] = new stdClass();
@@ -385,12 +386,13 @@ function pimenkoquestionnaire_update_grades($pimenkoquestionnaire=null, $userid=
  *
  * @param object $pimenkoquestionnaire object with extra cmidnumber
  * @param mixed optional array/object of grade(s); 'reset' means reset grades in gradebook
+ *
  * @return int 0 if ok, error code otherwise
  */
-function pimenkoquestionnaire_grade_item_update($pimenkoquestionnaire, $grades = null) {
+function pimenkoquestionnaire_grade_item_update( $pimenkoquestionnaire, $grades = null ) {
     global $CFG;
     if (!function_exists('grade_update')) { // Workaround for buggy PHP versions.
-        require_once($CFG->libdir.'/gradelib.php');
+        require_once($CFG->libdir . '/gradelib.php');
     }
 
     if (!isset($pimenkoquestionnaire->courseid)) {
@@ -398,23 +400,23 @@ function pimenkoquestionnaire_grade_item_update($pimenkoquestionnaire, $grades =
     }
 
     if ($pimenkoquestionnaire->cmidnumber != '') {
-        $params = array('itemname' => $pimenkoquestionnaire->name, 'idnumber' => $pimenkoquestionnaire->cmidnumber);
+        $params = ['itemname' => $pimenkoquestionnaire->name, 'idnumber' => $pimenkoquestionnaire->cmidnumber];
     } else {
-        $params = array('itemname' => $pimenkoquestionnaire->name);
+        $params = ['itemname' => $pimenkoquestionnaire->name];
     }
 
     if ($pimenkoquestionnaire->grade > 0) {
         $params['gradetype'] = GRADE_TYPE_VALUE;
-        $params['grademax']  = $pimenkoquestionnaire->grade;
-        $params['grademin']  = 0;
+        $params['grademax'] = $pimenkoquestionnaire->grade;
+        $params['grademin'] = 0;
 
     } else if ($pimenkoquestionnaire->grade < 0) {
         $params['gradetype'] = GRADE_TYPE_SCALE;
-        $params['scaleid']   = -$pimenkoquestionnaire->grade;
+        $params['scaleid'] = -$pimenkoquestionnaire->grade;
 
     } else if ($pimenkoquestionnaire->grade == 0) { // No Grade..be sure to delete the grade item if it exists.
         $grades = null;
-        $params = array('deleted' => 1);
+        $params = ['deleted' => 1];
 
     } else {
         $params = null; // Allow text comments only.
@@ -426,7 +428,7 @@ function pimenkoquestionnaire_grade_item_update($pimenkoquestionnaire, $grades =
     }
 
     return grade_update('mod/pimenkoquestionnaire', $pimenkoquestionnaire->courseid, 'mod', 'pimenkoquestionnaire',
-                    $pimenkoquestionnaire->id, 0, $grades, $params);
+            $pimenkoquestionnaire->id, 0, $grades, $params);
 }
 
 /**
@@ -434,15 +436,17 @@ function pimenkoquestionnaire_grade_item_update($pimenkoquestionnaire, $grades =
  * it it has support for grading and scales. Commented code should be
  * modified if necessary. See forum, glossary or journal modules
  * as reference.
+ *
  * @param $pimenkoquestionnaireid int
- * @param $scaleid int
+ * @param $scaleid                int
+ *
  * @return boolean True if the scale is used by any pimenkoquestionnaire
  *
  * Function parameters are unused, but API requires them. Suppress PHPMD warning.
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-function pimenkoquestionnaire_scale_used ($pimenkoquestionnaireid, $scaleid) {
+function pimenkoquestionnaire_scale_used( $pimenkoquestionnaireid, $scaleid ) {
     return false;
 }
 
@@ -450,14 +454,16 @@ function pimenkoquestionnaire_scale_used ($pimenkoquestionnaireid, $scaleid) {
  * Checks if scale is being used by any instance of pimenkoquestionnaire
  *
  * This is used to find out if scale used anywhere
+ *
  * @param $scaleid int
+ *
  * @return boolean True if the scale is used by any pimenkoquestionnaire
  *
  * Function parameters are unused, but API requires them. Suppress PHPMD warning.
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-function pimenkoquestionnaire_scale_used_anywhere($scaleid) {
+function pimenkoquestionnaire_scale_used_anywhere( $scaleid ) {
     return false;
 }
 
@@ -468,15 +474,16 @@ function pimenkoquestionnaire_scale_used_anywhere($scaleid) {
  * @param object $cm
  * @param object $context
  * @param string $filearea
- * @param array $args
- * @param bool $forcedownload
+ * @param array  $args
+ * @param bool   $forcedownload
+ *
  * @return bool false if file not found, does not return if found - justsend the file
  *
  * $forcedownload is unused, but API requires it. Suppress PHPMD warning.
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-function pimenkoquestionnaire_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
+function pimenkoquestionnaire_pluginfile( $course, $cm, $context, $filearea, $args, $forcedownload ) {
     global $DB;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -490,7 +497,7 @@ function pimenkoquestionnaire_pluginfile($course, $cm, $context, $filearea, $arg
         return false;
     }
 
-    $componentid = (int)array_shift($args);
+    $componentid = (int) array_shift($args);
 
     if ($filearea == 'question') {
         if (!$DB->record_exists('pimenko_question', ['id' => $componentid])) {
@@ -524,32 +531,35 @@ function pimenkoquestionnaire_pluginfile($course, $cm, $context, $filearea, $arg
     // Finally send the file.
     send_stored_file($file, 0, 0, true); // Download MUST be forced - security!
 }
+
 /**
  * Adds module specific settings to the settings block
  *
- * @param settings_navigation $settings The settings navigation object
- * @param navigation_node $pimenkoquestionnairenode The node to add module settings to
+ * @param settings_navigation $settings                 The settings navigation object
+ * @param navigation_node     $pimenkoquestionnairenode The node to add module settings to
  *
  * $settings is unused, but API requires it. Suppress PHPMD warning.
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-function pimenkoquestionnaire_extend_settings_navigation(settings_navigation $settings,
-        navigation_node $pimenkoquestionnairenode) {
+function pimenkoquestionnaire_extend_settings_navigation(
+        settings_navigation $settings,
+        navigation_node $pimenkoquestionnairenode
+) {
 
     global $PAGE, $DB, $USER, $CFG;
     $individualresponse = optional_param('individualresponse', false, PARAM_INT);
     $rid = optional_param('rid', false, PARAM_INT); // Response id.
     $currentgroupid = optional_param('group', 0, PARAM_INT); // Group id.
 
-    require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+    require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
     $context = $PAGE->cm->context;
     $cmid = $PAGE->cm->id;
     $cm = $PAGE->cm;
     $course = $PAGE->course;
 
-    if (! $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", array("id" => $cm->instance))) {
+    if (!$pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $cm->instance])) {
         print_error('invalidcoursemodule');
     }
 
@@ -585,36 +595,36 @@ function pimenkoquestionnaire_extend_settings_navigation(settings_navigation $se
     if (has_capability('mod/pimenkoquestionnaire:manage', $context) && $owner) {
         $url = '/mod/pimenkoquestionnaire/qsettings.php';
         $node = navigation_node::create(get_string('advancedsettings'),
-            new moodle_url($url, array('id' => $cmid)),
-            navigation_node::TYPE_SETTING, null, 'advancedsettings',
-            new pix_icon('t/edit', ''));
+                new moodle_url($url, ['id' => $cmid]),
+                navigation_node::TYPE_SETTING, null, 'advancedsettings',
+                new pix_icon('t/edit', ''));
         $pimenkoquestionnairenode->add_node($node, $beforekey);
     }
 
     if (has_capability('mod/pimenkoquestionnaire:editquestions', $context) && $owner) {
         $url = '/mod/pimenkoquestionnaire/questions.php';
         $node = navigation_node::create(get_string('questions', 'pimenkoquestionnaire'),
-            new moodle_url($url, array('id' => $cmid)),
-            navigation_node::TYPE_SETTING, null, 'questions',
-            new pix_icon('t/edit', ''));
+                new moodle_url($url, ['id' => $cmid]),
+                navigation_node::TYPE_SETTING, null, 'questions',
+                new pix_icon('t/edit', ''));
         $pimenkoquestionnairenode->add_node($node, $beforekey);
     }
 
     if (has_capability('mod/pimenkoquestionnaire:editquestions', $context) && $owner) {
         $url = '/mod/pimenkoquestionnaire/feedback.php';
         $node = navigation_node::create(get_string('feedback', 'pimenkoquestionnaire'),
-            new moodle_url($url, array('id' => $cmid)),
-            navigation_node::TYPE_SETTING, null, 'feedback',
-            new pix_icon('t/edit', ''));
+                new moodle_url($url, ['id' => $cmid]),
+                navigation_node::TYPE_SETTING, null, 'feedback',
+                new pix_icon('t/edit', ''));
         $pimenkoquestionnairenode->add_node($node, $beforekey);
     }
 
     if (has_capability('mod/pimenkoquestionnaire:preview', $context)) {
         $url = '/mod/pimenkoquestionnaire/preview.php';
         $node = navigation_node::create(get_string('preview_label', 'pimenkoquestionnaire'),
-            new moodle_url($url, array('id' => $cmid)),
-            navigation_node::TYPE_SETTING, null, 'preview',
-            new pix_icon('t/preview', ''));
+                new moodle_url($url, ['id' => $cmid]),
+                navigation_node::TYPE_SETTING, null, 'preview',
+                new pix_icon('t/preview', ''));
         $pimenkoquestionnairenode->add_node($node, $beforekey);
     }
 
@@ -628,7 +638,7 @@ function pimenkoquestionnaire_extend_settings_navigation(settings_navigation $se
             $text = get_string('answerquestions', 'pimenkoquestionnaire');
         }
         $node = navigation_node::create($text, new moodle_url($url, $args),
-            navigation_node::TYPE_SETTING, null, '', new pix_icon('i/info', 'answerquestions'));
+                navigation_node::TYPE_SETTING, null, '', new pix_icon('i/info', 'answerquestions'));
         $pimenkoquestionnairenode->add_node($node, $beforekey);
     }
     $usernumresp = $pimenkoquestionnaire->count_submissions($USER->id);
@@ -637,35 +647,35 @@ function pimenkoquestionnaire_extend_settings_navigation(settings_navigation $se
         $url = '/mod/pimenkoquestionnaire/myreport.php';
 
         if ($usernumresp > 1) {
-            $urlargs = array('instance' => $pimenkoquestionnaire->id, 'userid' => $USER->id,
-                'byresponse' => 0, 'action' => 'summary', 'group' => $currentgroupid);
+            $urlargs = ['instance' => $pimenkoquestionnaire->id, 'userid' => $USER->id,
+                    'byresponse' => 0, 'action' => 'summary', 'group' => $currentgroupid];
             $node = navigation_node::create(get_string('yourresponses', 'pimenkoquestionnaire'),
-                new moodle_url($url, $urlargs), navigation_node::TYPE_SETTING, null, 'yourresponses');
+                    new moodle_url($url, $urlargs), navigation_node::TYPE_SETTING, null, 'yourresponses');
             $myreportnode = $pimenkoquestionnairenode->add_node($node, $beforekey);
 
-            $urlargs = array('instance' => $pimenkoquestionnaire->id, 'userid' => $USER->id,
-                'byresponse' => 0, 'action' => 'summary', 'group' => $currentgroupid);
+            $urlargs = ['instance' => $pimenkoquestionnaire->id, 'userid' => $USER->id,
+                    'byresponse' => 0, 'action' => 'summary', 'group' => $currentgroupid];
             $myreportnode->add(get_string('summary', 'pimenkoquestionnaire'), new moodle_url($url, $urlargs));
 
-            $urlargs = array('instance' => $pimenkoquestionnaire->id, 'userid' => $USER->id,
-                'byresponse' => 1, 'action' => 'vresp', 'group' => $currentgroupid);
+            $urlargs = ['instance' => $pimenkoquestionnaire->id, 'userid' => $USER->id,
+                    'byresponse' => 1, 'action' => 'vresp', 'group' => $currentgroupid];
             $byresponsenode = $myreportnode->add(get_string('viewindividualresponse', 'pimenkoquestionnaire'),
-                new moodle_url($url, $urlargs));
+                    new moodle_url($url, $urlargs));
 
-            $urlargs = array('instance' => $pimenkoquestionnaire->id, 'userid' => $USER->id,
-                'byresponse' => 0, 'action' => 'vall', 'group' => $currentgroupid);
+            $urlargs = ['instance' => $pimenkoquestionnaire->id, 'userid' => $USER->id,
+                    'byresponse' => 0, 'action' => 'vall', 'group' => $currentgroupid];
             $myreportnode->add(get_string('myresponses', 'pimenkoquestionnaire'), new moodle_url($url, $urlargs));
             if ($pimenkoquestionnaire->capabilities->downloadresponses) {
-                $urlargs = array('instance' => $pimenkoquestionnaire->id, 'user' => $USER->id,
-                    'action' => 'dwnpg', 'group' => $currentgroupid);
+                $urlargs = ['instance' => $pimenkoquestionnaire->id, 'user' => $USER->id,
+                        'action' => 'dwnpg', 'group' => $currentgroupid];
                 $myreportnode->add(get_string('downloadtextformat', 'pimenkoquestionnaire'),
-                    new moodle_url('/mod/pimenkoquestionnaire/report.php', $urlargs));
+                        new moodle_url('/mod/pimenkoquestionnaire/report.php', $urlargs));
             }
         } else {
-            $urlargs = array('instance' => $pimenkoquestionnaire->id, 'userid' => $USER->id,
-                'byresponse' => 1, 'action' => 'vresp', 'group' => $currentgroupid);
+            $urlargs = ['instance' => $pimenkoquestionnaire->id, 'userid' => $USER->id,
+                    'byresponse' => 1, 'action' => 'vresp', 'group' => $currentgroupid];
             $node = navigation_node::create(get_string('yourresponse', 'pimenkoquestionnaire'),
-                new moodle_url($url, $urlargs), navigation_node::TYPE_SETTING, null, 'yourresponse');
+                    new moodle_url($url, $urlargs), navigation_node::TYPE_SETTING, null, 'yourresponse');
             $myreportnode = $pimenkoquestionnairenode->add_node($node, $beforekey);
         }
     }
@@ -676,52 +686,54 @@ function pimenkoquestionnaire_extend_settings_navigation(settings_navigation $se
 
         $url = '/mod/pimenkoquestionnaire/report.php';
         $node = navigation_node::create(get_string('viewallresponses', 'pimenkoquestionnaire'),
-            new moodle_url($url, array('instance' => $pimenkoquestionnaire->id, 'action' => 'vall')),
-            navigation_node::TYPE_SETTING, null, 'vall');
+                new moodle_url($url, ['instance' => $pimenkoquestionnaire->id, 'action' => 'vall']),
+                navigation_node::TYPE_SETTING, null, 'vall');
         $reportnode = $pimenkoquestionnairenode->add_node($node, $beforekey);
 
         if ($pimenkoquestionnaire->capabilities->viewsingleresponse) {
             $summarynode = $reportnode->add(get_string('summary', 'pimenkoquestionnaire'),
-                new moodle_url('/mod/pimenkoquestionnaire/report.php',
-                    array('instance' => $pimenkoquestionnaire->id, 'action' => 'vall')));
+                    new moodle_url('/mod/pimenkoquestionnaire/report.php',
+                            ['instance' => $pimenkoquestionnaire->id, 'action' => 'vall']));
         } else {
             $summarynode = $reportnode;
         }
         $summarynode->add(get_string('order_default', 'pimenkoquestionnaire'),
-            new moodle_url('/mod/pimenkoquestionnaire/report.php',
-                array('instance' => $pimenkoquestionnaire->id, 'action' => 'vall', 'group' => $currentgroupid)));
+                new moodle_url('/mod/pimenkoquestionnaire/report.php',
+                        ['instance' => $pimenkoquestionnaire->id, 'action' => 'vall', 'group' => $currentgroupid]));
         $summarynode->add(get_string('order_ascending', 'pimenkoquestionnaire'),
-            new moodle_url('/mod/pimenkoquestionnaire/report.php',
-                array('instance' => $pimenkoquestionnaire->id, 'action' => 'vallasort', 'group' => $currentgroupid)));
+                new moodle_url('/mod/pimenkoquestionnaire/report.php',
+                        ['instance' => $pimenkoquestionnaire->id, 'action' => 'vallasort', 'group' => $currentgroupid]));
         $summarynode->add(get_string('order_descending', 'pimenkoquestionnaire'),
-            new moodle_url('/mod/pimenkoquestionnaire/report.php',
-                array('instance' => $pimenkoquestionnaire->id, 'action' => 'vallarsort', 'group' => $currentgroupid)));
+                new moodle_url('/mod/pimenkoquestionnaire/report.php',
+                        ['instance' => $pimenkoquestionnaire->id, 'action' => 'vallarsort', 'group' => $currentgroupid]));
 
         if ($pimenkoquestionnaire->capabilities->deleteresponses) {
             $summarynode->add(get_string('deleteallresponses', 'pimenkoquestionnaire'),
-                new moodle_url('/mod/pimenkoquestionnaire/report.php',
-                    array('instance' => $pimenkoquestionnaire->id, 'action' => 'delallresp', 'group' => $currentgroupid)));
+                    new moodle_url('/mod/pimenkoquestionnaire/report.php',
+                            ['instance' => $pimenkoquestionnaire->id, 'action' => 'delallresp', 'group' => $currentgroupid]));
         }
 
         if ($pimenkoquestionnaire->capabilities->downloadresponses) {
             $summarynode->add(get_string('downloadtextformat', 'pimenkoquestionnaire'),
-                new moodle_url('/mod/pimenkoquestionnaire/report.php',
-                    array('instance' => $pimenkoquestionnaire->id, 'action' => 'dwnpg', 'group' => $currentgroupid)));
+                    new moodle_url('/mod/pimenkoquestionnaire/report.php',
+                            ['instance' => $pimenkoquestionnaire->id, 'action' => 'dwnpg', 'group' => $currentgroupid]));
         }
         if ($pimenkoquestionnaire->capabilities->viewsingleresponse) {
             $byresponsenode = $reportnode->add(get_string('viewbyresponse', 'pimenkoquestionnaire'),
-                new moodle_url('/mod/pimenkoquestionnaire/report.php',
-                    array('instance' => $pimenkoquestionnaire->id, 'action' => 'vresp', 'byresponse' => 1, 'group' => $currentgroupid)));
+                    new moodle_url('/mod/pimenkoquestionnaire/report.php',
+                            ['instance' => $pimenkoquestionnaire->id, 'action' => 'vresp', 'byresponse' => 1,
+                                    'group' => $currentgroupid]));
 
             $byresponsenode->add(get_string('view', 'pimenkoquestionnaire'),
-                new moodle_url('/mod/pimenkoquestionnaire/report.php',
-                    array('instance' => $pimenkoquestionnaire->id, 'action' => 'vresp', 'byresponse' => 1, 'group' => $currentgroupid)));
+                    new moodle_url('/mod/pimenkoquestionnaire/report.php',
+                            ['instance' => $pimenkoquestionnaire->id, 'action' => 'vresp', 'byresponse' => 1,
+                                    'group' => $currentgroupid]));
 
             if ($individualresponse) {
                 $byresponsenode->add(get_string('deleteresp', 'pimenkoquestionnaire'),
-                    new moodle_url('/mod/pimenkoquestionnaire/report.php',
-                        array('instance' => $pimenkoquestionnaire->id, 'action' => 'dresp', 'byresponse' => 1,
-                            'rid' => $rid, 'group' => $currentgroupid, 'individualresponse' => 1)));
+                        new moodle_url('/mod/pimenkoquestionnaire/report.php',
+                                ['instance' => $pimenkoquestionnaire->id, 'action' => 'dresp', 'byresponse' => 1,
+                                        'rid' => $rid, 'group' => $currentgroupid, 'individualresponse' => 1]));
             }
         }
     }
@@ -735,8 +747,8 @@ function pimenkoquestionnaire_extend_settings_navigation(settings_navigation $se
     if ($pimenkoquestionnaire->capabilities->viewsingleresponse && ($canviewallgroups || $canviewgroups)) {
         $url = '/mod/pimenkoquestionnaire/show_nonrespondents.php';
         $node = navigation_node::create(get_string('show_nonrespondents', 'pimenkoquestionnaire'),
-            new moodle_url($url, array('id' => $cmid)),
-            navigation_node::TYPE_SETTING, null, 'nonrespondents');
+                new moodle_url($url, ['id' => $cmid]),
+                navigation_node::TYPE_SETTING, null, 'nonrespondents');
         $pimenkoquestionnairenode->add_node($node, $beforekey);
 
     }
@@ -746,19 +758,21 @@ function pimenkoquestionnaire_extend_settings_navigation(settings_navigation $se
 // starts with pimenkoquestionnaire_.
 
 function pimenkoquestionnaire_get_view_actions() {
-    return array('view', 'view all');
+    return ['view', 'view all'];
 }
 
 function pimenkoquestionnaire_get_post_actions() {
-    return array('submit', 'update');
+    return ['submit', 'update'];
 }
 
-function pimenkoquestionnaire_get_recent_mod_activity(&$activities, &$index, $timestart,
-                $courseid, $cmid, $userid = 0, $groupid = 0) {
+function pimenkoquestionnaire_get_recent_mod_activity(
+        &$activities, &$index, $timestart,
+        $courseid, $cmid, $userid = 0, $groupid = 0
+) {
 
     global $CFG, $COURSE, $USER, $DB;
     require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
-    require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+    require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
     if ($COURSE->id == $courseid) {
         $course = $COURSE;
@@ -782,9 +796,9 @@ function pimenkoquestionnaire_get_recent_mod_activity(&$activities, &$index, $ti
         if (!$pimenkoquestionnaire->survey_is_public_master()) {
             // For a public pimenkoquestionnaire, look for the original public pimenkoquestionnaire that it is based on.
             $originalpimenkoquestionnaire = $DB->get_record('pimenkoquestionnaire',
-                ['sid' => $pimenkoquestionnaire->survey->id, 'course' => $pimenkoquestionnaire->survey->courseid]);
+                    ['sid' => $pimenkoquestionnaire->survey->id, 'course' => $pimenkoquestionnaire->survey->courseid]);
             $cmoriginal = get_coursemodule_from_instance("pimenkoquestionnaire", $originalpimenkoquestionnaire->id,
-                $pimenkoquestionnaire->survey->courseid);
+                    $pimenkoquestionnaire->survey->courseid);
             $contextoriginal = context_course::instance($pimenkoquestionnaire->survey->courseid, MUST_EXIST);
             if (!has_capability('mod/pimenkoquestionnaire:viewsingleresponse', $contextoriginal)) {
                 $tmpactivity = new stdClass();
@@ -807,11 +821,11 @@ function pimenkoquestionnaire_get_recent_mod_activity(&$activities, &$index, $ti
 
     if ($groupid) {
         $groupselect = 'AND gm.groupid = :groupid';
-        $groupjoin   = 'JOIN {groups_members} gm ON  gm.userid=u.id';
+        $groupjoin = 'JOIN {groups_members} gm ON  gm.userid=u.id';
         $params['groupid'] = $groupid;
     } else {
         $groupselect = '';
-        $groupjoin   = '';
+        $groupjoin = '';
     }
 
     $params['timestart'] = $timestart;
@@ -833,12 +847,12 @@ function pimenkoquestionnaire_get_recent_mod_activity(&$activities, &$index, $ti
     }
 
     $accessallgroups = has_capability('moodle/site:accessallgroups', $context);
-    $viewfullnames   = has_capability('moodle/site:viewfullnames', $context);
-    $groupmode       = groups_get_activity_groupmode($cm, $course);
+    $viewfullnames = has_capability('moodle/site:viewfullnames', $context);
+    $groupmode = groups_get_activity_groupmode($cm, $course);
 
     $usersgroups = null;
     $aname = format_string($cm->name, true);
-    $userattempts = array();
+    $userattempts = [];
     foreach ($attempts as $attempt) {
         if ($pimenkoquestionnaire->respondenttype != 'anonymous') {
             if (!isset($userattempts[$attempt->lastname])) {
@@ -856,11 +870,11 @@ function pimenkoquestionnaire_get_recent_mod_activity(&$activities, &$index, $ti
             if (($groupmode == SEPARATEGROUPS) && !$accessallgroups) {
                 if ($usersgroups === null) {
                     $usersgroups = groups_get_all_groups($course->id,
-                    $attempt->userid, $cm->groupingid);
+                            $attempt->userid, $cm->groupingid);
                     if (is_array($usersgroups)) {
                         $usersgroups = array_keys($usersgroups);
                     } else {
-                         $usersgroups = array();
+                        $usersgroups = [];
                     }
                 }
                 if (!array_intersect($usersgroups, $modinfo->groups[$cm->id])) {
@@ -871,19 +885,19 @@ function pimenkoquestionnaire_get_recent_mod_activity(&$activities, &$index, $ti
 
         $tmpactivity = new stdClass();
 
-        $tmpactivity->type       = 'pimenkoquestionnaire';
-        $tmpactivity->cmid       = $cm->id;
+        $tmpactivity->type = 'pimenkoquestionnaire';
+        $tmpactivity->cmid = $cm->id;
         $tmpactivity->cminstance = $cm->instance;
         // Current user is admin - or teacher enrolled in original public course.
         if (isset($cmoriginal)) {
             $tmpactivity->cminstance = $cmoriginal->instance;
         }
         $tmpactivity->cannotview = false;
-        $tmpactivity->anonymous  = false;
-        $tmpactivity->name       = $aname;
+        $tmpactivity->anonymous = false;
+        $tmpactivity->name = $aname;
         $tmpactivity->sectionnum = $cm->sectionnum;
-        $tmpactivity->timestamp  = $attempt->submitted;
-        $tmpactivity->groupid    = $groupid;
+        $tmpactivity->timestamp = $attempt->submitted;
+        $tmpactivity->groupid = $groupid;
         if (isset($userattempts[$attempt->lastname])) {
             $tmpactivity->nbattempts = $userattempts[$attempt->lastname];
         }
@@ -905,7 +919,7 @@ function pimenkoquestionnaire_get_recent_mod_activity(&$activities, &$index, $ti
             }
         }
         if ($pimenkoquestionnaire->respondenttype != 'anonymous') {
-            $tmpactivity->user->fullname  = fullname($attempt, $viewfullnames);
+            $tmpactivity->user->fullname = fullname($attempt, $viewfullnames);
         } else {
             $tmpactivity->user = '';
             unset ($tmpactivity->user);
@@ -918,23 +932,24 @@ function pimenkoquestionnaire_get_recent_mod_activity(&$activities, &$index, $ti
 /**
  * Prints all users who have completed a specified pimenkoquestionnaire since a given time
  *
- * @global object
  * @param object $activity
- * @param int $courseid
+ * @param int    $courseid
  * @param string $detail not used but needed for compability
- * @param array $modnames
+ * @param array  $modnames
+ *
  * @return void Output is echo'd
  *
  * $details and $modenames are unused, but API requires them. Suppress PHPMD warning.
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ * @global object
  */
-function pimenkoquestionnaire_print_recent_mod_activity($activity, $courseid, $detail, $modnames) {
+function pimenkoquestionnaire_print_recent_mod_activity( $activity, $courseid, $detail, $modnames ) {
     global $OUTPUT;
 
     // If the pimenkoquestionnaire is "anonymous", then $activity->user won't have been set, so do not display respondent info.
     if ($activity->anonymous) {
-        $stranonymous = ' ('.get_string('anonymous', 'pimenkoquestionnaire').')';
+        $stranonymous = ' (' . get_string('anonymous', 'pimenkoquestionnaire') . ')';
         $activity->nbattempts = '';
     } else {
         $stranonymous = '';
@@ -944,19 +959,19 @@ function pimenkoquestionnaire_print_recent_mod_activity($activity, $courseid, $d
         $strcannotview = get_string('cannotviewpublicresponses', 'pimenkoquestionnaire');
     }
     echo html_writer::start_tag('div');
-    echo html_writer::start_tag('span', array('class' => 'clearfix',
-                    'style' => 'margin-top:0px; background-color: white; display: inline-block;'));
+    echo html_writer::start_tag('span', ['class' => 'clearfix',
+            'style' => 'margin-top:0px; background-color: white; display: inline-block;']);
 
     if (!$activity->anonymous && !$activity->cannotview) {
-        echo html_writer::tag('div', $OUTPUT->user_picture($activity->user, array('courseid' => $courseid)),
-                        array('style' => 'float: left; padding-right: 10px;'));
+        echo html_writer::tag('div', $OUTPUT->user_picture($activity->user, ['courseid' => $courseid]),
+                ['style' => 'float: left; padding-right: 10px;']);
     }
     if (!$activity->cannotview) {
         echo html_writer::start_tag('div');
         echo html_writer::start_tag('div');
 
-        $urlparams = array('action' => 'vresp', 'instance' => $activity->cminstance,
-                        'group' => $activity->groupid, 'rid' => $activity->content->attemptid, 'individualresponse' => 1);
+        $urlparams = ['action' => 'vresp', 'instance' => $activity->cminstance,
+                'group' => $activity->groupid, 'rid' => $activity->content->attemptid, 'individualresponse' => 1];
 
         $context = context_module::instance($activity->cmid);
         if (has_capability('mod/pimenkoquestionnaire:viewsingleresponse', $context)) {
@@ -964,8 +979,8 @@ function pimenkoquestionnaire_print_recent_mod_activity($activity, $courseid, $d
         } else {
             $report = 'myreport.php';
         }
-        echo html_writer::tag('a', get_string('response', 'pimenkoquestionnaire').' '.$activity->nbattempts.$stranonymous,
-                        array('href' => new moodle_url('/mod/pimenkoquestionnaire/'.$report, $urlparams)));
+        echo html_writer::tag('a', get_string('response', 'pimenkoquestionnaire') . ' ' . $activity->nbattempts . $stranonymous,
+                ['href' => new moodle_url('/mod/pimenkoquestionnaire/' . $report, $urlparams)]);
         echo html_writer::end_tag('div');
     } else {
         echo html_writer::start_tag('div');
@@ -973,12 +988,12 @@ function pimenkoquestionnaire_print_recent_mod_activity($activity, $courseid, $d
         echo html_writer::tag('div', $strcannotview);
         echo html_writer::end_tag('div');
     }
-    if (!$activity->anonymous  && !$activity->cannotview) {
-        $url = new moodle_url('/user/view.php', array('course' => $courseid, 'id' => $activity->user->id));
+    if (!$activity->anonymous && !$activity->cannotview) {
+        $url = new moodle_url('/user/view.php', ['course' => $courseid, 'id' => $activity->user->id]);
         $name = $activity->user->fullname;
         $link = html_writer::link($url, $name);
-        echo html_writer::start_tag('div', array('class' => 'user'));
-        echo $link .' - '. userdate($activity->timestamp);
+        echo html_writer::start_tag('div', ['class' => 'user']);
+        echo $link . ' - ' . userdate($activity->timestamp);
         echo html_writer::end_tag('div');
     }
 
@@ -996,15 +1011,16 @@ function pimenkoquestionnaire_print_recent_mod_activity($activity, $courseid, $d
  * pimenkoquestionnaires that have a deadline that has not already passed
  * and it is available for taking.
  *
+ * @param array $courses   An array of course objects to get pimenkoquestionnaire instances from
+ * @param array $htmlarray Store overview output array( course ID => 'pimenkoquestionnaire' => HTML output )
+ *
+ * @return void
+ * @uses CONTEXT_MODULE
  * @global object
  * @global stdClass
  * @global object
- * @uses CONTEXT_MODULE
- * @param array $courses An array of course objects to get pimenkoquestionnaire instances from
- * @param array $htmlarray Store overview output array( course ID => 'pimenkoquestionnaire' => HTML output )
- * @return void
  */
-function pimenkoquestionnaire_print_overview($courses, &$htmlarray) {
+function pimenkoquestionnaire_print_overview( $courses, &$htmlarray ) {
     global $USER, $CFG, $DB, $OUTPUT;
 
     require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
@@ -1014,9 +1030,9 @@ function pimenkoquestionnaire_print_overview($courses, &$htmlarray) {
     }
 
     // Get Necessary Strings.
-    $strpimenkoquestionnaire       = get_string('modulename', 'pimenkoquestionnaire');
+    $strpimenkoquestionnaire = get_string('modulename', 'pimenkoquestionnaire');
     $strnotattempted = get_string('noattempts', 'pimenkoquestionnaire');
-    $strattempted    = get_string('attempted', 'pimenkoquestionnaire');
+    $strattempted = get_string('attempted', 'pimenkoquestionnaire');
     $strsavedbutnotsubmitted = get_string('savedbutnotsubmitted', 'pimenkoquestionnaire');
 
     $now = time();
@@ -1024,23 +1040,24 @@ function pimenkoquestionnaire_print_overview($courses, &$htmlarray) {
 
         // The pimenkoquestionnaire has a deadline.
         if (($pimenkoquestionnaire->closedate != 0)
-                        // And it is before the deadline has been met.
-                        && ($pimenkoquestionnaire->closedate >= $now)
-                        // And the pimenkoquestionnaire is available.
-                        && (($pimenkoquestionnaire->opendate == 0) || ($pimenkoquestionnaire->opendate <= $now))) {
+                // And it is before the deadline has been met.
+                && ($pimenkoquestionnaire->closedate >= $now)
+                // And the pimenkoquestionnaire is available.
+                && (($pimenkoquestionnaire->opendate == 0) || ($pimenkoquestionnaire->opendate <= $now))) {
             if (!$pimenkoquestionnaire->visible) {
                 $class = ' class="dimmed"';
             } else {
                 $class = '';
             }
             $str = $OUTPUT->box("$strpimenkoquestionnaire:
-                            <a$class href=\"$CFG->wwwroot/mod/pimenkoquestionnaire/view.php?id=$pimenkoquestionnaire->coursemodule\">".
-                            format_string($pimenkoquestionnaire->name).'</a>', 'name');
+                            <a$class href=\"$CFG->wwwroot/mod/pimenkoquestionnaire/view.php?id=$pimenkoquestionnaire->coursemodule\">" .
+                    format_string($pimenkoquestionnaire->name) . '</a>', 'name');
 
             // Deadline.
-            $str .= $OUTPUT->box(get_string('closeson', 'pimenkoquestionnaire', userdate($pimenkoquestionnaire->closedate)), 'info');
+            $str .= $OUTPUT->box(get_string('closeson', 'pimenkoquestionnaire', userdate($pimenkoquestionnaire->closedate)),
+                    'info');
             $attempts = $DB->get_records('pimenko_response',
-                ['pimenkoquestionnaireid' => $pimenkoquestionnaire->id, 'userid' => $USER->id, 'complete' => 'y']);
+                    ['pimenkoquestionnaireid' => $pimenkoquestionnaire->id, 'userid' => $USER->id, 'complete' => 'y']);
             $nbattempts = count($attempts);
 
             // Do not display a pimenkoquestionnaire as due if it can only be sumbitted once and it has already been submitted!
@@ -1052,7 +1069,7 @@ function pimenkoquestionnaire_print_overview($courses, &$htmlarray) {
             if (has_capability('mod/pimenkoquestionnaire:manage', context_module::instance($pimenkoquestionnaire->coursemodule))) {
                 // Number of user attempts.
                 $attempts = $DB->count_records('pimenko_response',
-                    ['pimenkoquestionnaireid' => $pimenkoquestionnaire->id, 'complete' => 'y']);
+                        ['pimenkoquestionnaireid' => $pimenkoquestionnaire->id, 'complete' => 'y']);
                 $str .= $OUTPUT->box(get_string('numattemptsmade', 'pimenkoquestionnaire', $attempts), 'info');
             } else {
                 if ($responses = pimenkoquestionnaire_get_user_responses($pimenkoquestionnaire->id, $USER->id, false)) {
@@ -1079,29 +1096,29 @@ function pimenkoquestionnaire_print_overview($courses, &$htmlarray) {
     }
 }
 
-
 /**
  * Implementation of the function for printing the form elements that control
  * whether the course reset functionality affects the pimenkoquestionnaire.
  *
  * @param $mform the course reset form that is being built.
  */
-function pimenkoquestionnaire_reset_course_form_definition($mform) {
+function pimenkoquestionnaire_reset_course_form_definition( $mform ) {
     $mform->addElement('header', 'pimenkoquestionnaireheader', get_string('modulenameplural', 'pimenkoquestionnaire'));
     $mform->addElement('advcheckbox', 'reset_pimenkoquestionnaire',
-                    get_string('removeallpimenkoquestionnaireattempts', 'pimenkoquestionnaire'));
+            get_string('removeallpimenkoquestionnaireattempts', 'pimenkoquestionnaire'));
 }
 
 /**
  * Course reset form defaults.
+ *
  * @return array the defaults.
  *
  * Function parameters are unused, but API requires them. Suppress PHPMD warning.
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-function pimenkoquestionnaire_reset_course_form_defaults($course) {
-    return array('reset_pimenkoquestionnaire' => 1);
+function pimenkoquestionnaire_reset_course_form_defaults( $course ) {
+    return ['reset_pimenkoquestionnaire' => 1];
 }
 
 /**
@@ -1109,15 +1126,16 @@ function pimenkoquestionnaire_reset_course_form_defaults($course) {
  * pimenkoquestionnaire responses for course $data->courseid.
  *
  * @param object $data the data submitted from the reset course.
+ *
  * @return array status array
  */
-function pimenkoquestionnaire_reset_userdata($data) {
+function pimenkoquestionnaire_reset_userdata( $data ) {
     global $CFG, $DB;
     require_once($CFG->libdir . '/questionlib.php');
-    require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/locallib.php');
+    require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
 
     $componentstr = get_string('modulenameplural', 'pimenkoquestionnaire');
-    $status = array();
+    $status = [];
 
     if (!empty($data->reset_pimenkoquestionnaire)) {
         $surveys = pimenkoquestionnaire_get_survey_list($data->courseid, '');
@@ -1132,30 +1150,31 @@ function pimenkoquestionnaire_reset_userdata($data) {
                  ORDER BY qr.id";
             $resps = $DB->get_records_sql($sql, [$survey->id]);
             if (!empty($resps)) {
-                $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["sid" => $survey->id, "course" => $survey->courseid]);
-                $pimenkoquestionnaire->course = $DB->get_record("course", array("id" => $pimenkoquestionnaire->course));
+                $pimenkoquestionnaire =
+                        $DB->get_record("pimenkoquestionnaire", ["sid" => $survey->id, "course" => $survey->courseid]);
+                $pimenkoquestionnaire->course = $DB->get_record("course", ["id" => $pimenkoquestionnaire->course]);
                 foreach ($resps as $response) {
                     pimenkoquestionnaire_delete_response($response, $pimenkoquestionnaire);
                 }
             }
             // Remove this pimenkoquestionnaire's grades (and feedback) from gradebook (if any).
-            $select = "itemmodule = 'pimenkoquestionnaire' AND iteminstance = ".$survey->qid;
+            $select = "itemmodule = 'pimenkoquestionnaire' AND iteminstance = " . $survey->qid;
             $fields = 'id';
             if ($itemid = $DB->get_record_select('grade_items', $select, null, $fields)) {
                 $itemid = $itemid->id;
-                $DB->delete_records_select('grade_grades', 'itemid = '.$itemid);
+                $DB->delete_records_select('grade_grades', 'itemid = ' . $itemid);
 
             }
         }
-        $status[] = array(
-                        'component' => $componentstr,
-                        'item' => get_string('deletedallresp', 'pimenkoquestionnaire'),
-                        'error' => false);
+        $status[] = [
+                'component' => $componentstr,
+                'item' => get_string('deletedallresp', 'pimenkoquestionnaire'),
+                'error' => false];
 
-        $status[] = array(
-                        'component' => $componentstr,
-                        'item' => get_string('gradesdeleted', 'pimenkoquestionnaire'),
-                        'error' => false);
+        $status[] = [
+                'component' => $componentstr,
+                'item' => get_string('gradesdeleted', 'pimenkoquestionnaire'),
+                'error' => false];
     }
     return $status;
 }
@@ -1165,20 +1184,21 @@ function pimenkoquestionnaire_reset_userdata($data) {
  * in pimenkoquestionnaire settings.
  *
  * @param object $course Course
- * @param object $cm Course-module
- * @param int $userid User ID
- * @param bool $type Type of comparison (or/and; can be used as return value if no conditions)
+ * @param object $cm     Course-module
+ * @param int    $userid User ID
+ * @param bool   $type   Type of comparison (or/and; can be used as return value if no conditions)
+ *
  * @return bool True if completed, false if not, $type if conditions not set.
  *
  * $course is unused, but API requires it. Suppress PHPMD warning.
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-function pimenkoquestionnaire_get_completion_state($course, $cm, $userid, $type) {
+function pimenkoquestionnaire_get_completion_state( $course, $cm, $userid, $type ) {
     global $DB;
 
     // Get pimenkoquestionnaire details.
-    $pimenkoquestionnaire = $DB->get_record('pimenkoquestionnaire', array('id' => $cm->instance), '*', MUST_EXIST);
+    $pimenkoquestionnaire = $DB->get_record('pimenkoquestionnaire', ['id' => $cm->instance], '*', MUST_EXIST);
 
     // If completion option is enabled, evaluate it and return true/false.
     if ($pimenkoquestionnaire->completionsubmit) {
@@ -1196,12 +1216,15 @@ function pimenkoquestionnaire_get_completion_state($course, $cm, $userid, $type)
  * This is used by block_myoverview in order to display the event appropriately. If null is returned then the event
  * is not displayed on the block.
  *
- * @param calendar_event $event
+ * @param calendar_event                $event
  * @param \core_calendar\action_factory $factory
+ *
  * @return \core_calendar\local\event\entities\action_interface|null
  */
-function mod_pimenkoquestionnaire_core_calendar_provide_event_action(calendar_event $event,
-                                                            \core_calendar\action_factory $factory) {
+function mod_pimenkoquestionnaire_core_calendar_provide_event_action(
+        calendar_event $event,
+        \core_calendar\action_factory $factory
+) {
     $cm = get_fast_modinfo($event->courseid)->instances['pimenkoquestionnaire'][$event->instance];
 
     $completion = new \completion_info($cm->get_course());

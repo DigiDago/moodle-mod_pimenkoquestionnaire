@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2015 Guy Thomas <gthomas@moodlerooms.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class bulk_sql_config  {
+class bulk_sql_config {
 
     /**
      * @var string $table
@@ -55,11 +55,11 @@ class bulk_sql_config  {
     /**
      * @param string $table
      * @param string $tablealias
-     * @param bool $usechoiceid
-     * @param bool $useresponse
-     * @param bool $userank
+     * @param bool   $usechoiceid
+     * @param bool   $useresponse
+     * @param bool   $userank
      */
-    public function __construct($table, $tablealias, $usechoiceid = false, $useresponse = false, $userank = false) {
+    public function __construct( $table, $tablealias, $usechoiceid = false, $useresponse = false, $userank = false ) {
         $this->table = $table;
         $this->tablealias = $tablealias;
         $this->usechoiceid = $usechoiceid;
@@ -69,13 +69,14 @@ class bulk_sql_config  {
 
     /**
      * Fields that need to be included for extra select.
+     *
      * @return array
      */
     public function get_extra_select() {
         return [
-            'choice_id' => $this->usechoiceid,
-            'response' => $this->useresponse,
-            'rankvalue' => $this->userank
+                'choice_id' => $this->usechoiceid,
+                'response' => $this->useresponse,
+                'rankvalue' => $this->userank
         ];
     }
 }

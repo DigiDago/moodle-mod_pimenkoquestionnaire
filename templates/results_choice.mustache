@@ -74,36 +74,39 @@
     }}
 <!-- Begin HTML generated from results_choice template. -->
 {{#responses.0}}
-<table class="generaltable">
-    <thead>
-    <tr>
-        <th class="header c0" style="text-align:left;width:50%;" scope="col">{{#str}} response, mod_pimenkoquestionnaire {{/str}}</th>
-        <th class="header c1" style="text-align:left;width:40%;" scope="col">{{#str}} average, mod_pimenkoquestionnaire {{/str}}</th>
-        <th class="header c2 lastcol" style="text-align:right;width:10%;" scope="col">{{#str}} total, mod_pimenkoquestionnaire {{/str}}</th>
-    </tr>
-    </thead>
+    <table class="generaltable">
+        <thead>
+        <tr>
+            <th class="header c0" style="text-align:left;width:50%;" scope="col">{{#str}} response, mod_pimenkoquestionnaire {{/str}}</th>
+            <th class="header c1" style="text-align:left;width:40%;" scope="col">{{#str}} average, mod_pimenkoquestionnaire {{/str}}</th>
+            <th class="header c2 lastcol" style="text-align:right;width:10%;" scope="col">{{#str}} total, mod_pimenkoquestionnaire {{/str}}</th>
+        </tr>
+        </thead>
     <tbody>
 {{/responses.0}}
 {{#responses}}
     {{#response}}
-    <tr class="">
-        <td class="cell c0" style="text-align:left;width:50%;">{{response.text}}</td>
-        <td class="cell c1" style="text-align:left;width:40%;white-space:nowrap;">
-            <img alt="{{response.alt1}}" src="{{response.image1}}" /><img style="height:9px; width:{{response.width2}}px;" alt="{{response.alt2}}" src="{{response.image2}}" /><img alt="{{response.alt3}}" src="{{response.image3}}" />
-            {{{response.percent}}}
-        </td>
-        <td class="cell c2 lastcol" style="text-align:right;width:10%;">{{response.total}}</td>
-    </tr>
+        <tr class="">
+            <td class="cell c0" style="text-align:left;width:50%;">{{response.text}}</td>
+            <td class="cell c1" style="text-align:left;width:40%;white-space:nowrap;">
+                <img alt="{{response.alt1}}" src="{{response.image1}}"/><img style="height:9px; width:{{response.width2}}px;" alt="{{response.alt2}}"
+                                                                             src="{{response.image2}}"/><img alt="{{response.alt3}}" src="{{response.image3}}"/>
+                {{{response.percent}}}
+            </td>
+            <td class="cell c2 lastcol" style="text-align:right;width:10%;">{{response.total}}</td>
+        </tr>
     {{/response}}
 {{/responses}}
 {{#total}}
     <tr>
-        <td colspan="3"><div class="tabledivider"></div></td>
+        <td colspan="3">
+            <div class="tabledivider"></div>
+        </td>
     </tr>
     <tr class="lastrow">
         <td class="cell c0" style="text-align:left;width:50%;">{{#str}} totalresponses, mod_pimenkoquestionnaire{{/str}}</td>
         <td class="cell c1" style="text-align:left;width:40%;white-space:nowrap;">
-            <img alt="{{alt1}}" src="{{image1}}" /><img style="height:9px; width:{{width2}}px;" alt="{{alt2}}" src="{{image2}}" /><img alt="{{alt3}}" src="{{image3}}" />
+            <img alt="{{alt1}}" src="{{image1}}"/><img style="height:9px; width:{{width2}}px;" alt="{{alt2}}" src="{{image2}}"/><img alt="{{alt3}}" src="{{image3}}"/>
             {{{percent}}}
         </td>
         <td class="cell c2 lastcol" style="text-align:right;width:10%;">{{total}}</td>
@@ -111,7 +114,7 @@
 {{/total}}
 {{#responses.0}}
     </tbody>
-</table>
+    </table>
 {{/responses.0}}
 {{^responses}}
     <p class="generaltable">&nbsp;{{#str}} noresponsedata, pimenkoquestionnaire{{/str}}</p>

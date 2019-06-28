@@ -17,16 +17,16 @@
 /**
  * print the form to add or edit a pimenkoquestionnaire-instance
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package pimenkoquestionnaire
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/locallib.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
 
 class mod_pimenkoquestionnaire_mod_form extends moodleform_mod {
 
@@ -36,11 +36,11 @@ class mod_pimenkoquestionnaire_mod_form extends moodleform_mod {
 
         $pimenkoquestionnaire = new pimenkoquestionnaire($this->_instance, null, $COURSE, $this->_cm);
 
-        $mform    =& $this->_form;
+        $mform =& $this->_form;
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
-        $mform->addElement('text', 'name', get_string('name', 'pimenkoquestionnaire'), array('size' => '64'));
+        $mform->addElement('text', 'name', get_string('name', 'pimenkoquestionnaire'), ['size' => '64']);
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
 
@@ -48,14 +48,14 @@ class mod_pimenkoquestionnaire_mod_form extends moodleform_mod {
 
         $mform->addElement('header', 'timinghdr', get_string('timing', 'form'));
 
-        $enableopengroup = array();
+        $enableopengroup = [];
         $enableopengroup[] =& $mform->createElement('checkbox', 'useopendate', get_string('opendate', 'pimenkoquestionnaire'));
         $enableopengroup[] =& $mform->createElement('date_time_selector', 'opendate', '');
         $mform->addGroup($enableopengroup, 'enableopengroup', get_string('opendate', 'pimenkoquestionnaire'), ' ', false);
         $mform->addHelpButton('enableopengroup', 'opendate', 'pimenkoquestionnaire');
         $mform->disabledIf('enableopengroup', 'useopendate', 'notchecked');
 
-        $enableclosegroup = array();
+        $enableclosegroup = [];
         $enableclosegroup[] =& $mform->createElement('checkbox', 'useclosedate', get_string('closedate', 'pimenkoquestionnaire'));
         $enableclosegroup[] =& $mform->createElement('date_time_selector', 'closedate', '');
         $mform->addGroup($enableclosegroup, 'enableclosegroup', get_string('closedate', 'pimenkoquestionnaire'), ' ', false);
@@ -69,23 +69,25 @@ class mod_pimenkoquestionnaire_mod_form extends moodleform_mod {
 
         $mform->addElement('hidden', 'cannotchangerespondenttype');
         $mform->setType('cannotchangerespondenttype', PARAM_INT);
-        $mform->addElement('select', 'respondenttype', get_string('respondenttype', 'pimenkoquestionnaire'), $pimenkoquestionnairerespondents);
+        $mform->addElement('select', 'respondenttype', get_string('respondenttype', 'pimenkoquestionnaire'),
+                $pimenkoquestionnairerespondents);
         $mform->addHelpButton('respondenttype', 'respondenttype', 'pimenkoquestionnaire');
         $mform->disabledIf('respondenttype', 'cannotchangerespondenttype', 'eq', 1);
 
-        $mform->addElement('select', 'resp_view', get_string('responseview', 'pimenkoquestionnaire'), $pimenkoquestionnaireresponseviewers);
+        $mform->addElement('select', 'resp_view', get_string('responseview', 'pimenkoquestionnaire'),
+                $pimenkoquestionnaireresponseviewers);
         $mform->addHelpButton('resp_view', 'responseview', 'pimenkoquestionnaire');
 
-        $notificationoptions = array(0 => get_string('no'), 1 => get_string('notificationsimple', 'pimenkoquestionnaire'),
-            2 => get_string('notificationfull', 'pimenkoquestionnaire'));
+        $notificationoptions = [0 => get_string('no'), 1 => get_string('notificationsimple', 'pimenkoquestionnaire'),
+                2 => get_string('notificationfull', 'pimenkoquestionnaire')];
         $mform->addElement('select', 'notifications', get_string('notifications', 'pimenkoquestionnaire'), $notificationoptions);
         $mform->addHelpButton('notifications', 'notifications', 'pimenkoquestionnaire');
 
-        $options = array('0' => get_string('no'), '1' => get_string('yes'));
+        $options = ['0' => get_string('no'), '1' => get_string('yes')];
         $mform->addElement('select', 'resume', get_string('resume', 'pimenkoquestionnaire'), $options);
         $mform->addHelpButton('resume', 'resume', 'pimenkoquestionnaire');
 
-        $options = array('0' => get_string('no'), '1' => get_string('yes'));
+        $options = ['0' => get_string('no'), '1' => get_string('yes')];
         $mform->addElement('select', 'navigate', get_string('navigate', 'pimenkoquestionnaire'), $options);
         $mform->addHelpButton('navigate', 'navigate', 'pimenkoquestionnaire');
 
@@ -130,7 +132,7 @@ class mod_pimenkoquestionnaire_mod_form extends moodleform_mod {
                 }
             } else {
                 $mform->addElement('static', 'usetemplate', get_string('usetemplate', 'pimenkoquestionnaire'),
-                                '('.get_string('notemplatesurveys', 'pimenkoquestionnaire').')');
+                        '(' . get_string('notemplatesurveys', 'pimenkoquestionnaire') . ')');
             }
 
             // Retrieve existing public pimenkoquestionnaires from this site.
@@ -143,7 +145,7 @@ class mod_pimenkoquestionnaire_mod_form extends moodleform_mod {
                 }
             } else {
                 $mform->addElement('static', 'usepublic', get_string('usepublic', 'pimenkoquestionnaire'),
-                                   '('.get_string('nopublicsurveys', 'pimenkoquestionnaire').')');
+                        '(' . get_string('nopublicsurveys', 'pimenkoquestionnaire') . ')');
             }
 
             $mform->setDefault('create', 'new-0');
@@ -155,7 +157,7 @@ class mod_pimenkoquestionnaire_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
-    public function data_preprocessing(&$defaultvalues) {
+    public function data_preprocessing( &$defaultvalues ) {
         global $DB;
         if (empty($defaultvalues['opendate'])) {
             $defaultvalues['useopendate'] = 0;
@@ -172,14 +174,14 @@ class mod_pimenkoquestionnaire_mod_form extends moodleform_mod {
         if (!empty($defaultvalues['respondenttype']) && $defaultvalues['respondenttype'] == "anonymous") {
             // If this pimenkoquestionnaire has responses.
             $numresp = $DB->count_records('pimenko_response',
-                            array('pimenkoquestionnaireid' => $defaultvalues['instance'], 'complete' => 'y'));
+                    ['pimenkoquestionnaireid' => $defaultvalues['instance'], 'complete' => 'y']);
             if ($numresp) {
                 $defaultvalues['cannotchangerespondenttype'] = 1;
             }
         }
     }
 
-    public function validation($data, $files) {
+    public function validation( $data, $files ) {
         $errors = parent::validation($data, $files);
         return $errors;
     }
@@ -187,10 +189,10 @@ class mod_pimenkoquestionnaire_mod_form extends moodleform_mod {
     public function add_completion_rules() {
         $mform =& $this->_form;
         $mform->addElement('checkbox', 'completionsubmit', '', get_string('completionsubmit', 'pimenkoquestionnaire'));
-        return array('completionsubmit');
+        return ['completionsubmit'];
     }
 
-    public function completion_rule_enabled($data) {
+    public function completion_rule_enabled( $data ) {
         return !empty($data['completionsubmit']);
     }
 

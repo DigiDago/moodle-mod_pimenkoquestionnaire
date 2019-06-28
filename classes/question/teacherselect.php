@@ -17,7 +17,7 @@
 /**
  * This file contains the parent class for teacherselect question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
@@ -40,6 +40,7 @@ class teacherselect extends base {
 
     /**
      * Return true if this question has been marked as required.
+     *
      * @return boolean
      */
     public function required() {
@@ -53,14 +54,14 @@ class teacherselect extends base {
         return true;
     }
 
-    protected function form_choices(\MoodleQuickForm $mform, array $choices, $helpname = '') {
+    protected function form_choices( \MoodleQuickForm $mform, array $choices, $helpname = '' ) {
         global $DB, $COURSE;
         $numchoices = count($choices);
         $allchoices = '';
-        $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
-        $context  = context_course::instance($COURSE->id);
+        $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
+        $context = context_course::instance($COURSE->id);
         $teachers = get_role_users($role->id, $context);
-        foreach($teachers as $teacher){
+        foreach ($teachers as $teacher) {
             $choice = new \stdClass();
             $choice->content = $teacher->firstname . ' ' . $teacher->lastname;
             $choices[] = $choice;
@@ -89,20 +90,21 @@ class teacherselect extends base {
 
     /**
      * Override and return a form template if provided. Output of question_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function question_template() {
         return 'mod_pimenkoquestionnaire/question_teacherselect';
     }
 
-    protected function question_survey_display($data, $descendantsdata, $blankpimenkoquestionnaire=false) {
+    protected function question_survey_display( $data, $descendantsdata, $blankpimenkoquestionnaire = false ) {
         // Drop.
         $options = [];
 
         $choicetags = new \stdClass();
         $choicetags->qelements = new \stdClass();
-        $selected = isset($data->{'q'.$this->id}) ? $data->{'q'.$this->id} : false;
-        $options[] = (object)['value' => '', 'label' => get_string('choosedots')];
+        $selected = isset($data->{'q' . $this->id}) ? $data->{'q' . $this->id} : false;
+        $options[] = (object) ['value' => '', 'label' => get_string('choosedots')];
         foreach ($this->choices as $key => $choice) {
             if ($pos = strpos($choice->content, '=')) {
                 $choice->content = substr($choice->content, $pos + 1);
@@ -116,9 +118,9 @@ class teacherselect extends base {
             $options[] = $option;
         }
         $chobj = new \stdClass();
-        $chobj->name = 'q'.$this->id;
+        $chobj->name = 'q' . $this->id;
         $chobj->id = self::qtypename($this->type_id) . $this->name;
-        $chobj->class = 'select custom-select menu q'.$this->id;
+        $chobj->class = 'select custom-select menu q' . $this->id;
         $chobj->options = $options;
         $choicetags->qelements->choice = $chobj;
 
@@ -127,26 +129,27 @@ class teacherselect extends base {
 
     /**
      * Override and return a form template if provided. Output of response_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function response_template() {
         return 'mod_pimenkoquestionnaire/response_drop';
     }
 
-    protected function response_survey_display($data) {
+    protected function response_survey_display( $data ) {
         static $uniquetag = 0;  // To make sure all radios have unique names.
         $resptags = new \stdClass();
-        $resptags->name = 'q' . $this->id.$uniquetag++;
+        $resptags->name = 'q' . $this->id . $uniquetag++;
         $resptags->id = 'menu' . $resptags->name;
         $resptags->class = 'select custom-select ' . $resptags->id;
         $resptags->options = [];
-        $resptags->options[] = (object)['value' => '', 'label' => get_string('choosedots')];
+        $resptags->options[] = (object) ['value' => '', 'label' => get_string('choosedots')];
         foreach ($this->choices as $id => $choice) {
             $contents = pimenkoquestionnaire_choice_values($choice->content);
             $chobj = new \stdClass();
             $chobj->value = $id;
             $chobj->label = format_text($contents->text, FORMAT_HTML, ['noclean' => true]);
-            if (isset($data->{'q'.$this->id}) && ($id == $data->{'q'.$this->id})) {
+            if (isset($data->{'q' . $this->id}) && ($id == $data->{'q' . $this->id})) {
                 $chobj->selected = 1;
                 $resptags->selectedlabel = $chobj->label;
             }
@@ -156,11 +159,11 @@ class teacherselect extends base {
         return $resptags;
     }
 
-    protected function form_length(\MoodleQuickForm $mform, $helpname = '') {
+    protected function form_length( \MoodleQuickForm $mform, $helpname = '' ) {
         return base::form_length_hidden($mform);
     }
 
-    protected function form_precise(\MoodleQuickForm $mform, $helpname = '') {
+    protected function form_precise( \MoodleQuickForm $mform, $helpname = '' ) {
         return base::form_precise_hidden($mform);
     }
 }

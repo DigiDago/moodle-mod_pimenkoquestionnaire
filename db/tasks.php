@@ -18,22 +18,22 @@
  * Definition of Questionnaire scheduled tasks.
  * Default is to run once every 12 hours.
  *
- * @package mod_pimenkoquestionnaire
- * @category task
+ * @package   mod_pimenkoquestionnaire
+ * @category  task
  * @copyright 2015 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = array(
-    array(
-        'classname' => 'mod_pimenkoquestionnaire\task\cleanup',
-        'blocking' => 0,
-        'minute' => 'R',
-        'hour' => '*/12',
-        'day' => '*',
-        'month' => '*',
-        'dayofweek' => '*'
-    )
-);
+$tasks = [
+        [
+                'classname' => 'mod_pimenkoquestionnaire\task\cleanup',
+                'blocking' => 0,
+                'minute' => 'R',
+                'hour' => '*/12',
+                'day' => '*',
+                'month' => '*',
+                'dayofweek' => '*'
+        ]
+];

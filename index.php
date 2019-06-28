@@ -23,21 +23,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/locallib.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/locallib.php');
 
 $id = required_param('id', PARAM_INT);
-$PAGE->set_url('/mod/pimenkoquestionnaire/index.php', array('id' => $id));
-if (! $course = $DB->get_record('course', array('id' => $id))) {
+$PAGE->set_url('/mod/pimenkoquestionnaire/index.php', ['id' => $id]);
+if (!$course = $DB->get_record('course', ['id' => $id])) {
     print_error('incorrectcourseid', 'pimenkoquestionnaire');
 }
 $coursecontext = context_course::instance($id);
 require_login($course->id);
 $PAGE->set_pagelayout('incourse');
 
-$event = \mod_pimenkoquestionnaire\event\course_module_instance_list_viewed::create(array(
-                'context' => context_course::instance($course->id)));
+$event = \mod_pimenkoquestionnaire\event\course_module_instance_list_viewed::create([
+        'context' => context_course::instance($course->id)]);
 $event->trigger();
 
 // Print the header.
@@ -65,15 +64,15 @@ foreach ($pimenkoquestionnaires as $pimenkoquestionnaire) {
 }
 
 // Configure table for displaying the list of instances.
-$headings = array(get_string('name'));
-$align = array('left');
+$headings = [get_string('name')];
+$align = ['left'];
 
 if ($showclosingheader) {
     array_push($headings, get_string('pimenkoquestionnairecloses', 'pimenkoquestionnaire'));
     array_push($align, 'left');
 }
 
-array_unshift($headings, get_string('sectionname', 'format_'.$course->format));
+array_unshift($headings, get_string('sectionname', 'format_' . $course->format));
 array_unshift($align, 'left');
 
 $showing = '';
@@ -100,8 +99,8 @@ $table->align = $align;
 $currentsection = '';
 foreach ($pimenkoquestionnaires as $pimenkoquestionnaire) {
     $cmid = $pimenkoquestionnaire->coursemodule;
-    $data = array();
-    $realm = $DB->get_field('pimenkoquestionnaire_survey', 'realm', array('id' => $pimenkoquestionnaire->sid));
+    $data = [];
+    $realm = $DB->get_field('pimenkoquestionnaire_survey', 'realm', ['id' => $pimenkoquestionnaire->sid]);
     // Template surveys should NOT be displayed as an activity to students.
     if (!($realm == 'template' && !has_capability('mod/pimenkoquestionnaire:manage', context_module::instance($cmid)))) {
         // Section number if necessary.
@@ -130,16 +129,18 @@ foreach ($pimenkoquestionnaires as $pimenkoquestionnaire) {
             if ($responses = pimenkoquestionnaire_get_user_responses($pimenkoquestionnaire->id, $USER->id, $complete = false)) {
                 foreach ($responses as $response) {
                     if ($response->complete == 'y') {
-                        $status .= get_string('submitted', 'pimenkoquestionnaire').' '.userdate($response->submitted).'<br />';
+                        $status .= get_string('submitted', 'pimenkoquestionnaire') . ' ' . userdate($response->submitted) .
+                                '<br />';
                     } else {
-                        $status .= get_string('attemptstillinprogress', 'pimenkoquestionnaire').' '.
-                            userdate($response->submitted).'<br />';
+                        $status .= get_string('attemptstillinprogress', 'pimenkoquestionnaire') . ' ' .
+                                userdate($response->submitted) . '<br />';
                     }
                 }
             }
             $data[] = $status;
         } else if ($showing == 'stats') {
-            $data[] = $DB->count_records('pimenko_response', ['pimenkoquestionnaireid' => $pimenkoquestionnaire->id, 'complete' => 'y']);
+            $data[] = $DB->count_records('pimenko_response',
+                    ['pimenkoquestionnaireid' => $pimenkoquestionnaire->id, 'complete' => 'y']);
             if ($survey = $DB->get_record('pimenkoquestionnaire_survey', ['id' => $pimenkoquestionnaire->sid])) {
                 // For a public pimenkoquestionnaire, look for the original public pimenkoquestionnaire that it is based on.
                 if ($survey->realm == 'public') {
@@ -149,53 +150,55 @@ foreach ($pimenkoquestionnaires as $pimenkoquestionnaire) {
                         $originalcourse = $DB->get_record('course', ['id' => $survey->courseid]);
                         $originalcoursecontext = context_course::instance($survey->courseid);
                         $originalpimenkoquestionnaire = $DB->get_record('pimenkoquestionnaire',
-                            ['sid' => $survey->id, 'course' => $survey->courseid]);
-                        $cm = get_coursemodule_from_instance("pimenkoquestionnaire", $originalpimenkoquestionnaire->id, $survey->courseid);
+                                ['sid' => $survey->id, 'course' => $survey->courseid]);
+                        $cm = get_coursemodule_from_instance("pimenkoquestionnaire", $originalpimenkoquestionnaire->id,
+                                $survey->courseid);
                         $context = context_course::instance($survey->courseid, MUST_EXIST);
                         $canvieworiginal = has_capability('mod/pimenkoquestionnaire:preview', $context, $USER->id, true);
                         // If current user can view pimenkoquestionnaires in original course,
                         // provide a link to the original public pimenkoquestionnaire.
                         if ($canvieworiginal) {
-                            $publicoriginal = '<br />'.get_string('publicoriginal', 'pimenkoquestionnaire').'&nbsp;'.
-                                '<a href="'.$CFG->wwwroot.'/mod/pimenkoquestionnaire/preview.php?id='.
-                                $cm->id.'" title="'.$strpreview.']">'.$originalpimenkoquestionnaire->name.' ['.
-                                $originalcourse->fullname.']</a>';
+                            $publicoriginal = '<br />' . get_string('publicoriginal', 'pimenkoquestionnaire') . '&nbsp;' .
+                                    '<a href="' . $CFG->wwwroot . '/mod/pimenkoquestionnaire/preview.php?id=' .
+                                    $cm->id . '" title="' . $strpreview . ']">' . $originalpimenkoquestionnaire->name . ' [' .
+                                    $originalcourse->fullname . ']</a>';
                         } else {
                             // If current user is not enrolled as teacher in original course,
                             // only display the original public pimenkoquestionnaire's name and course name.
-                            $publicoriginal = '<br />'.get_string('publicoriginal', 'pimenkoquestionnaire').'&nbsp;'.
-                                $originalpimenkoquestionnaire->name.' ['.$originalcourse->fullname.']';
+                            $publicoriginal = '<br />' . get_string('publicoriginal', 'pimenkoquestionnaire') . '&nbsp;' .
+                                    $originalpimenkoquestionnaire->name . ' [' . $originalcourse->fullname . ']';
                         }
-                        $data[] = get_string($realm, 'pimenkoquestionnaire').' '.$publicoriginal;
+                        $data[] = get_string($realm, 'pimenkoquestionnaire') . ' ' . $publicoriginal;
                     } else {
                         // Original public pimenkoquestionnaire was created in current course.
                         // Find which courses it is used in.
                         $publiccopy = '';
-                        $select = 'course != '.$course->id.' AND sid = '.$pimenkoquestionnaire->sid;
+                        $select = 'course != ' . $course->id . ' AND sid = ' . $pimenkoquestionnaire->sid;
                         if ($copies = $DB->get_records_select('pimenkoquestionnaire', $select, null,
                                 $sort = 'course ASC', $fields = 'id, course, name')) {
                             foreach ($copies as $copy) {
-                                $copycourse = $DB->get_record('course', array('id' => $copy->course));
-                                $select = 'course = '.$copycourse->id.' AND sid = '.$pimenkoquestionnaire->sid;
+                                $copycourse = $DB->get_record('course', ['id' => $copy->course]);
+                                $select = 'course = ' . $copycourse->id . ' AND sid = ' . $pimenkoquestionnaire->sid;
                                 $copypimenkoquestionnaire = $DB->get_record('pimenkoquestionnaire',
-                                    array('id' => $copy->id, 'sid' => $survey->id, 'course' => $copycourse->id));
-                                $cm = get_coursemodule_from_instance("pimenkoquestionnaire", $copypimenkoquestionnaire->id, $copycourse->id);
+                                        ['id' => $copy->id, 'sid' => $survey->id, 'course' => $copycourse->id]);
+                                $cm = get_coursemodule_from_instance("pimenkoquestionnaire", $copypimenkoquestionnaire->id,
+                                        $copycourse->id);
                                 $context = context_course::instance($copycourse->id, MUST_EXIST);
                                 $canviewcopy = has_capability('mod/pimenkoquestionnaire:view', $context, $USER->id, true);
                                 if ($canviewcopy) {
-                                    $publiccopy .= '<br />'.get_string('publiccopy', 'pimenkoquestionnaire').'&nbsp;:&nbsp;'.
-                                        '<a href = "'.$CFG->wwwroot.'/mod/pimenkoquestionnaire/preview.php?id='.
-                                        $cm->id.'" title = "'.$strpreview.'">'.
-                                        $copypimenkoquestionnaire->name.' ['.$copycourse->fullname.']</a>';
+                                    $publiccopy .= '<br />' . get_string('publiccopy', 'pimenkoquestionnaire') . '&nbsp;:&nbsp;' .
+                                            '<a href = "' . $CFG->wwwroot . '/mod/pimenkoquestionnaire/preview.php?id=' .
+                                            $cm->id . '" title = "' . $strpreview . '">' .
+                                            $copypimenkoquestionnaire->name . ' [' . $copycourse->fullname . ']</a>';
                                 } else {
                                     // If current user does not have "view" capability in copy course,
                                     // only display the copied public pimenkoquestionnaire's name and course name.
-                                    $publiccopy .= '<br />'.get_string('publiccopy', 'pimenkoquestionnaire').'&nbsp;:&nbsp;'.
-                                        $copypimenkoquestionnaire->name.' ['.$copycourse->fullname.']';
+                                    $publiccopy .= '<br />' . get_string('publiccopy', 'pimenkoquestionnaire') . '&nbsp;:&nbsp;' .
+                                            $copypimenkoquestionnaire->name . ' [' . $copycourse->fullname . ']';
                                 }
                             }
                         }
-                        $data[] = get_string($realm, 'pimenkoquestionnaire').' '.$publiccopy;
+                        $data[] = get_string($realm, 'pimenkoquestionnaire') . ' ' . $publiccopy;
                     }
                 } else {
                     $data[] = get_string($realm, 'pimenkoquestionnaire');

@@ -40,16 +40,17 @@ class activity extends \core_search\base_activity {
      * Returns recordset containing required data for indexing activities.
      *
      * @param int $modifiedfrom timestamp
+     *
      * @return \moodle_recordset
      */
-    public function get_recordset_by_timestamp($modifiedfrom = 0) {
+    public function get_recordset_by_timestamp( $modifiedfrom = 0 ) {
         global $DB;
 
         $sql = 'SELECT q.*, s.subtitle, s.info ' .
-            'FROM {pimenkoquestionnaire} q ' .
-            'INNER JOIN {questionnaire_survey} s ON q.sid = s.id ' .
-            'WHERE q.timemodified >= ? ' .
-            'ORDER BY q.timemodified ASC';
+                'FROM {pimenkoquestionnaire} q ' .
+                'INNER JOIN {questionnaire_survey} s ON q.sid = s.id ' .
+                'WHERE q.timemodified >= ? ' .
+                'ORDER BY q.timemodified ASC';
 
         return $DB->get_recordset_sql($sql, [$modifiedfrom]);
     }
@@ -62,9 +63,10 @@ class activity extends \core_search\base_activity {
      *
      * @param stdClass $record
      * @param array    $options
+     *
      * @return \core_search\document
      */
-    public function get_document($record, $options = []) {
+    public function get_document( $record, $options = [] ) {
         // Get the default implementation.
         $doc = parent::get_document($record, $options);
         if (!$doc) {

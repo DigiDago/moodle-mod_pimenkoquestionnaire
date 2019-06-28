@@ -17,10 +17,10 @@
 /**
  * Print the form to add or edit a pimenkoquestionnaire-instance
  *
- * @package mod_pimenkoquestionnaire
+ * @package    mod_pimenkoquestionnaire
  * @copyright  2016 Mike Churchward (mike.churchward@poetgroup.org)
- * @author Joseph Rezeau (based on Quiz by Tim Hunt)
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ * @author     Joseph Rezeau (based on Quiz by Tim Hunt)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
 namespace mod_pimenkoquestionnaire;
@@ -28,7 +28,7 @@ namespace mod_pimenkoquestionnaire;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/formslib.php');
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/lib.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/lib.php');
 
 class feedback_section_form extends \moodleform {
 
@@ -43,22 +43,24 @@ class feedback_section_form extends \moodleform {
         $feedbacksections = $pimenkoquestionnaire->survey->feedbacksections;
         $this->_feedbacks = $feedbacksection->sectionfeedback;
         $this->context = $pimenkoquestionnaire->context;
-        $mform    =& $this->_form;
+        $mform =& $this->_form;
 
         if ($survey->feedbacksections > 1) {
             $mform->addElement('header', 'feedbacksectionsheader', get_string('feedbacksections', 'pimenkoquestionnaire'));
             $sselectgroup = [];
             $sselect = $mform->createElement('select', 'navigatesections', get_string('navigatetosection', 'pimenkoquestionnaire'),
-                $this->_customdata->sectionselect);
+                    $this->_customdata->sectionselect);
             $sselect->setSelected($feedbacksection->id);
             $sselectgroup[] = $sselect;
-            $sselectgroup[] = $mform->createElement('submit', 'gotosection', get_string('navigatetosection', 'pimenkoquestionnaire'));
+            $sselectgroup[] =
+                    $mform->createElement('submit', 'gotosection', get_string('navigatetosection', 'pimenkoquestionnaire'));
             $mform->addGroup($sselectgroup, '');
             $addnewsectionarray = [];
             $addnewsectionarray[] = $mform->createElement('text', 'newsectionlabel',
-                get_string('feedbacksectionlabel', 'pimenkoquestionnaire'));
+                    get_string('feedbacksectionlabel', 'pimenkoquestionnaire'));
             $mform->setType('newsectionlabel', PARAM_TEXT);
-            $addnewsectionarray[] = $mform->createElement('submit', 'addnewsection', get_string('addnewsection', 'pimenkoquestionnaire'));
+            $addnewsectionarray[] =
+                    $mform->createElement('submit', 'addnewsection', get_string('addnewsection', 'pimenkoquestionnaire'));
             $mform->addGroup($addnewsectionarray, '', get_string('feedbacksectionlabel', 'pimenkoquestionnaire'));
         }
 
@@ -74,14 +76,14 @@ class feedback_section_form extends \moodleform {
 
         $mform->addElement('header', 'contenthdr', $feedbackheading);
         $mform->addElement('text', 'sectionlabel', get_string('feedbacksectionlabel', 'pimenkoquestionnaire'),
-            ['size' => '50', 'maxlength' => '50']);
+                ['size' => '50', 'maxlength' => '50']);
         $mform->setType('sectionlabel', PARAM_TEXT);
         $mform->addRule('sectionlabel', null, 'required', null, 'client');
         $mform->addHelpButton('sectionlabel', 'feedbacksectionlabel', 'pimenkoquestionnaire');
 
         $editoroptions = ['maxfiles' => EDITOR_UNLIMITED_FILES, 'trusttext' => true];
         $mform->addElement('editor', 'sectionheading', get_string('feedbacksectionheadingtext', 'pimenkoquestionnaire'),
-            null, $editoroptions);
+                null, $editoroptions);
         $mform->setType('sectionheading', PARAM_RAW);
         $mform->setDefault('feedbacknotes', $pimenkoquestionnaire->survey->feedbacknotes);
         $mform->addHelpButton('sectionheading', 'feedbackheading', 'pimenkoquestionnaire');
@@ -90,7 +92,7 @@ class feedback_section_form extends \moodleform {
             // Sections.
             if ($survey->feedbacksections > 1) {
                 $mform->addElement('header', 'fbsection_' . $feedbacksection->id,
-                    get_string('feedbacksectionquestions', 'pimenkoquestionnaire', $label));
+                        get_string('feedbacksectionquestions', 'pimenkoquestionnaire', $label));
                 $qvalid = $validquestions;
                 if (!empty($feedbacksection->scorecalculation)) {
                     $rsrc = $pimenkoquestionnaire->renderer->image_url('t/delete');
@@ -100,13 +102,13 @@ class feedback_section_form extends \moodleform {
                     foreach ($feedbacksection->scorecalculation as $qid => $score) {
                         unset($qvalid[$qid]);
                         $questionactions = [];
-                        if ((int)$score !== -1) {
+                        if ((int) $score !== -1) {
                             $weight = '<input type="number" style="width: 4em;" id="weight' . $counter . '" ' .
-                                'name="weight[' . $qid . ']" min="0.0" max="1.0" step="0.01" ' .
-                                'value="' . $score . '">';
+                                    'name="weight[' . $qid . ']" min="0.0" max="1.0" step="0.01" ' .
+                                    'value="' . $score . '">';
                         } else {
-                            $weight = '<input type="hidden" id="weight' . $counter . '" name="weight[' . $qid . ']" '.
-                                'value="' . $score . '">';
+                            $weight = '<input type="hidden" id="weight' . $counter . '" name="weight[' . $qid . ']" ' .
+                                    'value="' . $score . '">';
                         }
                         $questionactions[] = $mform->createElement('html', $weight);
                         $rextra['value'] = $qid;
@@ -121,7 +123,7 @@ class feedback_section_form extends \moodleform {
                     // Merge arrays maintaining keys.
                     $qselect = [];
                     $qselect[] = $mform->createElement('select', 'addquestionselect',
-                        get_string('addquestiontosection', 'pimenkoquestionnaire'), $qvalid);
+                            get_string('addquestiontosection', 'pimenkoquestionnaire'), $qvalid);
                     $qselect[] = $mform->createElement('submit', 'addquestion', get_string('addquestion', 'pimenkoquestionnaire'));
                     $mform->addGroup($qselect, '', get_string('addquestiontosection', 'pimenkoquestionnaire'));
                 }
@@ -139,9 +141,9 @@ class feedback_section_form extends \moodleform {
         $repeatedoptions = [];
 
         $repeatarray[] = $mform->createElement('editor', 'feedbacktext', get_string('feedback', 'pimenkoquestionnaire'), null,
-            ['maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $pimenkoquestionnaire->context]);
+                ['maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $pimenkoquestionnaire->context]);
         $repeatarray[] = $mform->createElement(
-            'text', 'feedbackboundaries', get_string('feedbackscoreboundary', 'pimenkoquestionnaire'), ['size' => 10]);
+                'text', 'feedbackboundaries', get_string('feedbackscoreboundary', 'pimenkoquestionnaire'), ['size' => 10]);
         $repeatedoptions['feedbacklabel']['type'] = PARAM_RAW;
         $repeatedoptions['feedbacktext']['type'] = PARAM_RAW;
         $repeatedoptions['feedbackboundaries']['type'] = PARAM_RAW;
@@ -149,16 +151,17 @@ class feedback_section_form extends \moodleform {
         $numfeedbacks = max(count($this->_feedbacks) * 1, 3);
 
         $nextel = $this->repeat_elements($repeatarray, $numfeedbacks - 1, $repeatedoptions, 'boundary_repeats',
-            'boundary_add_fields', 2, get_string('feedbackaddmorefeedbacks', 'pimenkoquestionnaire'), true);
+                'boundary_add_fields', 2, get_string('feedbackaddmorefeedbacks', 'pimenkoquestionnaire'), true);
 
         // Put some extra elements in before the button.
         $mform->insertElementBefore(
-            $mform->createElement('editor', "feedbacktext[$nextel]", get_string('feedback', 'pimenkoquestionnaire'), null,
-                ['maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $pimenkoquestionnaire->context]),
-            'boundary_add_fields');
+                $mform->createElement('editor', "feedbacktext[$nextel]", get_string('feedback', 'pimenkoquestionnaire'), null,
+                        ['maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $pimenkoquestionnaire->context]),
+                'boundary_add_fields');
         $mform->insertElementBefore(
-            $mform->createElement('static', 'scoreboundarystatic2', get_string('feedbackscoreboundary', 'pimenkoquestionnaire'), '0%'),
-            'boundary_add_fields');
+                $mform->createElement('static', 'scoreboundarystatic2', get_string('feedbackscoreboundary', 'pimenkoquestionnaire'),
+                        '0%'),
+                'boundary_add_fields');
 
         // Hidden fields.
         $mform->addElement('hidden', 'id', 0);
@@ -169,38 +172,14 @@ class feedback_section_form extends \moodleform {
         // Buttons.
         $buttonarray = [];
         $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('savechanges'));
-        $buttonarray[] = $mform->createElement('submit', 'confirmdeletesection', get_string('deletesection', 'pimenkoquestionnaire'));
+        $buttonarray[] =
+                $mform->createElement('submit', 'confirmdeletesection', get_string('deletesection', 'pimenkoquestionnaire'));
         $buttonarray[] = $mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '', ' ', false);
         $mform->closeHeaderBefore('buttonar');
     }
 
-    public function data_preprocessing(&$toform) {
-        if (count($this->_feedbacks)) {
-            $key = 0;
-            foreach ($this->_feedbacks as $feedback) {
-                $draftid = file_get_submitted_draft_itemid('feedbacktext['.$key.']');
-                $toform['feedbacktext['.$key.']']['text'] = file_prepare_draft_area(
-                    $draftid,               // Draftid.
-                    $this->context->id,     // Context.
-                    'mod_pimenkoquestionnaire',    // Component.
-                    'feedback',             // Filarea.
-                    !empty($feedback->id) ? (int)$feedback->id : null, // Itemid.
-                    null,
-                    $feedback->feedbacktext // Text.
-                );
-                $toform['feedbacktext['.$key.']']['format'] = 1;
-                $toform['feedbacklabel['.$key.']'] = $feedback->feedbacklabel;
-                $toform['feedbacktext['.$key.']']['itemid'] = $draftid;
-
-                if ($feedback->minscore > 0) {
-                    $toform['feedbackboundaries['.$key.']'] = (100.0 * $feedback->minscore / 100 ) . '%';
-                }
-                $key++;
-            }
-        }
-    }
-    public function validation($data, $files) {
+    public function validation( $data, $files ) {
         $errors = parent::validation($data, $files);
 
         // Check the boundary value is a number or a percentage, and in range.
@@ -230,15 +209,15 @@ class feedback_section_form extends \moodleform {
         // Check there is nothing in the remaining unused fields.
         if (!empty($data['feedbackboundaries'])) {
             for ($i = $numboundaries; $i < count($data['feedbackboundaries']); $i += 1) {
-                if (!empty($data['feedbackboundaries'][$i] ) &&
-                        trim($data['feedbackboundaries'][$i] ) != '') {
+                if (!empty($data['feedbackboundaries'][$i]) &&
+                        trim($data['feedbackboundaries'][$i]) != '') {
                     $errors["feedbackboundaries[$i]"] = get_string('feedbackerrorjunkinboundary', 'pimenkoquestionnaire', $i + 1);
                 }
             }
         }
         for ($i = $numboundaries + 1; $i < count($data['feedbacktext']); $i += 1) {
             if (!empty($data['feedbacktext'][$i]['text']) &&
-                    trim($data['feedbacktext'][$i]['text'] ) != '') {
+                    trim($data['feedbacktext'][$i]['text']) != '') {
                 $errors["feedbacktext[$i]"] = get_string('feedbackerrorjunkinfeedback', 'pimenkoquestionnaire', $i + 1);
             }
         }
@@ -252,11 +231,37 @@ class feedback_section_form extends \moodleform {
      *
      * @param mixed $default_values object or array of default values
      */
-    public function set_data($defaultvalues) {
+    public function set_data( $defaultvalues ) {
         if (is_object($defaultvalues)) {
-            $defaultvalues = (array)$defaultvalues;
+            $defaultvalues = (array) $defaultvalues;
         }
         $this->data_preprocessing($defaultvalues);
         parent::set_data($defaultvalues);
+    }
+
+    public function data_preprocessing( &$toform ) {
+        if (count($this->_feedbacks)) {
+            $key = 0;
+            foreach ($this->_feedbacks as $feedback) {
+                $draftid = file_get_submitted_draft_itemid('feedbacktext[' . $key . ']');
+                $toform['feedbacktext[' . $key . ']']['text'] = file_prepare_draft_area(
+                        $draftid,               // Draftid.
+                        $this->context->id,     // Context.
+                        'mod_pimenkoquestionnaire',    // Component.
+                        'feedback',             // Filarea.
+                        !empty($feedback->id) ? (int) $feedback->id : null, // Itemid.
+                        null,
+                        $feedback->feedbacktext // Text.
+                );
+                $toform['feedbacktext[' . $key . ']']['format'] = 1;
+                $toform['feedbacklabel[' . $key . ']'] = $feedback->feedbacklabel;
+                $toform['feedbacktext[' . $key . ']']['itemid'] = $draftid;
+
+                if ($feedback->minscore > 0) {
+                    $toform['feedbackboundaries[' . $key . ']'] = (100.0 * $feedback->minscore / 100) . '%';
+                }
+                $key++;
+            }
+        }
     }
 }

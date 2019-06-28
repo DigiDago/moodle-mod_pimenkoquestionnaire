@@ -45,39 +45,45 @@ class moodle1_mod_pimenkoquestionnaire_handler extends moodle1_mod_handler {
      * @return array of {@link convert_path} instances
      */
     public function get_paths() {
-        return array(
-            new convert_path(
-                'pimenkoquestionnaire', '/MOODLE_BACKUP/COURSE/MODULES/MOD/QUESTIONNAIRE',
-                array(
-                    'renamefields' => array(
-                        'summary' => 'intro',
-                    ),
-                    'newfields' => array(
-                        'introformat' => 0,
-                    ),
-                )
-            ),
-            new convert_path('survey', '/MOODLE_BACKUP/COURSE/MODULES/MOD/QUESTIONNAIRE/SURVEY'),
-            new convert_path('question', '/MOODLE_BACKUP/COURSE/MODULES/MOD/QUESTIONNAIRE/SURVEY/QUESTION'),
-            new convert_path('question_choice', '/MOODLE_BACKUP/COURSE/MODULES/MOD/QUESTIONNAIRE/SURVEY/QUESTION/QUESTION_CHOICE'),
-        );
+        return [
+                new convert_path(
+                        'pimenkoquestionnaire', '/MOODLE_BACKUP/COURSE/MODULES/MOD/QUESTIONNAIRE',
+                        [
+                                'renamefields' => [
+                                        'summary' => 'intro',
+                                ],
+                                'newfields' => [
+                                        'introformat' => 0,
+                                ],
+                        ]
+                ),
+                new convert_path('survey', '/MOODLE_BACKUP/COURSE/MODULES/MOD/QUESTIONNAIRE/SURVEY'),
+                new convert_path('question', '/MOODLE_BACKUP/COURSE/MODULES/MOD/QUESTIONNAIRE/SURVEY/QUESTION'),
+                new convert_path('question_choice',
+                        '/MOODLE_BACKUP/COURSE/MODULES/MOD/QUESTIONNAIRE/SURVEY/QUESTION/QUESTION_CHOICE'),
+        ];
     }
+
     /**
+     *
      * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/QUESTIONNAIRE
      * data available
+     *
+     * @param $data
+     *
      */
-    public function process_questionnaire($data) {
+    final public function process_questionnaire( $data ) {
         // Get the course module id and context id.
         $instanceid = $data['id'];
-        $cminfo     = $this->get_cminfo($instanceid);
-        $moduleid   = $cminfo['id'];
-        $contextid  = $this->converter->get_contextid(CONTEXT_MODULE, $moduleid);
+        $cminfo = $this->get_cminfo($instanceid);
+        $moduleid = $cminfo['id'];
+        $contextid = $this->converter->get_contextid(CONTEXT_MODULE, $moduleid);
 
         // We now have all information needed to start writing into the file.
         $this->open_xml_writer("activities/questionnaire_{$moduleid}/pimenkoquestionnaire.xml");
-        $this->xmlwriter->begin_tag('activity', array('id' => $instanceid, 'moduleid' => $moduleid,
-            'modulename' => 'pimenkoquestionnaire', 'contextid' => $contextid));
-        $this->xmlwriter->begin_tag('pimenkoquestionnaire', array('id' => $instanceid));
+        $this->xmlwriter->begin_tag('activity', ['id' => $instanceid, 'moduleid' => $moduleid,
+                'modulename' => 'pimenkoquestionnaire', 'contextid' => $contextid]);
+        $this->xmlwriter->begin_tag('pimenkoquestionnaire', ['id' => $instanceid]);
 
         unset($data['id']); // We already write it as attribute, do not repeat it as child element.
         foreach ($data as $field => $value) {
@@ -85,6 +91,7 @@ class moodle1_mod_pimenkoquestionnaire_handler extends moodle1_mod_handler {
         }
         $this->xmlwriter->begin_tag('surveys');
     }
+
     /**
      * This is executed when we reach the closing </MOD> tag of our 'pimenkoquestionnaire' path
      */
@@ -96,12 +103,15 @@ class moodle1_mod_pimenkoquestionnaire_handler extends moodle1_mod_handler {
         $this->xmlwriter->end_tag('activity');
         $this->close_xml_writer();
     }
+
     /**
      * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/QUESTIONNAIRE/SURVEY
      * data available
+     *
+     * @param $data
      */
-    public function process_survey($data) {
-        $this->xmlwriter->begin_tag('survey', array('id' => $data['id']));
+    final public function process_survey( $data ) {
+        $this->xmlwriter->begin_tag('survey', ['id' => $data['id']]);
         unset($data['id']); // We already write it as attribute, do not repeat it as child element.
         foreach ($data as $field => $value) {
             $this->xmlwriter->full_tag($field, $value);
@@ -120,10 +130,12 @@ class moodle1_mod_pimenkoquestionnaire_handler extends moodle1_mod_handler {
     /**
      * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/QUESTIONNAIRE/SURVEY/QUESTION
      * data available
+     *
+     * @param $data
      */
-    public function process_question($data) {
+    public function process_question( $data ) {
 
-        $this->xmlwriter->begin_tag('question', array('id' => $data['id']));
+        $this->xmlwriter->begin_tag('question', ['id' => $data['id']]);
 
         unset($data['id']); // We already write it as attribute, do not repeat it as child element.
         foreach ($data as $field => $value) {
@@ -132,6 +144,7 @@ class moodle1_mod_pimenkoquestionnaire_handler extends moodle1_mod_handler {
 
         $this->xmlwriter->begin_tag('quest_choices');
     }
+
     /**
      * This is executed when we reach the closing </QUESTION> tag
      */
@@ -144,9 +157,11 @@ class moodle1_mod_pimenkoquestionnaire_handler extends moodle1_mod_handler {
     /**
      * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/QUESTIONNAIRE/SURVEY/QUESTION/QUESTION_CHOICE
      * data available
+     *
+     * @param $data
+     *
      */
-    public function process_question_choice($data) {
-        $this->write_xml('quest_choice', $data, array('/question_choice/id'));
+    public function process_question_choice( $data ) {
+        $this->write_xml('quest_choice', $data, ['/question_choice/id']);
     }
-
 }

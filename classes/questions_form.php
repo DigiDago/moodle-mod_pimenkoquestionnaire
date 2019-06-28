@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod_pimenkoquestionnaire
+ * @package    mod_pimenkoquestionnaire
  * @copyright  2016 Mike Churchward (mike.churchward@poetgroup.org)
- * @author Mike Churchward & Joseph Rézeau
+ * @author     Mike Churchward & Joseph Rézeau
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +29,7 @@ require_once($CFG->libdir . '/formslib.php');
 
 class questions_form extends \moodleform {
 
-    public function __construct($action, $moveq=false) {
+    public function __construct( $action, $moveq = false ) {
         $this->moveq = $moveq;
         return parent::__construct($action);
     }
@@ -39,7 +39,7 @@ class questions_form extends \moodleform {
         global $DB;
 
         $sid = $pimenkoquestionnaire->survey->id;
-        $mform    =& $this->_form;
+        $mform =& $this->_form;
 
         $mform->addElement('header', 'questionhdr', get_string('addquestions', 'pimenkoquestionnaire'));
         $mform->addHelpButton('questionhdr', 'questiontypes', 'pimenkoquestionnaire');
@@ -50,7 +50,7 @@ class questions_form extends \moodleform {
         $strposition = get_string('position', 'pimenkoquestionnaire');
 
         if (!isset($pimenkoquestionnaire->questions)) {
-            $pimenkoquestionnaire->questions = array();
+            $pimenkoquestionnaire->questions = [];
         }
         if ($this->moveq) {
             $moveqposition = $pimenkoquestionnaire->questions[$this->moveq]->position;
@@ -59,7 +59,7 @@ class questions_form extends \moodleform {
         $pos = 0;
         $select = '';
         if (!($qtypes = $DB->get_records_select_menu('pimenko_question_type', $select, null, '', 'typeid,type'))) {
-            $qtypes = array();
+            $qtypes = [];
         }
         // Get the names of each question type in the appropriate language.
         foreach ($qtypes as $key => $qtype) {
@@ -71,12 +71,12 @@ class questions_form extends \moodleform {
             }
         }
         natsort($qtypes);
-        $addqgroup = array();
+        $addqgroup = [];
         $addqgroup[] =& $mform->createElement('select', 'type_id', '', $qtypes);
 
         // The 'sticky' type_id value for further new questions.
         if (isset($SESSION->pimenkoquestionnaire->type_id)) {
-                $mform->setDefault('type_id', $SESSION->pimenkoquestionnaire->type_id);
+            $mform->setDefault('type_id', $SESSION->pimenkoquestionnaire->type_id);
         }
 
         $addqgroup[] =& $mform->createElement('submit', 'addqbutton', get_string('addselqtype', 'pimenkoquestionnaire'));
@@ -85,9 +85,9 @@ class questions_form extends \moodleform {
 
         $mform->addGroup($addqgroup, 'addqgroup', '', ' ', false);
 
-        if (isset($SESSION->pimenkoquestionnaire->validateresults) &&  $SESSION->pimenkoquestionnaire->validateresults != '') {
-            $mform->addElement('static', 'validateresult', '', '<div class="qdepend warning">'.
-                $SESSION->pimenkoquestionnaire->validateresults.'</div>');
+        if (isset($SESSION->pimenkoquestionnaire->validateresults) && $SESSION->pimenkoquestionnaire->validateresults != '') {
+            $mform->addElement('static', 'validateresult', '', '<div class="qdepend warning">' .
+                    $SESSION->pimenkoquestionnaire->validateresults . '</div>');
             $SESSION->pimenkoquestionnaire->validateresults = '';
         }
 
@@ -108,7 +108,7 @@ class questions_form extends \moodleform {
 
         foreach ($pimenkoquestionnaire->questions as $question) {
 
-            $manageqgroup = array();
+            $manageqgroup = [];
 
             $qid = $question->id;
             $tid = $question->type_id;
@@ -131,10 +131,10 @@ class questions_form extends \moodleform {
                 $DB->set_field('pimenko_question', 'deleted', 'y', ['id' => $qid, 'surveyid' => $sid]);
                 if ($records = $DB->get_records_select('pimenko_question', $select, null, 'position ASC')) {
                     foreach ($records as $record) {
-                        $DB->set_field('pimenko_question', 'position', $record->position - 1, array('id' => $record->id));
+                        $DB->set_field('pimenko_question', 'position', $record->position - 1, ['id' => $record->id]);
                     }
                 }
-                redirect($CFG->wwwroot.'/mod/pimenkoquestionnaire/questions.php?id='.$pimenkoquestionnaire->cm->id);
+                redirect($CFG->wwwroot . '/mod/pimenkoquestionnaire/questions.php?id=' . $pimenkoquestionnaire->cm->id);
             }
 
             if ($tid != QUESPAGEBREAK && $tid != QUESSECTIONTEXT) {
@@ -142,7 +142,7 @@ class questions_form extends \moodleform {
             }
 
             // Needed for non-English languages JR.
-            $qtype = '['.pimenkoquestionnaire_get_type($tid).']';
+            $qtype = '[' . pimenkoquestionnaire_get_type($tid) . ']';
             $content = '';
             // If question text is "empty", i.e. 2 non-breaking spaces were inserted, do not display any question text.
             if ($question->content == '<p>  </p>') {
@@ -151,27 +151,28 @@ class questions_form extends \moodleform {
             if ($tid != QUESPAGEBREAK) {
                 // Needed to print potential media in question text.
                 $content = format_text(file_rewrite_pluginfile_urls($question->content, 'pluginfile.php',
-                    $question->context->id, 'mod_pimenkoquestionnaire', 'question', $question->id), FORMAT_HTML, ['noclean' => true]);
+                        $question->context->id, 'mod_pimenkoquestionnaire', 'question', $question->id), FORMAT_HTML,
+                        ['noclean' => true]);
             }
-            $moveqgroup = array();
+            $moveqgroup = [];
 
             $spacer = $pimenkoquestionnaire->renderer->image_url('spacer');
 
             if (!$this->moveq) {
                 $mform->addElement('html', '<div class="qn-container">'); // Begin div qn-container.
-                $mextra = array('value' => $question->id,
-                                'alt' => $strmove,
-                                'title' => $strmove);
-                $eextra = array('value' => $question->id,
-                                'alt' => get_string('edit', 'pimenkoquestionnaire'),
-                                'title' => get_string('edit', 'pimenkoquestionnaire'));
-                $rextra = array('value' => $question->id,
-                                'alt' => $strremove,
-                                'title' => $strremove);
+                $mextra = ['value' => $question->id,
+                        'alt' => $strmove,
+                        'title' => $strmove];
+                $eextra = ['value' => $question->id,
+                        'alt' => get_string('edit', 'pimenkoquestionnaire'),
+                        'title' => get_string('edit', 'pimenkoquestionnaire')];
+                $rextra = ['value' => $question->id,
+                        'alt' => $strremove,
+                        'title' => $strremove];
 
                 if ($tid == QUESPAGEBREAK) {
                     $esrc = $spacer;
-                    $eextra = array('disabled' => 'disabled');
+                    $eextra = ['disabled' => 'disabled'];
                 } else {
                     $esrc = $pimenkoquestionnaire->renderer->image_url('t/edit');
                 }
@@ -179,10 +180,10 @@ class questions_form extends \moodleform {
 
                 // Question numbers.
                 $manageqgroup[] =& $mform->createElement('static', 'qnums', '',
-                                '<div class="qnums">'.$strposition.' '.$pos.'</div>');
+                        '<div class="qnums">' . $strposition . ' ' . $pos . '</div>');
 
                 // Need to index by 'id' since IE doesn't return assigned 'values' for image inputs.
-                $manageqgroup[] =& $mform->createElement('static', 'opentag_'.$question->id, '', '');
+                $manageqgroup[] =& $mform->createElement('static', 'opentag_' . $question->id, '', '');
                 $msrc = $pimenkoquestionnaire->renderer->image_url('t/move');
 
                 if ($pimenkoquestionnairehasdependencies) {
@@ -193,10 +194,10 @@ class questions_form extends \moodleform {
                             if ($maxdown < 4) {
                                 $strdisabled = get_string('movedisabled', 'pimenkoquestionnaire');
                                 $msrc = $pimenkoquestionnaire->renderer->image_url('t/block');
-                                $mextra = array('value' => $question->id,
-                                                'alt' => $strdisabled,
-                                                'title' => $strdisabled);
-                                $mextra += array('disabled' => 'disabled');
+                                $mextra = ['value' => $question->id,
+                                        'alt' => $strdisabled,
+                                        'title' => $strdisabled];
+                                $mextra += ['disabled' => 'disabled'];
                             }
                         }
                     }
@@ -205,41 +206,41 @@ class questions_form extends \moodleform {
                     // or immediately preceded by a question with a dependency and followed by a non-dependent question.
                     if ($tid == QUESPAGEBREAK) {
                         if ($nextquestion = $DB->get_record('pimenko_question',
-                            ['surveyid' => $sid, 'position' => $pos + 1, 'deleted' => 'n'], 'id, name, content') ) {
+                                ['surveyid' => $sid, 'position' => $pos + 1, 'deleted' => 'n'], 'id, name, content')) {
 
                             $nextquestiondependencies = $DB->get_records('pimenko_dependency',
-                                ['questionid' => $nextquestion->id , 'surveyid' => $sid], 'id ASC');
+                                    ['questionid' => $nextquestion->id, 'surveyid' => $sid], 'id ASC');
 
                             if ($previousquestion = $DB->get_record('pimenko_question',
-                                ['surveyid' => $sid, 'position' => $pos - 1, 'deleted' => 'n'], 'id, name, content')) {
+                                    ['surveyid' => $sid, 'position' => $pos - 1, 'deleted' => 'n'], 'id, name, content')) {
 
                                 $previousquestiondependencies = $DB->get_records('pimenko_dependency',
-                                    ['questionid' => $previousquestion->id , 'surveyid' => $sid], 'id ASC');
+                                        ['questionid' => $previousquestion->id, 'surveyid' => $sid], 'id ASC');
 
                                 if (!empty($nextquestiondependencies) ||
-                                    (!empty($previousquestiondependencies) && empty($nextquestiondependencies))) {
+                                        (!empty($previousquestiondependencies) && empty($nextquestiondependencies))) {
                                     $strdisabled = get_string('movedisabled', 'pimenkoquestionnaire');
                                     $msrc = $pimenkoquestionnaire->renderer->image_url('t/block');
-                                    $mextra = array('value' => $question->id,
-                                                    'alt' => $strdisabled,
-                                                    'title' => $strdisabled);
-                                    $mextra += array('disabled' => 'disabled');
+                                    $mextra = ['value' => $question->id,
+                                            'alt' => $strdisabled,
+                                            'title' => $strdisabled];
+                                    $mextra += ['disabled' => 'disabled'];
 
                                     $rsrc = $msrc;
                                     $strdisabled = get_string('deletedisabled', 'pimenkoquestionnaire');
-                                    $rextra = array('value' => $question->id,
-                                                    'alt' => $strdisabled,
-                                                    'title' => $strdisabled);
-                                    $rextra += array('disabled' => 'disabled');
+                                    $rextra = ['value' => $question->id,
+                                            'alt' => $strdisabled,
+                                            'title' => $strdisabled];
+                                    $rextra += ['disabled' => 'disabled'];
                                 }
                             }
                         }
                     }
                 }
-                $manageqgroup[] =& $mform->createElement('image', 'movebutton['.$question->id.']',
-                                $msrc, $mextra);
-                $manageqgroup[] =& $mform->createElement('image', 'editbutton['.$question->id.']', $esrc, $eextra);
-                $manageqgroup[] =& $mform->createElement('image', 'removebutton['.$question->id.']', $rsrc, $rextra);
+                $manageqgroup[] =& $mform->createElement('image', 'movebutton[' . $question->id . ']',
+                        $msrc, $mextra);
+                $manageqgroup[] =& $mform->createElement('image', 'editbutton[' . $question->id . ']', $esrc, $eextra);
+                $manageqgroup[] =& $mform->createElement('image', 'removebutton[' . $question->id . ']', $rsrc, $rextra);
 
                 if ($tid != QUESPAGEBREAK && $tid != QUESSECTIONTEXT) {
                     if ($required == 'y') {
@@ -249,17 +250,17 @@ class questions_form extends \moodleform {
                         $reqsrc = $pimenkoquestionnaire->renderer->image_url('t/go');
                         $strrequired = get_string('notrequired', 'pimenkoquestionnaire');
                     }
-                    $strrequired .= ' '.get_string('clicktoswitch', 'pimenkoquestionnaire');
-                    $reqextra = array('value' => $question->id,
-                                    'alt' => $strrequired,
-                                    'title' => $strrequired);
-                    $manageqgroup[] =& $mform->createElement('image', 'requiredbutton['.$question->id.']', $reqsrc, $reqextra);
+                    $strrequired .= ' ' . get_string('clicktoswitch', 'pimenkoquestionnaire');
+                    $reqextra = ['value' => $question->id,
+                            'alt' => $strrequired,
+                            'title' => $strrequired];
+                    $manageqgroup[] =& $mform->createElement('image', 'requiredbutton[' . $question->id . ']', $reqsrc, $reqextra);
                 }
-                $manageqgroup[] =& $mform->createElement('static', 'closetag_'.$question->id, '', '');
+                $manageqgroup[] =& $mform->createElement('static', 'closetag_' . $question->id, '', '');
 
             } else {
                 $manageqgroup[] =& $mform->createElement('static', 'qnum', '',
-                                '<div class="qnums">'.$strposition.' '.$pos.'</div>');
+                        '<div class="qnums">' . $strposition . ' ' . $pos . '</div>');
                 $moveqgroup[] =& $mform->createElement('static', 'qnum', '', '');
 
                 $display = true;
@@ -280,7 +281,7 @@ class questions_form extends \moodleform {
                     }
                 }
 
-                $typeid = $DB->get_field('pimenko_question', 'type_id', array('id' => $this->moveq));
+                $typeid = $DB->get_field('pimenko_question', 'type_id', ['id' => $this->moveq]);
 
                 if ($display) {
                     // Do not move a page break to first position.
@@ -290,13 +291,13 @@ class questions_form extends \moodleform {
                         if ($this->moveq == $question->id) {
                             $moveqgroup[] =& $mform->createElement('cancel', 'cancelbutton', get_string('cancel'));
                         } else {
-                            $mextra = array('value' => $question->id,
-                                            'alt' => $strmove,
-                                            'title' => $strmovehere.' (position '.$pos.')');
+                            $mextra = ['value' => $question->id,
+                                    'alt' => $strmove,
+                                    'title' => $strmovehere . ' (position ' . $pos . ')'];
                             $msrc = $pimenkoquestionnaire->renderer->image_url('movehere');
-                            $moveqgroup[] =& $mform->createElement('static', 'opentag_'.$question->id, '', '');
-                            $moveqgroup[] =& $mform->createElement('image', 'moveherebutton['.$pos.']', $msrc, $mextra);
-                            $moveqgroup[] =& $mform->createElement('static', 'closetag_'.$question->id, '', '');
+                            $moveqgroup[] =& $mform->createElement('static', 'opentag_' . $question->id, '', '');
+                            $moveqgroup[] =& $mform->createElement('image', 'moveherebutton[' . $pos . ']', $msrc, $mextra);
+                            $moveqgroup[] =& $mform->createElement('static', 'closetag_' . $question->id, '', '');
                         }
                     }
                 } else {
@@ -305,11 +306,11 @@ class questions_form extends \moodleform {
                 }
             }
             if ($question->name) {
-                $qname = '('.$question->name.')';
+                $qname = '(' . $question->name . ')';
             } else {
                 $qname = '';
             }
-            $manageqgroup[] =& $mform->createElement('static', 'qinfo_'.$question->id, '', $qtype.' '.$qname);
+            $manageqgroup[] =& $mform->createElement('static', 'qinfo_' . $question->id, '', $qtype . ' ' . $qname);
 
             if (!empty($dependencies)) {
                 $mform->addElement('static', 'qdepend_' . $question->id, '', $dependencies);
@@ -317,7 +318,7 @@ class questions_form extends \moodleform {
 
             if ($tid != QUESPAGEBREAK) {
                 if ($tid != QUESSECTIONTEXT) {
-                    $qnumber = '<div class="qn-info"><h2 class="qn-number">'.$qnum.'</h2></div>';
+                    $qnumber = '<div class="qn-info"><h2 class="qn-number">' . $qnum . '</h2></div>';
                 } else {
                     $qnumber = '';
                 }
@@ -328,15 +329,15 @@ class questions_form extends \moodleform {
             }
             if ($this->moveq) {
                 if ($this->moveq == $question->id && $display) {
-                    $mform->addElement('html', '<div class="moving" title="'.$strmove.'">'); // Begin div qn-container.
+                    $mform->addElement('html', '<div class="moving" title="' . $strmove . '">'); // Begin div qn-container.
                 } else {
                     $mform->addElement('html', '<div class="qn-container">'); // Begin div qn-container.
                 }
             }
             $mform->addGroup($manageqgroup, 'manageqgroup', '', '&nbsp;', false);
             if ($tid != QUESPAGEBREAK) {
-                $mform->addElement('static', 'qcontent_'.$question->id, '',
-                    $qnumber.'<div class="qn-question">'.$content.'</div>');
+                $mform->addElement('static', 'qcontent_' . $question->id, '',
+                        $qnumber . '<div class="qn-question">' . $content . '</div>');
             }
             $mform->addElement('html', '</div>'); // End div qn-container.
 
@@ -361,7 +362,7 @@ class questions_form extends \moodleform {
         $mform->addElement('html', '</div>');
     }
 
-    public function validation($data, $files) {
+    public function validation( $data, $files ) {
         $errors = parent::validation($data, $files);
         return $errors;
     }

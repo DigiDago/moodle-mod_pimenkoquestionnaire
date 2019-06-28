@@ -26,19 +26,19 @@
  * Require config.php
  */
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
 $id = required_param('id', PARAM_INT);
 $cm = get_coursemodule_from_id('pimenkoquestionnaire', $id, 0, false, MUST_EXIST);
-if (! $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", array("id" => $cm->instance))) {
+if (!$pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $cm->instance])) {
     print_error('invalidcoursemodule');
 }
-$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 require_login($course, false, $cm);
-$PAGE->set_url('/mod/pimenkoquestionnaire/grade.php', array('id' => $cm->id));
+$PAGE->set_url('/mod/pimenkoquestionnaire/grade.php', ['id' => $cm->id]);
 
 if (has_capability('mod/pimenkoquestionnaire:readallresponseanytime', context_module::instance($cm->id))) {
-    redirect('report.php?instance='.$pimenkoquestionnaire->id);
+    redirect('report.php?instance=' . $pimenkoquestionnaire->id);
 } else {
-    redirect('view.php?id='.$cm->id);
+    redirect('view.php?id=' . $cm->id);
 }

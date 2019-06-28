@@ -69,7 +69,7 @@ class pimenkoquestionnaire_previewed extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        $params = array();
+        $params = [];
         $params['id'] = $this->contextinstanceid;
         return new \moodle_url("/mod/pimenkoquestionnaire/preview.php", $params);
     }

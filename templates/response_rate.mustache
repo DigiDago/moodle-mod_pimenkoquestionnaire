@@ -58,35 +58,39 @@
 }}
 <!-- Begin HTML generated from response_rate template. -->
 <div class="pimenko_response pimenkoquestionnaire_radio">
-<table class="individual" style="border: 0; borderspacing: 1px; padding: 0; width:{{twidth}}">
-  <tbody>
-    <tr>
-        {{#osgood}}<td style="width: {{sidecolwidth}}; text-align: right;"></td>{{/osgood}}
-        {{^osgood}}<td style="width: {{sidecolwidth}}"></td>{{/osgood}}
-        {{#headers}}
-        <td style="width:{{colwidth}}; text-align:center" class="{{bg}} smalltext">{{str}}</td>
-        {{/headers}}
-        {{#osgood}}<td style="width:{{sidecolwidth}};"></td>{{/osgood}}
-    </tr>
-    {{#rows}}
-    <tr>
-        <td style="text-align:{{textalign}}">{{{content}}}</td>
-        {{#cols}}
-        {{#checked}}
-        <td style="text-align:center;" class="selected">
-            <span class="selected"><input type="radio" name="{{str}}" checked="checked" disabled="disabled"/></span>
-        </td>
-        {{/checked}}
-        {{^checked}}
-        <td style="text-align:center;" class="{{bg}}">
-            <span class="unselected"><input type="radio" disabled="disabled" name="{{str}}" onclick="this.checked=false;" /></span>
-        </td>
-        {{/checked}}
-        {{/cols}}
-        {{#osgood}}<td>{{{osgoodstr}}}</td>{{/osgood}}
-    </tr>
-    {{/rows}}
-  </tbody>
-</table>
+    <table class="individual" style="border: 0; borderspacing: 1px; padding: 0; width:{{twidth}}">
+        <tbody>
+        <tr>
+            {{#osgood}}
+                <td style="width: {{sidecolwidth}}; text-align: right;"></td>{{/osgood}}
+            {{^osgood}}
+                <td style="width: {{sidecolwidth}}"></td>{{/osgood}}
+            {{#headers}}
+                <td style="width:{{colwidth}}; text-align:center" class="{{bg}} smalltext">{{str}}</td>
+            {{/headers}}
+            {{#osgood}}
+                <td style="width:{{sidecolwidth}};"></td>{{/osgood}}
+        </tr>
+        {{#rows}}
+            <tr>
+                <td style="text-align:{{textalign}}">{{{content}}}</td>
+                {{#cols}}
+                    {{#checked}}
+                        <td style="text-align:center;" class="selected">
+                            <span class="selected"><input type="radio" name="{{str}}" checked="checked" disabled="disabled"/></span>
+                        </td>
+                    {{/checked}}
+                    {{^checked}}
+                        <td style="text-align:center;" class="{{bg}}">
+                            <span class="unselected"><input type="radio" disabled="disabled" name="{{str}}" onclick="this.checked=false;"/></span>
+                        </td>
+                    {{/checked}}
+                {{/cols}}
+                {{#osgood}}
+                    <td>{{{osgoodstr}}}</td>{{/osgood}}
+            </tr>
+        {{/rows}}
+        </tbody>
+    </table>
 </div>
 <!-- End HTML generated from response_rate template. -->

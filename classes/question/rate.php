@@ -17,13 +17,14 @@
 /**
  * This file contains the parent class for rate question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
 
 namespace mod_pimenkoquestionnaire\question;
 defined('MOODLE_INTERNAL') || die();
+
 use \html_writer;
 
 class rate extends base {
@@ -32,7 +33,7 @@ class rate extends base {
      * Constructor. Use to set any default properties.
      *
      */
-    public function __construct($id = 0, $question = null, $context = null, $params = array()) {
+    public function __construct( $id = 0, $question = null, $context = null, $params = [] ) {
         $this->length = 5;
         return parent::__construct($id, $question, $context, $params);
     }
@@ -54,6 +55,7 @@ class rate extends base {
 
     /**
      * Override and return a form template if provided. Output of question_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function question_template() {
@@ -62,6 +64,7 @@ class rate extends base {
 
     /**
      * Override and return a response template if provided. Output of response_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function response_template() {
@@ -84,6 +87,7 @@ class rate extends base {
 
     /**
      * Get the maximum score possible for feedback if appropriate. Override if default behaviour is not correct.
+     *
      * @return int | boolean
      */
     public function get_feedback_maxscore() {
@@ -109,13 +113,15 @@ class rate extends base {
 
     /**
      * Return the context tags for the check question template.
-     * @param object $data
-     * @param string $descendantdata
+     *
+     * @param object  $data
+     * @param string  $descendantdata
      * @param boolean $blankpimenkoquestionnaire
+     *
      * @return object The check question context tags.
      *
      */
-    protected function question_survey_display($data, $descendantsdata, $blankpimenkoquestionnaire=false) {
+    protected function question_survey_display( $data, $descendantsdata, $blankpimenkoquestionnaire = false ) {
         $choicetags = new \stdClass();
         $choicetags->qelements = [];
 
@@ -123,8 +129,8 @@ class rate extends base {
         if ($blankpimenkoquestionnaire) {
             $disabled = ' disabled="disabled"';
         }
-        if (!empty($data) && ( !isset($data->{'q'.$this->id}) || !is_array($data->{'q'.$this->id}) ) ) {
-            $data->{'q'.$this->id} = [];
+        if (!empty($data) && (!isset($data->{'q' . $this->id}) || !is_array($data->{'q' . $this->id}))) {
+            $data->{'q' . $this->id} = [];
         }
 
         $isna = $this->precise == 1;
@@ -175,15 +181,15 @@ class rate extends base {
                 $width = '30%';
             }
             $nn = 100 - ($width * 2);
-            $colwidth = ($nn / $this->length).'%';
+            $colwidth = ($nn / $this->length) . '%';
             $textalign = 'right';
         } else if ($nocontent) {
             $width = '0%';
-            $colwidth = (100 / $this->length).'%';
+            $colwidth = (100 / $this->length) . '%';
             $textalign = 'right';
         } else {
             $width = '59%';
-            $colwidth = (40 / $this->length).'%';
+            $colwidth = (40 / $this->length) . '%';
             $textalign = 'left';
         }
 
@@ -222,12 +228,12 @@ class rate extends base {
                 $val = $j + 1;
             }
             if ($blankpimenkoquestionnaire) {
-                $val = '<br />('.$val.')';
+                $val = '<br />(' . $val . ')';
             } else {
                 $val = '';
             }
             $col['colwidth'] = $colwidth;
-            $col['coltext'] = $str.$val;
+            $col['coltext'] = $str . $val;
             $collabel[$j] = $col['coltext'];
             $choicetags->qelements['headerrow']['cols'][] = $col;
         }
@@ -238,12 +244,12 @@ class rate extends base {
 
         $num = 0;
         foreach ($this->choices as $cid => $choice) {
-            $str = 'q'."{$this->id}_$cid";
+            $str = 'q' . "{$this->id}_$cid";
             $num += (isset($data->$str) && ($data->$str != -999));
         }
 
         $notcomplete = false;
-        if ( ($num != $nbchoices) && ($num != 0) ) {
+        if (($num != $nbchoices) && ($num != 0)) {
             $this->add_notification(get_string('checkallradiobuttons', 'pimenkoquestionnaire', $nbchoices));
             $notcomplete = true;
         }
@@ -254,16 +260,16 @@ class rate extends base {
             $cols = [];
             if (isset($choice->content)) {
                 $row++;
-                $str = 'q'."{$this->id}_$cid";
+                $str = 'q' . "{$this->id}_$cid";
                 $content = $choice->content;
                 if ($osgood) {
-                    list($content, $contentright) = array_merge(preg_split('/[|]/', $content), array(' '));
+                    list($content, $contentright) = array_merge(preg_split('/[|]/', $content), [' ']);
                 }
-                $cols[] = ['colstyle' => 'text-align: '.$textalign.';',
-                           'coltext' => format_text($content, FORMAT_HTML, ['noclean' => true]).'&nbsp;'];
+                $cols[] = ['colstyle' => 'text-align: ' . $textalign . ';',
+                        'coltext' => format_text($content, FORMAT_HTML, ['noclean' => true]) . '&nbsp;'];
 
                 $bg = 'c0 raterow';
-                if ($nbchoices > 1 && $this->precise != 2  && !$blankpimenkoquestionnaire) {
+                if ($nbchoices > 1 && $this->precise != 2 && !$blankpimenkoquestionnaire) {
                     $checked = ' checked="checked"';
                     $completeclass = 'notanswered';
                     $title = '';
@@ -280,12 +286,12 @@ class rate extends base {
                         $colinput['onclick'] = $order;
                     }
                     $cols[] = ['colstyle' => 'width:1%;', 'colclass' => $completeclass, 'coltitle' => $title,
-                        'colinput' => $colinput];
+                            'colinput' => $colinput];
                 }
                 for ($j = 0; $j < $this->length + $isna; $j++) {
                     $col = [];
                     $checked = ((isset($data->$str) && ($j == $data->$str ||
-                                 $j == $this->length && $data->$str == -1)) ? ' checked="checked"' : '');
+                                    $j == $this->length && $data->$str == -1)) ? ' checked="checked"' : '');
                     $checked = '';
                     if (isset($data->$str) && ($j == $data->$str || $j == $this->length && $data->$str == -1)) {
                         $checked = ' checked="checked"';
@@ -295,10 +301,10 @@ class rate extends base {
                     $i = $j + 1;
                     $col['colhiddentext'] = get_string('option', 'pimenkoquestionnaire', $i);
                     // If isna column then set na choice to -1 value.
-                    $value = ($j < $this->length ? $j : - 1);
+                    $value = ($j < $this->length ? $j : -1);
                     $col['colinput']['name'] = $str;
                     $col['colinput']['value'] = $value;
-                    $col['colinput']['id'] = $str.'_'.$value;
+                    $col['colinput']['id'] = $str . '_' . $value;
                     if (!empty($checked)) {
                         $col['colinput']['checked'] = true;
                     }
@@ -308,7 +314,7 @@ class rate extends base {
                     if (!empty($order)) {
                         $col['colinput']['onclick'] = $order;
                     }
-                    $col['colinput']['label'] = 'Choice '.$collabel[$j].' for row '.format_text($content, FORMAT_PLAIN);
+                    $col['colinput']['label'] = 'Choice ' . $collabel[$j] . ' for row ' . format_text($content, FORMAT_PLAIN);
                     if ($bg == 'c0 raterow') {
                         $bg = 'c1 raterow';
                     } else {
@@ -317,7 +323,7 @@ class rate extends base {
                     $cols[] = $col;
                 }
                 if ($osgood) {
-                    $cols[] = ['coltext' => '&nbsp;'.format_text($contentright, FORMAT_HTML, ['noclean' => true])];
+                    $cols[] = ['coltext' => '&nbsp;' . format_text($contentright, FORMAT_HTML, ['noclean' => true])];
                 }
                 $choicetags->qelements['rows'][] = ['cols' => $cols];
             }
@@ -328,19 +334,21 @@ class rate extends base {
 
     /**
      * Return the context tags for the rate response template.
+     *
      * @param object $data
+     *
      * @return object The rate question response context tags.
      *
      */
-    protected function response_survey_display($data) {
+    protected function response_survey_display( $data ) {
         static $uniquetag = 0;  // To make sure all radios have unique names.
 
         $resptags = new \stdClass();
         $resptags->headers = [];
         $resptags->rows = [];
 
-        if (!isset($data->{'q'.$this->id}) || !is_array($data->{'q'.$this->id})) {
-            $data->{'q'.$this->id} = array();
+        if (!isset($data->{'q' . $this->id}) || !is_array($data->{'q' . $this->id})) {
+            $data->{'q' . $this->id} = [];
         }
         // Check if rate question has one line only to display full width columns of choices.
         $nocontent = false;
@@ -356,8 +364,8 @@ class rate extends base {
         $osgood = $this->precise == 3;
         $bg = 'c0';
         $nameddegrees = 0;
-        $cidnamed = array();
-        $n = array();
+        $cidnamed = [];
+        $n = [];
         // Max length of potential named degree in column head.
         $maxndlen = 0;
         foreach ($this->choices as $cid => $choice) {
@@ -383,11 +391,11 @@ class rate extends base {
             }
             $nn = 100 - ($sidecolwidth * 2);
             $resptags->sidecolwidth = $sidecolwidth;
-            $resptags->colwidth = ($nn / $this->length).'%';
+            $resptags->colwidth = ($nn / $this->length) . '%';
             $resptags->textalign = 'right';
         } else {
             $resptags->sidecolwidth = '49%';
-            $resptags->colwidth = (50 / $this->length).'%';
+            $resptags->colwidth = (50 / $this->length) . '%';
             $resptags->textalign = 'left';
         }
         for ($j = 0; $j < $this->length; $j++) {
@@ -416,16 +424,16 @@ class rate extends base {
             $rowobj = new \stdClass();
             // Do not print column names if named column exist.
             if (!array_key_exists($cid, $cidnamed)) {
-                $str = 'q'."{$this->id}_$cid";
+                $str = 'q' . "{$this->id}_$cid";
                 $content = $choice->content;
                 $contents = pimenkoquestionnaire_choice_values($content);
                 if ($contents->modname) {
                     $content = $contents->text;
                 }
                 if ($osgood) {
-                    list($content, $contentright) = array_merge(preg_split('/[|]/', $content), array(' '));
+                    list($content, $contentright) = array_merge(preg_split('/[|]/', $content), [' ']);
                 }
-                $rowobj->content = format_text($content, FORMAT_HTML, ['noclean' => true]).'&nbsp;';
+                $rowobj->content = format_text($content, FORMAT_HTML, ['noclean' => true]) . '&nbsp;';
                 $bg = 'c0';
                 $cols = [];
                 for ($j = 0; $j < $this->length; $j++) {
@@ -433,7 +441,7 @@ class rate extends base {
                     if (isset($data->$str) && ($j == $data->$str)) {
                         $cellobj->checked = 1;
                     }
-                    $cellobj->str = $str.$j.$uniquetag++;
+                    $cellobj->str = $str . $j . $uniquetag++;
                     $cellobj->bg = $bg;
                     // N/A column checked.
                     $checkedna = (isset($data->$str) && ($data->$str == -1));
@@ -449,13 +457,13 @@ class rate extends base {
                     if ($checkedna) {
                         $cellobj->checked = 1;
                     }
-                    $cellobj->str = $str.$j.$uniquetag++.'na';
+                    $cellobj->str = $str . $j . $uniquetag++ . 'na';
                     $cellobj->bg = $bg;
                     $cols[] = $cellobj;
                 }
                 $rowobj->cols = $cols;
                 if ($osgood) {
-                    $rowobj->osgoodstr = '&nbsp;'.format_text($contentright, FORMAT_HTML, ['noclean' => true]);
+                    $rowobj->osgoodstr = '&nbsp;' . format_text($contentright, FORMAT_HTML, ['noclean' => true]);
                 }
                 $resptags->rows[] = $rowobj;
             }
@@ -467,10 +475,11 @@ class rate extends base {
      * Check question's form data for complete response.
      *
      * @param object $responsedata The data entered into the response.
+     *
      * @return boolean
      *
      */
-    public function response_complete($responsedata) {
+    public function response_complete( $responsedata ) {
         $num = 0;
         $nbchoices = count($this->choices);
         $na = get_string('notapplicable', 'pimenkoquestionnaire');
@@ -482,7 +491,7 @@ class rate extends base {
             if (preg_match("/^[0-9]{1,3}=/", $content)) {
                 $nameddegrees++;
             } else {
-                $str = 'q'."{$this->id}_$cid";
+                $str = 'q' . "{$this->id}_$cid";
                 if (isset($responsedata->$str) && $responsedata->$str == $na) {
                     $responsedata->$str = -1;
                 }
@@ -506,9 +515,10 @@ class rate extends base {
      * Check question's form data for valid response. Override this is type has specific format requirements.
      *
      * @param object $responsedata The data entered into the response.
+     *
      * @return boolean
      */
-    public function response_valid($responsedata) {
+    public function response_valid( $responsedata ) {
         $num = 0;
         $nbchoices = count($this->choices);
         $na = get_string('notapplicable', 'pimenkoquestionnaire');
@@ -519,7 +529,7 @@ class rate extends base {
             if (preg_match("/^[0-9]{1,3}=/", $content)) {
                 $nameddegrees++;
             } else {
-                $str = 'q'."{$this->id}_$cid";
+                $str = 'q' . "{$this->id}_$cid";
                 if (isset($responsedata->$str) && ($responsedata->$str == $na)) {
                     $responsedata->$str = -1;
                 }
@@ -531,7 +541,7 @@ class rate extends base {
         // If nodupes and nb choice restricted, nbchoices may be > actual choices, so limit it to $question->length.
         $isrestricted = ($this->length < count($this->choices)) && ($this->precise == 2);
         if ($isrestricted) {
-            $nbchoices = min ($nbchoices, $this->length);
+            $nbchoices = min($nbchoices, $this->length);
         }
         if (($num != $nbchoices) && ($num != 0)) {
             return false;
@@ -540,15 +550,15 @@ class rate extends base {
         }
     }
 
-    protected function form_length(\MoodleQuickForm $mform, $helptext = '') {
+    protected function form_length( \MoodleQuickForm $mform, $helptext = '' ) {
         return parent::form_length($mform, 'numberscaleitems');
     }
 
-    protected function form_precise(\MoodleQuickForm $mform, $helptext = '') {
-        $precoptions = array("0" => get_string('normal', 'pimenkoquestionnaire'),
-                             "1" => get_string('notapplicablecolumn', 'pimenkoquestionnaire'),
-                             "2" => get_string('noduplicates', 'pimenkoquestionnaire'),
-                             "3" => get_string('osgood', 'pimenkoquestionnaire'));
+    protected function form_precise( \MoodleQuickForm $mform, $helptext = '' ) {
+        $precoptions = ["0" => get_string('normal', 'pimenkoquestionnaire'),
+                "1" => get_string('notapplicablecolumn', 'pimenkoquestionnaire'),
+                "2" => get_string('noduplicates', 'pimenkoquestionnaire'),
+                "3" => get_string('osgood', 'pimenkoquestionnaire')];
         $mform->addElement('select', 'precise', get_string('kindofratescale', 'pimenkoquestionnaire'), $precoptions);
         $mform->addHelpButton('precise', 'kindofratescale', 'pimenkoquestionnaire');
         $mform->setType('precise', PARAM_INT);
@@ -559,7 +569,7 @@ class rate extends base {
     /**
      * Preprocess choice data.
      */
-    protected function form_preprocess_choicedata($formdata) {
+    protected function form_preprocess_choicedata( $formdata ) {
         if (empty($formdata->allchoices)) {
             // Add dummy blank space character for empty value.
             $formdata->allchoices = " ";

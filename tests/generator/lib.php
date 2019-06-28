@@ -140,9 +140,9 @@ class mod_pimenkoquestionnaire_generator extends testing_module_generator {
     /**
      * Function to create a question.
      *
-     * @param pimenkoquestionnaire  $questionnaire
-     * @param array|stdClass $record
-     * @param array|stdClass $data - accompanying data for question - e.g. choices
+     * @param pimenkoquestionnaire $questionnaire
+     * @param array|stdClass       $record
+     * @param array|stdClass       $data - accompanying data for question - e.g. choices
      *
      * @return \mod_pimenkoquestionnaire\question\base the question object
      */
@@ -563,7 +563,7 @@ class mod_pimenkoquestionnaire_generator extends testing_module_generator {
     }
 
     /**
-     * @param pimenkoquestionnaire                             $questionnaire
+     * @param pimenkoquestionnaire                      $questionnaire
      * @param \mod_pimenkoquestionnaire\question\base[] $questions
      * @param                                           $userid
      * @param                                           $complete
@@ -687,7 +687,8 @@ class mod_pimenkoquestionnaire_generator extends testing_module_generator {
             return;
         }
 
-        if ($qtype === QUESCHOOSE || $qtype === QUESTEACHERSELECT || $qtype === QUESRADIO || $qtype === QUESDROP || $qtype === QUESCHECK || $qtype === QUESRATE) {
+        if ($qtype === QUESCHOOSE || $qtype === QUESTEACHERSELECT || $qtype === QUESRADIO || $qtype === QUESDROP ||
+                $qtype === QUESCHECK || $qtype === QUESRATE) {
             if (is_int($questionresponse->response)) {
                 $choiceid = $questionresponse->response;
             } else {

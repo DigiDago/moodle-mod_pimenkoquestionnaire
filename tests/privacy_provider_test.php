@@ -58,7 +58,8 @@ class mod_pimenkoquestionnaire_privacy_testcase extends \core_privacy\tests\prov
         $user = $DB->get_record('user', ['firstname' => 'Testy']);
         $pimenkoquestionnaires = $qdg->pimenkoquestionnaires();
         $pimenkoquestionnaire = current($pimenkoquestionnaires);
-        list ($course, $cm) = get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
+        list ($course, $cm) =
+                get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
 
         $contextlist = provider::get_contexts_for_userid($user->id);
         // Check that we only get back one context.
@@ -82,7 +83,8 @@ class mod_pimenkoquestionnaire_privacy_testcase extends \core_privacy\tests\prov
         $user = $DB->get_record('user', ['firstname' => 'Testy']);
         $pimenkoquestionnaires = $qdg->pimenkoquestionnaires();
         $pimenkoquestionnaire = current($pimenkoquestionnaires);
-        list ($course, $cm) = get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
+        list ($course, $cm) =
+                get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
         $cmcontext = context_module::instance($cm->id);
 
         $userlist = new \core_privacy\local\request\userlist($cmcontext, 'mod_pimenkoquestionnaire');
@@ -113,7 +115,8 @@ class mod_pimenkoquestionnaire_privacy_testcase extends \core_privacy\tests\prov
         $user = $DB->get_record('user', ['firstname' => 'Testy']);
         $pimenkoquestionnaires = $qdg->pimenkoquestionnaires();
         $pimenkoquestionnaire = current($pimenkoquestionnaires);
-        list ($course, $cm) = get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
+        list ($course, $cm) =
+                get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
         $cmcontext = context_module::instance($cm->id);
 
         $writer = \core_privacy\local\request\writer::with_context($cmcontext);
@@ -148,7 +151,8 @@ class mod_pimenkoquestionnaire_privacy_testcase extends \core_privacy\tests\prov
         $user = $DB->get_record('user', ['username' => 'username1']);
         $pimenkoquestionnaires = $qdg->pimenkoquestionnaires();
         $pimenkoquestionnaire = current($pimenkoquestionnaires);
-        list ($course, $cm) = get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
+        list ($course, $cm) =
+                get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
         $cmcontext = context_module::instance($cm->id);
 
         // Get all accounts. There should be two.
@@ -172,7 +176,8 @@ class mod_pimenkoquestionnaire_privacy_testcase extends \core_privacy\tests\prov
         $user = $DB->get_record('user', ['username' => 'username1']);
         $pimenkoquestionnaires = $qdg->pimenkoquestionnaires();
         $pimenkoquestionnaire = current($pimenkoquestionnaires);
-        list ($course, $cm) = get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
+        list ($course, $cm) =
+                get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
         $cmcontext = context_module::instance($cm->id);
 
         // Get all accounts. There should be two.
@@ -202,10 +207,12 @@ class mod_pimenkoquestionnaire_privacy_testcase extends \core_privacy\tests\prov
         $user3 = $DB->get_record('user', ['username' => 'username3']);
         $pimenkoquestionnaires = $qdg->pimenkoquestionnaires();
         $pimenkoquestionnaire = current($pimenkoquestionnaires);
-        list ($course, $cm) = get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
+        list ($course, $cm) =
+                get_course_and_cm_from_instance($pimenkoquestionnaire->id, 'pimenkoquestionnaire', $pimenkoquestionnaire->course);
         $cmcontext = context_module::instance($cm->id);
 
-        $approveduserlist = new \core_privacy\local\request\approved_userlist($cmcontext, 'pimenkoquestionnaire', [$user->id, $user3->id]);
+        $approveduserlist =
+                new \core_privacy\local\request\approved_userlist($cmcontext, 'pimenkoquestionnaire', [$user->id, $user3->id]);
 
         // Get all accounts. There should be three.
         $this->assertCount(3, $DB->get_records('pimenko_response', []));

@@ -70,7 +70,7 @@ class non_respondents_viewed extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        $params = array();
+        $params = [];
         $params['id'] = $this->contextinstanceid;
         return new \moodle_url("/mod/pimenkoquestionnaire/show_nonrespondents.php", $params);
     }

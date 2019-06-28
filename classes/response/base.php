@@ -17,13 +17,14 @@
 /**
  * This file contains the parent class for pimenkoquestionnaire question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
 
 namespace mod_pimenkoquestionnaire\response;
 defined('MOODLE_INTERNAL') || die();
+
 use \html_writer;
 use \html_table;
 
@@ -32,13 +33,12 @@ use mod_pimenkoquestionnaire\db\bulk_sql_config;
 /**
  * Class for describing a response.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @package response
  */
-
 abstract class base {
 
-    public function __construct($question) {
+    public function __construct( $question ) {
         $this->question = $question;
     }
 
@@ -52,44 +52,65 @@ abstract class base {
     }
 
     /**
+     * Return an array of answers by question/choice for the given response. Must be implemented by the subclass.
+     *
+     * @param int  $rid         The response id.
+     * @param null $col         Other data columns to return.
+     * @param bool $csvexport   Using for CSV export.
+     * @param int  $choicecodes CSV choicecodes are required.
+     * @param int  $choicetext  CSV choicetext is required.
+     *
+     * @return array
+     */
+    static public function response_select( $rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1 ) {
+        return [];
+    }
+
+    /**
      * Insert a provided response to the question.
      *
      * @param integer $rid - The data id of the response table id.
-     * @param mixed $val - The response data provided.
+     * @param mixed   $val - The response data provided.
+     *
      * @return int|bool - on error the subtype should call set_error and return false.
      */
-    abstract public function insert_response($rid, $val);
+    abstract public function insert_response( $rid, $val );
 
     /**
      * Provide the result information for the specified result records.
      *
-     * @param int|array $rids - A single response id, or array.
-     * @param boolean $anonymous - Whether or not responses are anonymous.
+     * @param int|array $rids      - A single response id, or array.
+     * @param boolean   $anonymous - Whether or not responses are anonymous.
+     *
      * @return array - Array of data records.
      */
-    abstract public function get_results($rids=false, $anonymous=false);
+    abstract public function get_results( $rids = false, $anonymous = false );
 
     /**
      * Provide the result information for the specified result records.
      *
-     * @param int|array $rids - A single response id, or array.
-     * @param string $sort - Optional display sort.
-     * @param boolean $anonymous - Whether or not responses are anonymous.
+     * @param int|array $rids      - A single response id, or array.
+     * @param string    $sort      - Optional display sort.
+     * @param boolean   $anonymous - Whether or not responses are anonymous.
+     *
      * @return string - Display output.
      */
-    abstract public function display_results($rids=false, $sort='', $anonymous=false);
+    abstract public function display_results( $rids = false, $sort = '', $anonymous = false );
 
     /**
      * If the choice id needs to be transformed into a different value, override this in the child class.
+     *
      * @param $choiceid
+     *
      * @return mixed
      */
-    public function transform_choiceid($choiceid) {
+    public function transform_choiceid( $choiceid ) {
         return $choiceid;
     }
 
     /**
      * Provide a template for results screen if defined.
+     *
      * @return mixed The template string or false/
      */
     public function results_template() {
@@ -99,21 +120,22 @@ abstract class base {
     /**
      * Gets the results tags for templates for questions with defined choices (single, multiple, boolean).
      *
-     * @param $weights
-     * @param $participants Number of pimenkoquestionnaire participants.
-     * @param $respondents Number of question respondents.
-     * @param $showtotals
+     * @param        $weights
+     * @param        $participants Number of pimenkoquestionnaire participants.
+     * @param        $respondents  Number of question respondents.
+     * @param        $showtotals
      * @param string $sort
+     *
      * @return \stdClass
      * @throws \coding_exception
      */
-    public function get_results_tags($weights, $participants, $respondents, $showtotals = 1, $sort = '') {
+    public function get_results_tags( $weights, $participants, $respondents, $showtotals = 1, $sort = '' ) {
         global $CFG;
 
         $pagetags = new \stdClass();
         $precision = 0;
         $alt = '';
-        $imageurl = $CFG->wwwroot.'/mod/pimenkoquestionnaire/images/';
+        $imageurl = $CFG->wwwroot . '/mod/pimenkoquestionnaire/images/';
 
         if (!empty($weights) && is_array($weights)) {
             $pos = 0;
@@ -126,13 +148,13 @@ abstract class base {
                     break;
             }
 
-            reset ($weights);
+            reset($weights);
             $pagetags->responses = [];
             foreach ($weights as $content => $num) {
                 $response = new \stdClass();
                 $response->text = format_text($content, FORMAT_HTML, ['noclean' => true]);
                 if ($num > 0) {
-                    $percent = round((float)$num / (float)$respondents * 100.0);
+                    $percent = round((float) $num / (float) $respondents * 100.0);
                 } else {
                     $percent = 0;
                 }
@@ -154,17 +176,17 @@ abstract class base {
                     $response->alt2 = $alt;
                     $response->width2 = $percent * 1.4;
                     $response->image2 = $imageurl . 'hbar.gif';
-                    $response->percent = sprintf('&nbsp;%.'.$precision.'f%%', $percent);
+                    $response->percent = sprintf('&nbsp;%.' . $precision . 'f%%', $percent);
                 }
                 $response->total = $num;
-                $pagetags->responses[] = (object)['response' => $response];
+                $pagetags->responses[] = (object) ['response' => $response];
                 $pos++;
             } // End while.
 
             if ($showtotals) {
                 $pagetags->total = new \stdClass();
                 if ($respondents > 0) {
-                    $percent = round((float)$respondents / (float)$participants * 100.0);
+                    $percent = round((float) $respondents / (float) $participants * 100.0);
                 } else {
                     $percent = 0;
                 }
@@ -185,7 +207,7 @@ abstract class base {
                 $pagetags->total->alt2 = $alt;
                 $pagetags->total->width2 = $percent * 1.4;
                 $pagetags->total->image2 = $imageurl . 'thbar.gif';
-                $pagetags->total->percent = sprintf('&nbsp;%.'.$precision.'f%%', $percent);
+                $pagetags->total->percent = sprintf('&nbsp;%.' . $precision . 'f%%', $percent);
                 $pagetags->total->total = "$respondents/$participants";
             }
         }
@@ -195,55 +217,29 @@ abstract class base {
 
     /**
      * Provide the feedback scores for all requested response id's. This should be provided only by questions that provide feedback.
+     *
      * @param array $rids
+     *
      * @return array | boolean
      */
-    public function get_feedback_scores(array $rids) {
+    public function get_feedback_scores( array $rids ) {
         return false;
     }
 
     /**
-     * Return an array of answers by question/choice for the given response. Must be implemented by the subclass.
-     *
-     * @param int $rid The response id.
-     * @param null $col Other data columns to return.
-     * @param bool $csvexport Using for CSV export.
-     * @param int $choicecodes CSV choicecodes are required.
-     * @param int $choicetext CSV choicetext is required.
-     * @return array
-     */
-    static public function response_select($rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1) {
-        return [];
-    }
-
-    /**
-     * Return all the fields to be used for users in bulk pimenkoquestionnaire sql.
-     *
-     * @author: Guy Thomas
-     * @return string
-     */
-    protected function user_fields_sql() {
-        $userfieldsarr = get_all_user_name_fields();
-        $userfieldsarr = array_merge($userfieldsarr, ['username', 'department', 'institution']);
-        $userfields = '';
-        foreach ($userfieldsarr as $field) {
-            $userfields .= $userfields === '' ? '' : ', ';
-            $userfields .= 'u.'.$field;
-        }
-        $userfields .= ', u.id as usrid';
-        return $userfields;
-    }
-
-    /**
      * Return sql and params for getting responses in bulk.
-     * @author Guy Thomas
+     *
      * @param int|array $pimenkoquestionnaireids One id, or an array of ids.
-     * @param bool|int $responseid
-     * @param bool|int $userid
-     * @param bool|int $groupid
+     * @param bool|int  $responseid
+     * @param bool|int  $userid
+     * @param bool|int  $groupid
+     *
      * @return array
+     * @author Guy Thomas
      */
-    public function get_bulk_sql($pimenkoquestionnaireids, $responseid = false, $userid = false, $groupid = false, $showincompletes = 0) {
+    public function get_bulk_sql(
+            $pimenkoquestionnaireids, $responseid = false, $userid = false, $groupid = false, $showincompletes = 0
+    ) {
         global $DB;
 
         $sql = $this->bulk_sql();
@@ -287,17 +283,10 @@ abstract class base {
     }
 
     /**
-     * Configure bulk sql
-     * @return bulk_sql_config
-     */
-    protected function bulk_sql_config() {
-        return new bulk_sql_config('pimenko_response_other', 'qro', true, true, false);
-    }
-
-    /**
      * Return sql for getting responses in bulk.
-     * @author Guy Thomas
+     *
      * @return string
+     * @author Guy Thomas
      */
     protected function bulk_sql() {
         global $DB;
@@ -314,24 +303,51 @@ abstract class base {
                 // The 'response' field can be varchar or text, which doesn't work for all DB's (Oracle).
                 // So convert the text if needed.
                 if ($field === 'response') {
-                    $extraselect .= $DB->sql_order_by_text($alias . '.' . $field, 1000).' AS '.$field;
+                    $extraselect .= $DB->sql_order_by_text($alias . '.' . $field, 1000) . ' AS ' . $field;
                 } else {
                     $extraselect .= $alias . '.' . $field;
                 }
             } else {
                 $default = $field === 'response' ? 'null' : 0;
-                $extraselect .= $default.' AS ' . $field;
+                $extraselect .= $default . ' AS ' . $field;
             }
         }
 
         return "
-            SELECT " . $DB->sql_concat_join("'_'", ['qr.id', "'".$this->question->helpname()."'", $alias.'.id']) . " AS id,
+            SELECT " . $DB->sql_concat_join("'_'", ['qr.id', "'" . $this->question->helpname() . "'", $alias . '.id']) . " AS id,
                    qr.submitted, qr.complete, qr.grade, qr.userid, $userfields, qr.id AS rid, $alias.question_id,
                    $extraselect
               FROM {pimenko_response} qr
-              JOIN {".$config->table."} $alias
+              JOIN {" . $config->table . "} $alias
                 ON $alias.response_id = qr.id
         ";
+    }
+
+    /**
+     * Return all the fields to be used for users in bulk pimenkoquestionnaire sql.
+     *
+     * @return string
+     * @author: Guy Thomas
+     */
+    protected function user_fields_sql() {
+        $userfieldsarr = get_all_user_name_fields();
+        $userfieldsarr = array_merge($userfieldsarr, ['username', 'department', 'institution']);
+        $userfields = '';
+        foreach ($userfieldsarr as $field) {
+            $userfields .= $userfields === '' ? '' : ', ';
+            $userfields .= 'u.' . $field;
+        }
+        $userfields .= ', u.id as usrid';
+        return $userfields;
+    }
+
+    /**
+     * Configure bulk sql
+     *
+     * @return bulk_sql_config
+     */
+    protected function bulk_sql_config() {
+        return new bulk_sql_config('pimenko_response_other', 'qro', true, true, false);
     }
 
 }

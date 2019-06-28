@@ -15,22 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
 $qid = required_param('qid', PARAM_INT);
 $rid = required_param('rid', PARAM_INT);
 $courseid = required_param('courseid', PARAM_INT);
 $sec = required_param('sec', PARAM_INT);
 $null = null;
-$referer = $CFG->wwwroot.'/mod/pimenkoquestionnaire/report.php';
+$referer = $CFG->wwwroot . '/mod/pimenkoquestionnaire/report.php';
 
-if (! $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", array("id" => $qid))) {
+if (!$pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $qid])) {
     print_error('invalidcoursemodule');
 }
-if (! $course = $DB->get_record("course", array("id" => $pimenkoquestionnaire->course))) {
+if (!$course = $DB->get_record("course", ["id" => $pimenkoquestionnaire->course])) {
     print_error('coursemisconf');
 }
-if (! $cm = get_coursemodule_from_instance("pimenkoquestionnaire", $pimenkoquestionnaire->id, $course->id)) {
+if (!$cm = get_coursemodule_from_instance("pimenkoquestionnaire", $pimenkoquestionnaire->id, $course->id)) {
     print_error('invalidcoursemodule');
 }
 
@@ -50,13 +50,13 @@ if (!empty($rid)) {
 // If you can't view the pimenkoquestionnaire, or can't view a specified response, error out.
 if (!($pimenkoquestionnaire->capabilities->view && (($rid == 0) || $pimenkoquestionnaire->can_view_response($rid)))) {
     // Should never happen, unless called directly by a snoop...
-    print_error('nopermissions', 'moodle', $CFG->wwwroot.'/mod/pimenkoquestionnaire/view.php?id='.$cm->id);
+    print_error('nopermissions', 'moodle', $CFG->wwwroot . '/mod/pimenkoquestionnaire/view.php?id=' . $cm->id);
 }
 $blankpimenkoquestionnaire = true;
 if ($rid != 0) {
     $blankpimenkoquestionnaire = false;
 }
-$url = new moodle_url($CFG->wwwroot.'/mod/pimenkoquestionnaire/print.php');
+$url = new moodle_url($CFG->wwwroot . '/mod/pimenkoquestionnaire/print.php');
 $url->param('qid', $qid);
 $url->param('rid', $rid);
 $url->param('courseid', $courseid);

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
 $instance = optional_param('instance', false, PARAM_INT);   // Questionnaire ID.
 $action = optional_param('action', 'vall', PARAM_ALPHA);
@@ -48,13 +48,13 @@ if ($instance === false) {
 $SESSION->instance = $instance;
 $usergraph = get_config('pimenkoquestionnaire', 'usergraph');
 
-if (! $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", array("id" => $instance))) {
+if (!$pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $instance])) {
     print_error('incorrectpimenkoquestionnaire', 'pimenkoquestionnaire');
 }
-if (! $course = $DB->get_record("course", array("id" => $pimenkoquestionnaire->course))) {
+if (!$course = $DB->get_record("course", ["id" => $pimenkoquestionnaire->course])) {
     print_error('coursemisconf');
 }
-if (! $cm = get_coursemodule_from_instance("pimenkoquestionnaire", $pimenkoquestionnaire->id, $course->id)) {
+if (!$cm = get_coursemodule_from_instance("pimenkoquestionnaire", $pimenkoquestionnaire->id, $course->id)) {
     print_error('invalidcoursemodule');
 }
 
@@ -69,15 +69,15 @@ $pimenkoquestionnaire->add_page(new \mod_pimenkoquestionnaire\output\reportpage(
 // If you can't view the pimenkoquestionnaire, or can't view a specified response, error out.
 $context = context_module::instance($cm->id);
 if (!has_capability('mod/pimenkoquestionnaire:readallresponseanytime', $context) &&
-    !($pimenkoquestionnaire->capabilities->view && $pimenkoquestionnaire->can_view_response($rid))) {
+        !($pimenkoquestionnaire->capabilities->view && $pimenkoquestionnaire->can_view_response($rid))) {
     // Should never happen, unless called directly by a snoop...
-    print_error('nopermissions', 'moodle', $CFG->wwwroot.'/mod/pimenkoquestionnaire/view.php?id='.$cm->id);
+    print_error('nopermissions', 'moodle', $CFG->wwwroot . '/mod/pimenkoquestionnaire/view.php?id=' . $cm->id);
 }
 
 $pimenkoquestionnaire->canviewallgroups = has_capability('moodle/site:accessallgroups', $context);
 $sid = $pimenkoquestionnaire->survey->id;
 
-$url = new moodle_url($CFG->wwwroot.'/mod/pimenkoquestionnaire/report.php');
+$url = new moodle_url($CFG->wwwroot . '/mod/pimenkoquestionnaire/report.php');
 if ($instance) {
     $url->param('instance', $instance);
 }
@@ -115,7 +115,7 @@ $SESSION->pimenkoquestionnaire->current_tab = 'allreport';
 // Get all responses for further use in viewbyresp and deleteall etc.
 // All participants.
 $respsallparticipants = $pimenkoquestionnaire->get_responses();
-$SESSION->pimenkoquestionnaire->numrespsallparticipants = count ($respsallparticipants);
+$SESSION->pimenkoquestionnaire->numrespsallparticipants = count($respsallparticipants);
 $SESSION->pimenkoquestionnaire->numselectedresps = $SESSION->pimenkoquestionnaire->numrespsallparticipants;
 
 // Available group modes (0 = no groups; 1 = separate groups; 2 = visible groups).
@@ -154,9 +154,9 @@ if ($groupmode > 0) {
     }
 
     if ($currentgroupid > 0) {
-        $groupname = get_string('group').' <strong>'.groups_get_group_name($currentgroupid).'</strong>';
+        $groupname = get_string('group') . ' <strong>' . groups_get_group_name($currentgroupid) . '</strong>';
     } else {
-        $groupname = '<strong>'.get_string('allparticipants').'</strong>';
+        $groupname = '<strong>' . get_string('allparticipants') . '</strong>';
     }
 }
 if ($usergraph) {
@@ -192,13 +192,13 @@ switch ($action) {
 
         if (empty($pimenkoquestionnaire->survey)) {
             $id = $pimenkoquestionnaire->survey;
-            notify ("pimenkoquestionnaire->survey = /$id/");
+            notify("pimenkoquestionnaire->survey = /$id/");
             print_error('surveynotexists', 'pimenkoquestionnaire');
         } else if ($pimenkoquestionnaire->survey->courseid != $course->id) {
             print_error('surveyowner', 'pimenkoquestionnaire');
         } else if (!$rid || !is_numeric($rid)) {
             print_error('invalidresponse', 'pimenkoquestionnaire');
-        } else if (!($resp = $DB->get_record('pimenko_response', array('id' => $rid)))) {
+        } else if (!($resp = $DB->get_record('pimenko_response', ['id' => $rid]))) {
             print_error('invalidresponserecord', 'pimenkoquestionnaire');
         }
 
@@ -207,7 +207,7 @@ switch ($action) {
             if ($user = $DB->get_record('user', ['id' => $resp->userid])) {
                 $ruser = fullname($user);
             } else {
-                $ruser = '- '.get_string('unknown', 'pimenkoquestionnaire').' -';
+                $ruser = '- ' . get_string('unknown', 'pimenkoquestionnaire') . ' -';
             }
         } else {
             $ruser = $resp->userid;
@@ -222,23 +222,24 @@ switch ($action) {
         $SESSION->pimenkoquestionnaire->current_tab = 'deleteresp';
         include('tabs.php');
 
-        $timesubmitted = '<br />'.get_string('submitted', 'pimenkoquestionnaire').'&nbsp;'.userdate($resp->submitted);
+        $timesubmitted = '<br />' . get_string('submitted', 'pimenkoquestionnaire') . '&nbsp;' . userdate($resp->submitted);
         if ($pimenkoquestionnaire->respondenttype == 'anonymous') {
-            $ruser = '- '.get_string('anonymous', 'pimenkoquestionnaire').' -';
+            $ruser = '- ' . get_string('anonymous', 'pimenkoquestionnaire') . ' -';
             $timesubmitted = '';
         }
 
         // Print the confirmation.
         $msg = '<div class="warning centerpara">';
-        $msg .= get_string('confirmdelresp', 'pimenkoquestionnaire', $ruser.$timesubmitted);
+        $msg .= get_string('confirmdelresp', 'pimenkoquestionnaire', $ruser . $timesubmitted);
         $msg .= '</div>';
-        $urlyes = new moodle_url('report.php', array('action' => 'dvresp',
-            'rid' => $rid, 'individualresponse' => 1, 'instance' => $instance, 'group' => $currentgroupid));
-        $urlno = new moodle_url('report.php', array('action' => 'vresp', 'instance' => $instance,
-            'rid' => $rid, 'individualresponse' => 1, 'group' => $currentgroupid));
+        $urlyes = new moodle_url('report.php', ['action' => 'dvresp',
+                'rid' => $rid, 'individualresponse' => 1, 'instance' => $instance, 'group' => $currentgroupid]);
+        $urlno = new moodle_url('report.php', ['action' => 'vresp', 'instance' => $instance,
+                'rid' => $rid, 'individualresponse' => 1, 'group' => $currentgroupid]);
         $buttonyes = new single_button($urlyes, get_string('delete'), 'post');
         $buttonno = new single_button($urlno, get_string('cancel'), 'get');
-        $pimenkoquestionnaire->page->add_to_page('notifications', $pimenkoquestionnaire->renderer->confirm($msg, $buttonyes, $buttonno));
+        $pimenkoquestionnaire->page->add_to_page('notifications',
+                $pimenkoquestionnaire->renderer->confirm($msg, $buttonyes, $buttonno));
         echo $pimenkoquestionnaire->renderer->render($pimenkoquestionnaire->page);
         // Finish the page.
         echo $pimenkoquestionnaire->renderer->footer($course);
@@ -267,13 +268,14 @@ switch ($action) {
             }
             $msg .= '</div>';
 
-            $urlyes = new moodle_url('report.php', array('action' => 'dvallresp', 'sid' => $sid,
-                'instance' => $instance, 'group' => $currentgroupid));
-            $urlno = new moodle_url('report.php', array('instance' => $instance, 'group' => $currentgroupid));
+            $urlyes = new moodle_url('report.php', ['action' => 'dvallresp', 'sid' => $sid,
+                    'instance' => $instance, 'group' => $currentgroupid]);
+            $urlno = new moodle_url('report.php', ['instance' => $instance, 'group' => $currentgroupid]);
             $buttonyes = new single_button($urlyes, get_string('delete'), 'post');
             $buttonno = new single_button($urlno, get_string('cancel'), 'get');
 
-            $pimenkoquestionnaire->page->add_to_page('notifications', $pimenkoquestionnaire->renderer->confirm($msg, $buttonyes, $buttonno));
+            $pimenkoquestionnaire->page->add_to_page('notifications',
+                    $pimenkoquestionnaire->renderer->confirm($msg, $buttonyes, $buttonno));
             echo $pimenkoquestionnaire->renderer->render($pimenkoquestionnaire->page);
             // Finish the page.
             echo $pimenkoquestionnaire->renderer->footer($course);
@@ -290,42 +292,44 @@ switch ($action) {
             print_error('surveyowner', 'pimenkoquestionnaire');
         } else if (!$rid || !is_numeric($rid)) {
             print_error('invalidresponse', 'pimenkoquestionnaire');
-        } else if (!($response = $DB->get_record('pimenko_response', array('id' => $rid)))) {
+        } else if (!($response = $DB->get_record('pimenko_response', ['id' => $rid]))) {
             print_error('invalidresponserecord', 'pimenkoquestionnaire');
         }
 
         if (pimenkoquestionnaire_delete_response($response, $pimenkoquestionnaire)) {
-            if (!$DB->count_records('pimenko_response', array('pimenkoquestionnaireid' => $pimenkoquestionnaire->id, 'complete' => 'y'))) {
-                $redirection = $CFG->wwwroot.'/mod/pimenkoquestionnaire/view.php?id='.$cm->id;
+            if (!$DB->count_records('pimenko_response',
+                    ['pimenkoquestionnaireid' => $pimenkoquestionnaire->id, 'complete' => 'y'])) {
+                $redirection = $CFG->wwwroot . '/mod/pimenkoquestionnaire/view.php?id=' . $cm->id;
             } else {
-                $redirection = $CFG->wwwroot.'/mod/pimenkoquestionnaire/report.php?action=vresp&amp;instance='.
-                    $instance.'&amp;byresponse=1';
+                $redirection = $CFG->wwwroot . '/mod/pimenkoquestionnaire/report.php?action=vresp&amp;instance=' .
+                        $instance . '&amp;byresponse=1';
             }
 
             // Log this pimenkoquestionnaire delete single response action.
-            $params = array('objectid' => $pimenkoquestionnaire->survey->id,
-                'context' => $pimenkoquestionnaire->context,
-                'courseid' => $pimenkoquestionnaire->course->id,
-                'relateduserid' => $response->userid);
+            $params = ['objectid' => $pimenkoquestionnaire->survey->id,
+                    'context' => $pimenkoquestionnaire->context,
+                    'courseid' => $pimenkoquestionnaire->course->id,
+                    'relateduserid' => $response->userid];
             $event = \mod_pimenkoquestionnaire\event\response_deleted::create($params);
             $event->trigger();
 
             redirect($redirection);
         } else {
             if ($pimenkoquestionnaire->respondenttype == 'anonymous') {
-                $ruser = '- '.get_string('anonymous', 'pimenkoquestionnaire').' -';
+                $ruser = '- ' . get_string('anonymous', 'pimenkoquestionnaire') . ' -';
             } else if (!empty($response->userid)) {
                 if ($user = $DB->get_record('user', ['id' => $response->userid])) {
                     $ruser = fullname($user);
                 } else {
-                    $ruser = '- '.get_string('unknown', 'pimenkoquestionnaire').' -';
+                    $ruser = '- ' . get_string('unknown', 'pimenkoquestionnaire') . ' -';
                 }
             } else {
                 $ruser = $response->userid;
             }
-            error (get_string('couldnotdelresp', 'pimenkoquestionnaire').$rid.get_string('by', 'pimenkoquestionnaire').$ruser.'?',
-                $CFG->wwwroot.'/mod/pimenkoquestionnaire/report.php?action=vresp&amp;sid='.$sid.'&amp;&amp;instance='.
-                $instance.'byresponse=1');
+            error(get_string('couldnotdelresp', 'pimenkoquestionnaire') . $rid . get_string('by', 'pimenkoquestionnaire') . $ruser .
+                    '?',
+                    $CFG->wwwroot . '/mod/pimenkoquestionnaire/report.php?action=vresp&amp;sid=' . $sid . '&amp;&amp;instance=' .
+                    $instance . 'byresponse=1');
         }
         break;
 
@@ -357,13 +361,13 @@ switch ($action) {
                     $resp = current($resps);
                     $rid = $resp->id;
                 } else {
-                    $resp = $DB->get_record('pimenko_response', array('id' => $rid));
+                    $resp = $DB->get_record('pimenko_response', ['id' => $rid]);
                 }
                 if (!empty($resp->userid)) {
                     if ($user = $DB->get_record('user', ['id' => $resp->userid])) {
                         $ruser = fullname($user);
                     } else {
-                        $ruser = '- '.get_string('unknown', 'pimenkoquestionnaire').' -';
+                        $ruser = '- ' . get_string('unknown', 'pimenkoquestionnaire') . ' -';
                     }
                 } else {
                     $ruser = $resp->userid;
@@ -378,26 +382,29 @@ switch ($action) {
                 pimenkoquestionnaire_delete_response($response, $pimenkoquestionnaire);
             }
             if (!$pimenkoquestionnaire->count_submissions()) {
-                $redirection = $CFG->wwwroot.'/mod/pimenkoquestionnaire/view.php?id='.$cm->id;
+                $redirection = $CFG->wwwroot . '/mod/pimenkoquestionnaire/view.php?id=' . $cm->id;
             } else {
-                $redirection = $CFG->wwwroot.'/mod/pimenkoquestionnaire/report.php?action=vall&amp;sid='.$sid.'&amp;instance='.$instance;
+                $redirection =
+                        $CFG->wwwroot . '/mod/pimenkoquestionnaire/report.php?action=vall&amp;sid=' . $sid . '&amp;instance=' .
+                        $instance;
             }
 
             // Log this pimenkoquestionnaire delete all responses action.
             $context = context_module::instance($pimenkoquestionnaire->cm->id);
             $anonymous = $pimenkoquestionnaire->respondenttype == 'anonymous';
 
-            $event = \mod_pimenkoquestionnaire\event\all_responses_deleted::create(array(
-                'objectid' => $pimenkoquestionnaire->id,
-                'anonymous' => $anonymous,
-                'context' => $context
-            ));
+            $event = \mod_pimenkoquestionnaire\event\all_responses_deleted::create([
+                    'objectid' => $pimenkoquestionnaire->id,
+                    'anonymous' => $anonymous,
+                    'context' => $context
+            ]);
             $event->trigger();
 
             redirect($redirection);
         } else {
-            error (get_string('couldnotdelresp', 'pimenkoquestionnaire'),
-                $CFG->wwwroot.'/mod/pimenkoquestionnaire/report.php?action=vall&amp;sid='.$sid.'&amp;instance='.$instance);
+            error(get_string('couldnotdelresp', 'pimenkoquestionnaire'),
+                    $CFG->wwwroot . '/mod/pimenkoquestionnaire/report.php?action=vall&amp;sid=' . $sid . '&amp;instance=' .
+                    $instance);
         }
         break;
 
@@ -426,15 +433,15 @@ switch ($action) {
                     $groupname = get_string('allparticipants');
                     break;
                 default:     // Members of a specific group.
-                    $groupname = get_string('membersofselectedgroup', 'group').' '.get_string('group').' '.
-                        $pimenkoquestionnairegroups[$currentgroupid]->name;
+                    $groupname = get_string('membersofselectedgroup', 'group') . ' ' . get_string('group') . ' ' .
+                            $pimenkoquestionnairegroups[$currentgroupid]->name;
             }
         }
         $output = '';
         $output .= "<br /><br />\n";
         $output .= $pimenkoquestionnaire->renderer->help_icon('downloadtextformat', 'pimenkoquestionnaire');
         $output .= '&nbsp;' . (get_string('downloadtextformat', 'pimenkoquestionnaire')) . ':&nbsp;' .
-            get_string('responses', 'pimenkoquestionnaire').'&nbsp;'.$groupname;
+                get_string('responses', 'pimenkoquestionnaire') . '&nbsp;' . $groupname;
         $output .= $pimenkoquestionnaire->renderer->heading(get_string('textdownloadoptions', 'pimenkoquestionnaire'));
         $output .= $pimenkoquestionnaire->renderer->box_start();
         $output .= "<form action=\"{$CFG->wwwroot}/mod/pimenkoquestionnaire/report.php\" method=\"GET\">\n";
@@ -450,7 +457,7 @@ switch ($action) {
         $output .= html_writer::checkbox('complete', 1, false, get_string('includeincomplete', 'pimenkoquestionnaire'));
         $output .= "<br />\n";
         $output .= "<br />\n";
-        $output .= "<input type=\"submit\" name=\"submit\" value=\"".get_string('download', 'pimenkoquestionnaire')."\" />\n";
+        $output .= "<input type=\"submit\" name=\"submit\" value=\"" . get_string('download', 'pimenkoquestionnaire') . "\" />\n";
         $output .= "</form>\n";
         $output .= $pimenkoquestionnaire->renderer->box_end();
 
@@ -460,11 +467,11 @@ switch ($action) {
         echo $pimenkoquestionnaire->renderer->footer('none');
 
         // Log saved as text action.
-        $params = array('objectid' => $pimenkoquestionnaire->id,
-            'context' => $pimenkoquestionnaire->context,
-            'courseid' => $course->id,
-            'other' => array('action' => $action, 'instance' => $instance, 'currentgroupid' => $currentgroupid)
-        );
+        $params = ['objectid' => $pimenkoquestionnaire->id,
+                'context' => $pimenkoquestionnaire->context,
+                'courseid' => $course->id,
+                'other' => ['action' => $action, 'instance' => $instance, 'currentgroupid' => $currentgroupid]
+        ];
         $event = \mod_pimenkoquestionnaire\event\all_responses_saved_as_text::create($params);
         $event->trigger();
 
@@ -473,15 +480,15 @@ switch ($action) {
 
     case 'dcsv': // Download responses data as text (cvs) format.
         require_capability('mod/pimenkoquestionnaire:downloadresponses', $context);
-        require_once($CFG->libdir.'/dataformatlib.php');
+        require_once($CFG->libdir . '/dataformatlib.php');
 
         // Use the pimenkoquestionnaire name as the file name. Clean it and change any non-filename characters to '_'.
         $name = clean_param($pimenkoquestionnaire->name, PARAM_FILE);
         $name = preg_replace("/[^A-Z0-9]+/i", "_", trim($name));
 
         $choicecodes = optional_param('choicecodes', '0', PARAM_INT);
-        $choicetext  = optional_param('choicetext', '0', PARAM_INT);
-        $showincompletes  = optional_param('complete', '0', PARAM_INT);
+        $choicetext = optional_param('choicetext', '0', PARAM_INT);
+        $showincompletes = optional_param('complete', '0', PARAM_INT);
         $output = $pimenkoquestionnaire->generate_csv('', $user, $choicecodes, $choicetext, $currentgroupid, $showincompletes);
 
         // Use Moodle's core download function for outputting csv.
@@ -497,7 +504,8 @@ switch ($action) {
         $PAGE->set_title(get_string('pimenkoquestionnairereport', 'pimenkoquestionnaire'));
         $PAGE->set_heading(format_string($course->fullname));
         echo $pimenkoquestionnaire->renderer->header();
-        if (!$pimenkoquestionnaire->capabilities->readallresponses && !$pimenkoquestionnaire->capabilities->readallresponseanytime) {
+        if (!$pimenkoquestionnaire->capabilities->readallresponses &&
+                !$pimenkoquestionnaire->capabilities->readallresponseanytime) {
             // Should never happen, unless called directly by a snoop.
             print_error('nopermissions', '', '', get_string('viewallresponses', 'pimenkoquestionnaire'));
             // Finish the page.
@@ -519,7 +527,7 @@ switch ($action) {
         include('tabs.php');
 
         $respinfo = '';
-        $resps = array();
+        $resps = [];
         // Enable choose_group if there are pimenkoquestionnaire groups and groupmode is not set to "no groups"
         // and if there are more goups than 1 (or if user can view all groups).
         if (is_array($pimenkoquestionnairegroups) && $groupmode > 0) {
@@ -531,21 +539,22 @@ switch ($action) {
                 $escapedgroupname = preg_quote($thisgroupname, '/');
                 if (!empty ($respscount)) {
                     // Add number of responses to name of group in the groups select list.
-                    $groupselect = preg_replace('/\<option value="'.$group->id.'">'.$escapedgroupname.'<\/option>/',
-                        '<option value="'.$group->id.'">'.$thisgroupname.' ('.$respscount.')</option>', $groupselect);
+                    $groupselect = preg_replace('/\<option value="' . $group->id . '">' . $escapedgroupname . '<\/option>/',
+                            '<option value="' . $group->id . '">' . $thisgroupname . ' (' . $respscount . ')</option>',
+                            $groupselect);
                 } else {
                     // Remove groups with no responses from the groups select list.
-                    $groupselect = preg_replace('/\<option value="'.$group->id.'">'.$escapedgroupname.
-                        '<\/option>/', '', $groupselect);
+                    $groupselect = preg_replace('/\<option value="' . $group->id . '">' . $escapedgroupname .
+                            '<\/option>/', '', $groupselect);
                 }
             }
             $respinfo .= isset($groupselect) ? ($groupselect . ' ') : '';
             $currentgroupid = groups_get_activity_group($cm);
         }
         if ($currentgroupid > 0) {
-            $groupname = get_string('group').': <strong>'.groups_get_group_name($currentgroupid).'</strong>';
+            $groupname = get_string('group') . ': <strong>' . groups_get_group_name($currentgroupid) . '</strong>';
         } else {
-            $groupname = '<strong>'.get_string('allparticipants').'</strong>';
+            $groupname = '<strong>' . get_string('allparticipants') . '</strong>';
         }
 
         // Available group modes (0 = no groups; 1 = separate groups; 2 = visible groups).
@@ -579,16 +588,16 @@ switch ($action) {
             }
         }
 
-        $params = array('objectid' => $pimenkoquestionnaire->id,
-            'context' => $context,
-            'courseid' => $course->id,
-            'other' => array('action' => $action, 'instance' => $instance, 'groupid' => $currentgroupid)
-        );
+        $params = ['objectid' => $pimenkoquestionnaire->id,
+                'context' => $context,
+                'courseid' => $course->id,
+                'other' => ['action' => $action, 'instance' => $instance, 'groupid' => $currentgroupid]
+        ];
         $event = \mod_pimenkoquestionnaire\event\all_responses_viewed::create($params);
         $event->trigger();
 
-        $respinfo .= get_string('viewallresponses', 'pimenkoquestionnaire').'. '.$groupname.'. ';
-        $strsort = get_string('order_'.$sort, 'pimenkoquestionnaire');
+        $respinfo .= get_string('viewallresponses', 'pimenkoquestionnaire') . '. ' . $groupname . '. ';
+        $strsort = get_string('order_' . $sort, 'pimenkoquestionnaire');
         $respinfo .= $strsort;
         $respinfo .= $pimenkoquestionnaire->renderer->help_icon('orderresponses', 'pimenkoquestionnaire');
         $pimenkoquestionnaire->page->add_to_page('respondentinfo', $respinfo);
@@ -659,7 +668,7 @@ switch ($action) {
                         if ($user = $DB->get_record('user', ['id' => $resp->userid])) {
                             $ruser = fullname($user);
                         } else {
-                            $ruser = '- '.get_string('unknown', 'pimenkoquestionnaire').' -';
+                            $ruser = '- ' . get_string('unknown', 'pimenkoquestionnaire') . ' -';
                         }
                     } else {
                         $ruser = $resp->userid;
@@ -693,18 +702,20 @@ switch ($action) {
 
         if ($noresponses) {
             $pimenkoquestionnaire->page->add_to_page('respondentinfo',
-                get_string('group').' <strong>'.groups_get_group_name($currentgroupid).'</strong>: '.
-                get_string('noresponses', 'pimenkoquestionnaire'));
+                    get_string('group') . ' <strong>' . groups_get_group_name($currentgroupid) . '</strong>: ' .
+                    get_string('noresponses', 'pimenkoquestionnaire'));
         } else {
-            $groupname = get_string('group').': <strong>'.groups_get_group_name($currentgroupid).'</strong>';
-            if ($currentgroupid == 0 ) {
+            $groupname = get_string('group') . ': <strong>' . groups_get_group_name($currentgroupid) . '</strong>';
+            if ($currentgroupid == 0) {
                 $groupname = get_string('allparticipants');
             }
             if ($byresponse) {
                 $respinfo = '';
                 $respinfo .= $pimenkoquestionnaire->renderer->box_start();
-                $respinfo .= $pimenkoquestionnaire->renderer->help_icon('viewindividualresponse', 'pimenkoquestionnaire').'&nbsp;';
-                $respinfo .= get_string('viewindividualresponse', 'pimenkoquestionnaire').' <strong> : '.$groupname.'</strong>';
+                $respinfo .= $pimenkoquestionnaire->renderer->help_icon('viewindividualresponse', 'pimenkoquestionnaire') .
+                        '&nbsp;';
+                $respinfo .= get_string('viewindividualresponse', 'pimenkoquestionnaire') . ' <strong> : ' . $groupname .
+                        '</strong>';
                 $respinfo .= $pimenkoquestionnaire->renderer->box_end();
                 $pimenkoquestionnaire->page->add_to_page('respondentinfo', $respinfo);
             }

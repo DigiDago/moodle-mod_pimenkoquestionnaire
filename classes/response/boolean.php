@@ -17,7 +17,7 @@
 /**
  * This file contains the parent class for pimenkoquestionnaire question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
@@ -30,17 +30,16 @@ use mod_pimenkoquestionnaire\db\bulk_sql_config;
 /**
  * Class for boolean response types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @package response
  */
-
 class boolean extends base {
 
     static public function response_table() {
         return 'pimenko_response_bool';
     }
 
-    public function insert_response($rid, $val) {
+    public function insert_response( $rid, $val ) {
         global $DB;
         if (!empty($val)) { // If "no answer" then choice is empty (CONTRIB-846).
             $record = new \stdClass();
@@ -53,11 +52,11 @@ class boolean extends base {
         }
     }
 
-    public function get_results($rids=false, $anonymous=false) {
+    public function get_results( $rids = false, $anonymous = false ) {
         global $DB;
 
         $rsql = '';
-        $params = array($this->question->id);
+        $params = [$this->question->id];
         if (!empty($rids)) {
             list($rsql, $rparams) = $DB->get_in_or_equal($rids);
             $params = array_merge($params, $rparams);
@@ -66,18 +65,20 @@ class boolean extends base {
         $params[] = '';
 
         $sql = 'SELECT choice_id, COUNT(response_id) AS num ' .
-               'FROM {'.self::response_table().'} ' .
-               'WHERE question_id= ? ' . $rsql . ' AND choice_id != ? ' .
-               'GROUP BY choice_id';
+                'FROM {' . self::response_table() . '} ' .
+                'WHERE question_id= ? ' . $rsql . ' AND choice_id != ? ' .
+                'GROUP BY choice_id';
         return $DB->get_records_sql($sql, $params);
     }
 
     /**
      * If the choice id needs to be transformed into a different value, override this in the child class.
+     *
      * @param $choiceid
+     *
      * @return mixed
      */
-    public function transform_choiceid($choiceid) {
+    public function transform_choiceid( $choiceid ) {
         if ($choiceid == 0) {
             $choice = 'y';
         } else {
@@ -88,10 +89,12 @@ class boolean extends base {
 
     /**
      * Provide the feedback scores for all requested response id's. This should be provided only by questions that provide feedback.
+     *
      * @param array $rids
+     *
      * @return array | boolean
      */
-    public function get_feedback_scores(array $rids) {
+    public function get_feedback_scores( array $rids ) {
         global $DB;
 
         $rsql = '';
@@ -105,9 +108,9 @@ class boolean extends base {
 
         $feedbackscores = false;
         $sql = 'SELECT response_id, choice_id ' .
-            'FROM {'.$this->response_table().'} ' .
-            'WHERE question_id= ? ' . $rsql . ' ' .
-            'ORDER BY response_id ASC';
+                'FROM {' . $this->response_table() . '} ' .
+                'WHERE question_id= ? ' . $rsql . ' ' .
+                'ORDER BY response_id ASC';
         if ($responses = $DB->get_recordset_sql($sql, $params)) {
             $feedbackscores = [];
             foreach ($responses as $rid => $response) {
@@ -121,6 +124,7 @@ class boolean extends base {
 
     /**
      * Provide a template for results screen if defined.
+     *
      * @return mixed The template string or false/
      */
     public function results_template() {
@@ -130,12 +134,13 @@ class boolean extends base {
     /**
      * Return the JSON structure required for the template.
      *
-     * @param bool $rids
+     * @param bool   $rids
      * @param string $sort
-     * @param bool $anonymous
+     * @param bool   $anonymous
+     *
      * @return string
      */
-    public function display_results($rids=false, $sort='', $anonymous=false) {
+    public function display_results( $rids = false, $sort = '', $anonymous = false ) {
         if (empty($this->stryes)) {
             $this->stryes = get_string('yes');
             $this->strno = get_string('no');
@@ -172,26 +177,27 @@ class boolean extends base {
     /**
      * Return an array of answers by question/choice for the given response. Must be implemented by the subclass.
      *
-     * @param int $rid The response id.
-     * @param null $col Other data columns to return.
-     * @param bool $csvexport Using for CSV export.
-     * @param int $choicecodes CSV choicecodes are required.
-     * @param int $choicetext CSV choicetext is required.
+     * @param int  $rid         The response id.
+     * @param null $col         Other data columns to return.
+     * @param bool $csvexport   Using for CSV export.
+     * @param int  $choicecodes CSV choicecodes are required.
+     * @param int  $choicetext  CSV choicetext is required.
+     *
      * @return array
      */
-    static public function response_select($rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1) {
+    static public function response_select( $rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1 ) {
         global $DB;
 
         $values = [];
-        $sql = 'SELECT q.id '.$col.', a.choice_id '.
-            'FROM {'.self::response_table().'} a, {pimenko_question} q '.
-            'WHERE a.response_id= ? AND a.question_id=q.id ';
+        $sql = 'SELECT q.id ' . $col . ', a.choice_id ' .
+                'FROM {' . self::response_table() . '} a, {pimenko_question} q ' .
+                'WHERE a.response_id= ? AND a.question_id=q.id ';
         $records = $DB->get_records_sql($sql, [$rid]);
         foreach ($records as $qid => $row) {
             $choice = $row->choice_id;
             unset ($row->id);
             unset ($row->choice_id);
-            $row = (array)$row;
+            $row = (array) $row;
             $newrow = [];
             foreach ($row as $key => $val) {
                 if (!is_numeric($key)) {
@@ -210,6 +216,7 @@ class boolean extends base {
 
     /**
      * Configure bulk sql
+     *
      * @return bulk_sql_config
      */
     protected function bulk_sql_config() {
@@ -218,9 +225,10 @@ class boolean extends base {
 
     /**
      * Return sql for getting responses in bulk.
-     * @author Guy Thomas
-     * @author Mike Churchward
+     *
      * @return string
+     * @author Mike Churchward
+     * @author Guy Thomas
      */
     protected function bulk_sql() {
         global $DB;
@@ -234,11 +242,11 @@ class boolean extends base {
         $extraselect = '0 AS choice_id, ' . $DB->sql_order_by_text('qrb.choice_id', 1000) . ' AS response, 0 AS rankvalue';
 
         return "
-            SELECT " . $DB->sql_concat_join("'_'", ['qr.id', "'".$this->question->helpname()."'", $alias.'.id']) . " AS id,
+            SELECT " . $DB->sql_concat_join("'_'", ['qr.id', "'" . $this->question->helpname() . "'", $alias . '.id']) . " AS id,
                    qr.submitted, qr.complete, qr.grade, qr.userid, $userfields, qr.id AS rid, $alias.question_id,
                    $extraselect
               FROM {pimenko_response} qr
-              JOIN {".self::response_table()."} $alias ON $alias.response_id = qr.id
+              JOIN {" . self::response_table() . "} $alias ON $alias.response_id = qr.id
         ";
     }
 }

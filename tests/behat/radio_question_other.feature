@@ -6,42 +6,42 @@ Feature: Radio questions allow optional "other" responses with optional labels
 
   Background: Add two radio button question to a pimenkoquestionnaire with both "other" choice options specified
     Given the following "users" exist:
-      | username | firstname | lastname | email |
-      | teacher1 | Teacher | 1 | teacher1@example.com |
-      | student1 | Student | 1 | student1@example.com |
+      | username | firstname | lastname | email                |
+      | teacher1 | Teacher   | 1        | teacher1@example.com |
+      | student1 | Student   | 1        | student1@example.com |
     And the following "courses" exist:
       | fullname | shortname | category |
-      | Course 1 | C1 | 0 |
+      | Course 1 | C1        | 0        |
     And the following "course enrolments" exist:
-      | user | course | role |
-      | teacher1 | C1 | editingteacher |
-      | student1 | C1 | student |
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+      | student1 | C1     | student        |
     And the following "activities" exist:
-      | activity | name | description | course | idnumber |
-      | pimenkoquestionnaire | Test pimenkoquestionnaire | Test pimenkoquestionnaire description | C1 | questionnaire0 |
+      | activity             | name                      | description                           | course | idnumber       |
+      | pimenkoquestionnaire | Test pimenkoquestionnaire | Test pimenkoquestionnaire description | C1     | questionnaire0 |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Test pimenkoquestionnaire"
     And I navigate to "Questions" in current page administration
     And I add a "Radio Buttons" question and I fill the form with:
-      | Question Name | Q1 |
-      | Yes | y |
-      | Question Text | Select one |
+      | Question Name    | Q1                    |
+      | Yes              | y                     |
+      | Question Text    | Select one            |
       | Possible answers | Red,Blue,Black,!other |
     Then I should see "position 1"
     And I should see "[Radio Buttons] (Q1)"
     And I should see "Select one"
     And I add a "Radio Buttons" question and I fill the form with:
-      | Question Name | Q2 |
-      | Yes | y |
-      | Question Text | Select another |
+      | Question Name    | Q2                                         |
+      | Yes              | y                                          |
+      | Question Text    | Select another                             |
       | Possible answers | Green,Orange,Yellow,!other=Another colour: |
     Then I should see "position 2"
     And I should see "[Radio Buttons] (Q2)"
     And I should see "Select another"
     And I log out
 
-@javascript
+  @javascript
   Scenario: Student selects other options and enters their own text.
     And I log in as "student1"
     And I am on "Course 1" course homepage

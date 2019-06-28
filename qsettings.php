@@ -17,22 +17,22 @@
 // This page prints a particular instance of pimenkoquestionnaire.
 
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
 $id = required_param('id', PARAM_INT);    // Course module ID.
 $currentgroupid = optional_param('group', 0, PARAM_INT); // Groupid.
 $cancel = optional_param('cancel', '', PARAM_ALPHA);
 $submitbutton2 = optional_param('submitbutton2', '', PARAM_ALPHA);
 
-if (! $cm = get_coursemodule_from_id('pimenkoquestionnaire', $id)) {
+if (!$cm = get_coursemodule_from_id('pimenkoquestionnaire', $id)) {
     print_error('invalidcoursemodule');
 }
 
-if (! $course = $DB->get_record("course", array("id" => $cm->course))) {
+if (!$course = $DB->get_record("course", ["id" => $cm->course])) {
     print_error('coursemisconf');
 }
 
-if (! $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", array("id" => $cm->instance))) {
+if (!$pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $cm->instance])) {
     print_error('invalidcoursemodule');
 }
 
@@ -40,7 +40,7 @@ if (! $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", array("id"
 require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 
-$url = new moodle_url($CFG->wwwroot.'/mod/pimenkoquestionnaire/qsettings.php', array('id' => $id));
+$url = new moodle_url($CFG->wwwroot . '/mod/pimenkoquestionnaire/qsettings.php', ['id' => $id]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 if (!isset($SESSION->pimenkoquestionnaire)) {
@@ -65,18 +65,18 @@ $sdata->id = $cm->id;
 
 $draftideditor = file_get_submitted_draft_itemid('info');
 $currentinfo = file_prepare_draft_area($draftideditor, $context->id, 'mod_pimenkoquestionnaire', 'info',
-                $sdata->sid, array('subdirs' => true), $pimenkoquestionnaire->survey->info);
-$sdata->info = array('text' => $currentinfo, 'format' => FORMAT_HTML, 'itemid' => $draftideditor);
+        $sdata->sid, ['subdirs' => true], $pimenkoquestionnaire->survey->info);
+$sdata->info = ['text' => $currentinfo, 'format' => FORMAT_HTML, 'itemid' => $draftideditor];
 
 $draftideditor = file_get_submitted_draft_itemid('thankbody');
 $currentinfo = file_prepare_draft_area($draftideditor, $context->id, 'mod_pimenkoquestionnaire', 'thankbody',
-                $sdata->sid, array('subdirs' => true), $pimenkoquestionnaire->survey->thank_body);
-$sdata->thank_body = array('text' => $currentinfo, 'format' => FORMAT_HTML, 'itemid' => $draftideditor);
+        $sdata->sid, ['subdirs' => true], $pimenkoquestionnaire->survey->thank_body);
+$sdata->thank_body = ['text' => $currentinfo, 'format' => FORMAT_HTML, 'itemid' => $draftideditor];
 
 $settingsform->set_data($sdata);
 
 if ($settingsform->is_cancelled()) {
-    redirect ($CFG->wwwroot.'/mod/pimenkoquestionnaire/view.php?id='.$pimenkoquestionnaire->cm->id, '');
+    redirect($CFG->wwwroot . '/mod/pimenkoquestionnaire/view.php?id=' . $pimenkoquestionnaire->cm->id, '');
 }
 
 if ($settings = $settingsform->get_data()) {
@@ -89,9 +89,9 @@ if ($settings = $settingsform->get_data()) {
 
     $sdata->infoitemid = $settings->info['itemid'];
     $sdata->infoformat = $settings->info['format'];
-    $sdata->info       = $settings->info['text'];
-    $sdata->info       = file_save_draft_area_files($sdata->infoitemid, $context->id, 'mod_pimenkoquestionnaire', 'info',
-                                                    $sdata->id, array('subdirs' => true), $sdata->info);
+    $sdata->info = $settings->info['text'];
+    $sdata->info = file_save_draft_area_files($sdata->infoitemid, $context->id, 'mod_pimenkoquestionnaire', 'info',
+            $sdata->id, ['subdirs' => true], $sdata->info);
 
     $sdata->theme = ''; // Deprecated theme field.
     $sdata->thanks_page = $settings->thanks_page;
@@ -99,9 +99,9 @@ if ($settings = $settingsform->get_data()) {
 
     $sdata->thankitemid = $settings->thank_body['itemid'];
     $sdata->thankformat = $settings->thank_body['format'];
-    $sdata->thank_body  = $settings->thank_body['text'];
-    $sdata->thank_body  = file_save_draft_area_files($sdata->thankitemid, $context->id, 'mod_pimenkoquestionnaire', 'thankbody',
-                                                     $sdata->id, array('subdirs' => true), $sdata->thank_body);
+    $sdata->thank_body = $settings->thank_body['text'];
+    $sdata->thank_body = file_save_draft_area_files($sdata->thankitemid, $context->id, 'mod_pimenkoquestionnaire', 'thankbody',
+            $sdata->id, ['subdirs' => true], $sdata->thank_body);
     $sdata->email = $settings->email;
 
     $sdata->courseid = $settings->courseid;
@@ -111,12 +111,12 @@ if ($settings = $settingsform->get_data()) {
         if ($submitbutton2) {
             $redirecturl = course_get_url($cm->course);
         } else {
-            $redirecturl = $CFG->wwwroot.'/mod/pimenkoquestionnaire/view.php?id='.$pimenkoquestionnaire->cm->id;
+            $redirecturl = $CFG->wwwroot . '/mod/pimenkoquestionnaire/view.php?id=' . $pimenkoquestionnaire->cm->id;
         }
 
         // Save current advanced settings only.
         if (isset($settings->submitbutton) || isset($settings->submitbutton2)) {
-            redirect ($redirecturl, get_string('settingssaved', 'pimenkoquestionnaire'));
+            redirect($redirecturl, get_string('settingssaved', 'pimenkoquestionnaire'));
         }
     }
 }

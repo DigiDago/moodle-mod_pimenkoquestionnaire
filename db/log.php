@@ -25,8 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$logs = array(
-    array('module' => 'pimenkoquestionnaire', 'action' => 'view all', 'mtable' => 'pimenkoquestionnaire', 'field' => 'name'),
-    array('module' => 'pimenkoquestionnaire', 'action' => 'submit', 'mtable' => 'pimenko_response', 'field' => 'id'),
-    array('module' => 'pimenkoquestionnaire', 'action' => 'view', 'mtable' => 'pimenkoquestionnaire', 'field' => 'name'),
-);
+$logs = [
+        ['module' => 'pimenkoquestionnaire', 'action' => 'view all', 'mtable' => 'pimenkoquestionnaire', 'field' => 'name'],
+        ['module' => 'pimenkoquestionnaire', 'action' => 'submit', 'mtable' => 'pimenko_response', 'field' => 'id'],
+        ['module' => 'pimenkoquestionnaire', 'action' => 'view', 'mtable' => 'pimenkoquestionnaire', 'field' => 'name'],
+];

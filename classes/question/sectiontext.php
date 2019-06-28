@@ -17,7 +17,7 @@
 /**
  * This file contains the parent class for sectiontext question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
@@ -37,6 +37,7 @@ class sectiontext extends base {
 
     /**
      * Return true if this question has been marked as required.
+     *
      * @return boolean
      */
     public function required() {
@@ -66,15 +67,16 @@ class sectiontext extends base {
 
     /**
      * Override and return a form template if provided. Output of question_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function question_template() {
         return 'mod_pimenkoquestionnaire/question_sectionfb';
     }
 
-    protected function question_survey_display($data, $descendantsdata, $blankpimenkoquestionnaire=false) {
+    protected function question_survey_display( $data, $descendantsdata, $blankpimenkoquestionnaire = false ) {
         global $DB, $CFG, $PAGE;
-        require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+        require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
         // If !isset then normal behavior as sectiontext question.
         if (!isset($data->pimenkoquestionnaire_id)) {
@@ -97,7 +99,8 @@ class sectiontext extends base {
             return '';
         }
 
-        list($cm, $course, $pimenkoquestionnaire) = pimenkoquestionnaire_get_standard_page_items(null, $data->pimenkoquestionnaire_id);
+        list($cm, $course, $pimenkoquestionnaire) =
+                pimenkoquestionnaire_get_standard_page_items(null, $data->pimenkoquestionnaire_id);
         $pimenkoquestionnaire = new \pimenkoquestionnaire(0, $pimenkoquestionnaire, $course, $cm);
         $pimenkoquestionnaire->add_renderer($PAGE->get_renderer('mod_pimenkoquestionnaire'));
         $pimenkoquestionnaire->add_page(new \mod_pimenkoquestionnaire\output\reportpage());
@@ -110,7 +113,7 @@ class sectiontext extends base {
         $rid = $data->rid;
         // For $filteredsections -> get the feedback messages only for this sections!
         $feedbackmessages = $pimenkoquestionnaire->response_analysis($rid, $resps, $compare, $isgroupmember, $allresponses,
-            $currentgroupid, $filteredsections);
+                $currentgroupid, $filteredsections);
 
         // Output.
         $questiontags = new \stdClass();
@@ -124,7 +127,7 @@ class sectiontext extends base {
 
     }
 
-    protected function response_survey_display($data) {
+    protected function response_survey_display( $data ) {
         return '';
     }
 
@@ -132,9 +135,10 @@ class sectiontext extends base {
      * Check question's form data for complete response.
      *
      * @param object $responsedata The data entered into the response.
+     *
      * @return boolean
      */
-    public function response_complete($responsedata) {
+    public function response_complete( $responsedata ) {
         return true;
     }
 
@@ -145,15 +149,15 @@ class sectiontext extends base {
     }
     */
 
-    protected function form_required(\MoodleQuickForm $mform) {
+    protected function form_required( \MoodleQuickForm $mform ) {
         return $mform;
     }
 
-    protected function form_length(\MoodleQuickForm $mform, $helpname = '') {
+    protected function form_length( \MoodleQuickForm $mform, $helpname = '' ) {
         return base::form_length_hidden($mform);
     }
 
-    protected function form_precise(\MoodleQuickForm $mform, $helpname = '') {
+    protected function form_precise( \MoodleQuickForm $mform, $helpname = '' ) {
         return base::form_precise_hidden($mform);
     }
 }

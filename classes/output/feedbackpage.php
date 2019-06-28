@@ -31,15 +31,17 @@ class feedbackpage implements \renderable, \templatable {
 
     /**
      * The data to be exported.
+     *
      * @var array
      */
     protected $data;
 
     /**
      * Construct the renderable.
+     *
      * @param object $data The template data for export.
      */
-    public function __construct($data = null) {
+    public function __construct( $data = null ) {
         if ($data !== null) {
             $this->data = $data;
         } else {
@@ -49,18 +51,20 @@ class feedbackpage implements \renderable, \templatable {
 
     /**
      * Add data for export.
+     *
      * @param string The index for the data.
      * @param string The content for the index.
      */
-    public function add_to_page($element, $content) {
+    public function add_to_page( $element, $content ) {
         $this->data->{$element} = empty($this->data->{$element}) ? $content : ($this->data->{$element} . $content);
     }
 
     /**
      * Export the data for template.
+     *
      * @param \renderer_base $output
      */
-    public function export_for_template(\renderer_base $output) {
+    public function export_for_template( \renderer_base $output ) {
         return $this->data;
     }
 

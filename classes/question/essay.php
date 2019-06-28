@@ -17,13 +17,14 @@
 /**
  * This file contains the parent class for essay question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
 
 namespace mod_pimenkoquestionnaire\question;
 defined('MOODLE_INTERNAL') || die();
+
 use \html_writer;
 
 class essay extends base {
@@ -36,7 +37,7 @@ class essay extends base {
         return 'essaybox';
     }
 
-    protected function question_survey_display($data, $descendantsdata, $blankpimenkoquestionnaire=false) {
+    protected function question_survey_display( $data, $descendantsdata, $blankpimenkoquestionnaire = false ) {
         $output = '';
 
         // Essay.
@@ -52,9 +53,9 @@ class essay extends base {
             // Prior to version 2.6, "precise" was used for rows number.
             $rows = $this->precise > 1 ? $this->precise : $this->length;
         }
-        $name = 'q'.$this->id;
-        if (isset($data->{'q'.$this->id})) {
-            $value = $data->{'q'.$this->id};
+        $name = 'q' . $this->id;
+        if (isset($data->{'q' . $this->id})) {
+            $value = $data->{'q' . $this->id};
         } else {
             $value = '';
         }
@@ -62,38 +63,38 @@ class essay extends base {
             $editor = editors_get_preferred_editor();
             $editor->use_editor($name, pimenkoquestionnaire_get_editor_options($this->context));
             $texteditor = html_writer::tag('textarea', $value,
-                            array('id' => $name, 'name' => $name, 'rows' => $rows, 'cols' => $cols));
+                    ['id' => $name, 'name' => $name, 'rows' => $rows, 'cols' => $cols]);
         } else {
             $editor = FORMAT_PLAIN;
             $texteditor = html_writer::tag('textarea', $value,
-                            array('id' => $name, 'name' => $name, 'rows' => $rows, 'cols' => $cols));
+                    ['id' => $name, 'name' => $name, 'rows' => $rows, 'cols' => $cols]);
         }
         $output .= $texteditor;
 
         return $output;
     }
 
-    protected function response_survey_display($data) {
+    protected function response_survey_display( $data ) {
         $output = '';
         $output .= '<div class="response text">';
-        $output .= !empty($data->{'q'.$this->id}) ? format_text($data->{'q'.$this->id}, FORMAT_HTML) : '&nbsp;';
+        $output .= !empty($data->{'q' . $this->id}) ? format_text($data->{'q' . $this->id}, FORMAT_HTML) : '&nbsp;';
         $output .= '</div>';
         return $output;
     }
 
     // Note - intentianally returning 'precise' for length and 'length' for precise.
 
-    protected function form_length(\MoodleQuickForm $mform, $helptext = '') {
-        $responseformats = array(
-                        "0" => get_string('formateditor', 'pimenkoquestionnaire'),
-                        "1" => get_string('formatplain', 'pimenkoquestionnaire'));
+    protected function form_length( \MoodleQuickForm $mform, $helptext = '' ) {
+        $responseformats = [
+                "0" => get_string('formateditor', 'pimenkoquestionnaire'),
+                "1" => get_string('formatplain', 'pimenkoquestionnaire')];
         $mform->addElement('select', 'precise', get_string('responseformat', 'pimenkoquestionnaire'), $responseformats);
         $mform->setType('precise', PARAM_INT);
         return $mform;
     }
 
-    protected function form_precise(\MoodleQuickForm $mform, $helptext = '') {
-        $choices = array();
+    protected function form_precise( \MoodleQuickForm $mform, $helptext = '' ) {
+        $choices = [];
         for ($lines = 5; $lines <= 40; $lines += 5) {
             $choices[$lines] = get_string('nlines', 'pimenkoquestionnaire', $lines);
         }

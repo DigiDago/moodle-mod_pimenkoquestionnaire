@@ -17,14 +17,16 @@
 /**
  * This file contains the parent class for pagebreak question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
 
 namespace mod_pimenkoquestionnaire\question;
+
 use mod_pimenkoquestionnaire\edit_question_form;
 use \pimenkoquestionnaire;
+
 defined('MOODLE_INTERNAL') || die();
 
 class pagebreak extends base {
@@ -37,15 +39,15 @@ class pagebreak extends base {
         return '';
     }
 
-    protected function question_survey_display($data, $descendantsdata, $blankpimenkoquestionnaire=false) {
+    protected function question_survey_display( $data, $descendantsdata, $blankpimenkoquestionnaire = false ) {
         return '';
     }
 
-    protected function response_survey_display($data) {
+    protected function response_survey_display( $data ) {
         return '';
     }
 
-    public function edit_form(edit_question_form $form, pimenkoquestionnaire $pimenkoquestionnaire) {
+    public function edit_form( edit_question_form $form, pimenkoquestionnaire $pimenkoquestionnaire ) {
         return false;
     }
 }

@@ -17,14 +17,14 @@
 /**
  * Manage feedback sections.
  *
- * @package mod_pimenkoquestionnaire
+ * @package    mod_pimenkoquestionnaire
  * @copyright  2016 onward Mike Churchward (mike.churchward@poetgroup.org)
- * @author Joseph Rezeau
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ * @author     Joseph Rezeau
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
 $id = required_param('id', PARAM_INT);    // Course module ID.
 $section = optional_param('section', 1, PARAM_INT);
@@ -35,15 +35,15 @@ $currentgroupid = optional_param('group', 0, PARAM_INT); // Groupid.
 $action = optional_param('action', '', PARAM_ALPHA);
 $sectionid = optional_param('sectionid', 0, PARAM_INT);
 
-if (! $cm = get_coursemodule_from_id('pimenkoquestionnaire', $id)) {
+if (!$cm = get_coursemodule_from_id('pimenkoquestionnaire', $id)) {
     print_error('invalidcoursemodule');
 }
 
-if (! $course = $DB->get_record("course", ["id" => $cm->course])) {
+if (!$course = $DB->get_record("course", ["id" => $cm->course])) {
     print_error('coursemisconf');
 }
 
-if (! $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $cm->instance])) {
+if (!$pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $cm->instance])) {
     print_error('invalidcoursemodule');
 }
 
@@ -75,8 +75,9 @@ if ($sectionid) {
 
 } else {
     // Get the specified section by section number.
-    $feedbacksection = new mod_pimenkoquestionnaire\feedback\section(['surveyid' => $pimenkoquestionnaire->survey->id, 'sectionnum' => $section],
-        $pimenkoquestionnaire->questions);
+    $feedbacksection = new mod_pimenkoquestionnaire\feedback\section(['surveyid' => $pimenkoquestionnaire->survey->id,
+            'sectionnum' => $section],
+            $pimenkoquestionnaire->questions);
 }
 
 // Get all questions that are valid feedback questions.
@@ -116,7 +117,7 @@ $customdata->feedbacksection = $feedbacksection;
 $customdata->validquestions = $validquestions;
 $customdata->survey = $pimenkoquestionnaire->survey;
 $customdata->sectionselect = $DB->get_records_menu('pimenko_fb_sections', ['surveyid' => $pimenkoquestionnaire->survey->id],
-    'section', 'id,sectionlabel');
+        'section', 'id,sectionlabel');
 
 $feedbackform = new \mod_pimenkoquestionnaire\feedback_section_form('fbsections.php', $customdata);
 $sdata = clone($feedbacksection);
@@ -126,7 +127,7 @@ $sdata->id = $cm->id;
 
 $draftideditor = file_get_submitted_draft_itemid('sectionheading');
 $currentinfo = file_prepare_draft_area($draftideditor, $context->id, 'mod_pimenkoquestionnaire', 'sectionheading',
-    $feedbacksection->id, ['subdirs' => true], $feedbacksection->sectionheading);
+        $feedbacksection->id, ['subdirs' => true], $feedbacksection->sectionheading);
 $sdata->sectionheading = ['text' => $currentinfo, 'format' => FORMAT_HTML, 'itemid' => $draftideditor];
 
 $feedbackform->set_data($sdata);
@@ -142,21 +143,22 @@ if ($settings = $feedbackform->get_data()) {
     if (isset($settings->gotosection)) {
         if ($settings->navigatesections != $feedbacksection->id) {
             redirect(new moodle_url('/mod/pimenkoquestionnaire/fbsections.php',
-                ['id' => $cm->id, 'sectionid' => $settings->navigatesections]));
+                    ['id' => $cm->id, 'sectionid' => $settings->navigatesections]));
         }
 
     } else if (isset($settings->addnewsection)) {
-        $newsection = mod_pimenkoquestionnaire\feedback\section::new_section($pimenkoquestionnaire->survey->id, $settings->newsectionlabel);
+        $newsection = mod_pimenkoquestionnaire\feedback\section::new_section($pimenkoquestionnaire->survey->id,
+                $settings->newsectionlabel);
         redirect(new moodle_url('/mod/pimenkoquestionnaire/fbsections.php', ['id' => $cm->id, 'sectionid' => $newsection->id]));
 
     } else if (isset($fullform->confirmdeletesection)) {
         redirect(new moodle_url('/mod/pimenkoquestionnaire/fbsections.php',
-            ['id' => $cm->id, 'sectionid' => $feedbacksection->id, 'action' => 'confirmdeletesection']));
+                ['id' => $cm->id, 'sectionid' => $feedbacksection->id, 'action' => 'confirmdeletesection']));
 
     } else if (isset($fullform->confirmremovequestion)) {
         $qid = key($fullform->confirmremovequestion);
         redirect(new moodle_url('/mod/pimenkoquestionnaire/fbsections.php',
-            ['id' => $cm->id, 'sectionid' => $settings->sectionid, 'action' => 'confirmremovequestion', 'qid' => $qid]));
+                ['id' => $cm->id, 'sectionid' => $settings->sectionid, 'action' => 'confirmremovequestion', 'qid' => $qid]));
 
     } else if (isset($settings->addquestion)) {
         $scorecalculation = [];
@@ -184,9 +186,10 @@ if ($settings = $feedbackform->get_data()) {
             $feedbacksection->scorecalculation = [];
         }
         $feedbacksection->sectionlabel = $settings->sectionlabel;
-        $feedbacksection->sectionheading = file_save_draft_area_files((int)$settings->sectionheading['itemid'], $context->id,
-            'mod_pimenkoquestionnaire', 'sectionheading', $feedbacksection->id, ['subdirs' => false, 'maxfiles' => -1, 'maxbytes' => 0],
-            $settings->sectionheading['text']);
+        $feedbacksection->sectionheading = file_save_draft_area_files((int) $settings->sectionheading['itemid'], $context->id,
+                'mod_pimenkoquestionnaire', 'sectionheading', $feedbacksection->id,
+                ['subdirs' => false, 'maxfiles' => -1, 'maxbytes' => 0],
+                $settings->sectionheading['text']);
         $feedbacksection->sectionheadingformat = $settings->sectionheading['format'];
 
         // May have changed the section label and weights, so update the data.
@@ -230,9 +233,10 @@ if ($settings = $feedbackform->get_data()) {
 
             $fbid = $feedbacksection->load_sectionfeedback($feedback);
 
-            $feedbacktext = file_save_draft_area_files((int)$settings->feedbacktext[$i]['itemid'],
-                $context->id, 'mod_pimenkoquestionnaire', 'feedback', $fbid, ['subdirs' => false, 'maxfiles' => -1, 'maxbytes' => 0],
-                $settings->feedbacktext[$i]['text']);
+            $feedbacktext = file_save_draft_area_files((int) $settings->feedbacktext[$i]['itemid'],
+                    $context->id, 'mod_pimenkoquestionnaire', 'feedback', $fbid,
+                    ['subdirs' => false, 'maxfiles' => -1, 'maxbytes' => 0],
+                    $settings->feedbacktext[$i]['text']);
             $feedbacksection->sectionfeedback[$fbid]->feedbacktext = $feedbacktext;
         }
 
@@ -256,7 +260,8 @@ if ($action == 'confirmremovequestion') {
     $msgargs = new stdClass();
     $msgargs->qname = $pimenkoquestionnaire->questions[$qid]->name;
     $msgargs->sname = $feedbacksection->sectionlabel;
-    $msg = '<div class="warning centerpara"><p>' . get_string('confirmremovequestion', 'pimenkoquestionnaire', $msgargs) . '</p></div>';
+    $msg = '<div class="warning centerpara"><p>' . get_string('confirmremovequestion', 'pimenkoquestionnaire', $msgargs) .
+            '</p></div>';
     $args = ['id' => $pimenkoquestionnaire->cm->id, 'sectionid' => $sectionid];
     $urlno = new moodle_url('/mod/pimenkoquestionnaire/fbsections.php', $args);
     $args['action'] = 'removequestion';
@@ -269,7 +274,7 @@ if ($action == 'confirmremovequestion') {
 } else if ($action == 'confirmdeletesection') {
     $sectionid = required_param('sectionid', PARAM_INT);
     $msg = '<div class="warning centerpara"><p>' .
-        get_string('confirmdeletesection', 'pimenkoquestionnaire', $feedbacksection->sectionlabel) . '</p></div>';
+            get_string('confirmdeletesection', 'pimenkoquestionnaire', $feedbacksection->sectionlabel) . '</p></div>';
     $args = ['id' => $pimenkoquestionnaire->cm->id, 'sectionid' => $sectionid];
     $urlno = new moodle_url('/mod/pimenkoquestionnaire/fbsections.php', $args);
     $args['action'] = 'deletesection';

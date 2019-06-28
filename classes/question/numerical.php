@@ -17,7 +17,7 @@
 /**
  * This file contains the parent class for numeric question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
@@ -31,7 +31,7 @@ class numerical extends base {
      * Constructor. Use to set any default properties.
      *
      */
-    public function __construct($id = 0, $question = null, $context = null, $params = []) {
+    public function __construct( $id = 0, $question = null, $context = null, $params = [] ) {
         $this->length = 10;
         return parent::__construct($id, $question, $context, $params);
     }
@@ -46,6 +46,7 @@ class numerical extends base {
 
     /**
      * Override and return a form template if provided. Output of question_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function question_template() {
@@ -54,6 +55,7 @@ class numerical extends base {
 
     /**
      * Override and return a response template if provided. Output of response_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function response_template() {
@@ -62,22 +64,24 @@ class numerical extends base {
 
     /**
      * Return the context tags for the check question template.
-     * @param object $data
-     * @param string $descendantdata
+     *
+     * @param object  $data
+     * @param string  $descendantdata
      * @param boolean $blankpimenkoquestionnaire
+     *
      * @return object The check question context tags.
      *
      */
-    protected function question_survey_display($data, $descendantsdata, $blankpimenkoquestionnaire=false) {
+    protected function question_survey_display( $data, $descendantsdata, $blankpimenkoquestionnaire = false ) {
         // Numeric.
         $questiontags = new \stdClass();
         $precision = $this->precise;
         $a = '';
-        if (isset($data->{'q'.$this->id})) {
-            $mynumber = $data->{'q'.$this->id};
+        if (isset($data->{'q' . $this->id})) {
+            $mynumber = $data->{'q' . $this->id};
             if ($mynumber != '') {
                 $mynumber0 = $mynumber;
-                if (!is_numeric($mynumber) ) {
+                if (!is_numeric($mynumber)) {
                     $msg = get_string('notanumber', 'pimenkoquestionnaire', $mynumber);
                     $this->add_notification($msg);
                 } else {
@@ -85,13 +89,13 @@ class numerical extends base {
                         $pos = strpos($mynumber, '.');
                         if (!$pos) {
                             if (strlen($mynumber) > $this->length) {
-                                $mynumber = substr($mynumber, 0 , $this->length);
+                                $mynumber = substr($mynumber, 0, $this->length);
                             }
                         }
                         $this->length += (1 + $precision); // To allow for n numbers after decimal point.
                     }
-                    $mynumber = number_format($mynumber, $precision , '.', '');
-                    if ( $mynumber != $mynumber0) {
+                    $mynumber = number_format($mynumber, $precision, '.', '');
+                    if ($mynumber != $mynumber0) {
                         $a->number = $mynumber0;
                         $a->precision = $precision;
                         $msg = get_string('numberfloat', 'pimenkoquestionnaire', $a);
@@ -100,16 +104,16 @@ class numerical extends base {
                 }
             }
             if ($mynumber != '') {
-                $data->{'q'.$this->id} = $mynumber;
+                $data->{'q' . $this->id} = $mynumber;
             }
         }
 
         $choice = new \stdClass();
         $choice->onkeypress = 'return event.keyCode != 13;';
         $choice->size = $this->length;
-        $choice->name = 'q'.$this->id;
+        $choice->name = 'q' . $this->id;
         $choice->maxlength = $this->length;
-        $choice->value = (isset($data->{'q'.$this->id}) ? $data->{'q'.$this->id} : '');
+        $choice->value = (isset($data->{'q' . $this->id}) ? $data->{'q' . $this->id} : '');
         $choice->id = self::qtypename($this->type_id) . $this->id;
         $questiontags->qelements = new \stdClass();
         $questiontags->qelements->choice = $choice;
@@ -118,14 +122,16 @@ class numerical extends base {
 
     /**
      * Return the context tags for the numeric response template.
+     *
      * @param object $data
+     *
      * @return object The numeric question response context tags.
      *
      */
-    protected function response_survey_display($data) {
+    protected function response_survey_display( $data ) {
         $resptags = new \stdClass();
-        if (isset($data->{'q'.$this->id})) {
-            $resptags->content = $data->{'q'.$this->id};
+        if (isset($data->{'q' . $this->id})) {
+            $resptags->content = $data->{'q' . $this->id};
         }
         return $resptags;
     }
@@ -134,24 +140,25 @@ class numerical extends base {
      * Check question's form data for valid response. Override this is type has specific format requirements.
      *
      * @param object $responsedata The data entered into the response.
+     *
      * @return boolean
      */
-    public function response_valid($responsedata) {
-        if (isset($responsedata->{'q'.$this->id})) {
+    public function response_valid( $responsedata ) {
+        if (isset($responsedata->{'q' . $this->id})) {
             // If commas are present, replace them with periods, in case that was meant as the European decimal place.
-            $responseval = str_replace(',', '.', $responsedata->{'q'.$this->id});
+            $responseval = str_replace(',', '.', $responsedata->{'q' . $this->id});
             return (($responseval == '') || is_numeric($responseval));
         } else {
             return parent::response_valid($responsedata);
         }
     }
 
-    protected function form_length(\MoodleQuickForm $mform, $helptext = '') {
+    protected function form_length( \MoodleQuickForm $mform, $helptext = '' ) {
         $this->length = isset($this->length) ? $this->length : 10;
         return parent::form_length($mform, 'maxdigitsallowed');
     }
 
-    protected function form_precise(\MoodleQuickForm $mform, $helptext = '') {
+    protected function form_precise( \MoodleQuickForm $mform, $helptext = '' ) {
         return parent::form_precise($mform, 'numberofdecimaldigits');
     }
 }

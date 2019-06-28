@@ -24,10 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2018110108;  // The current module version (Date: YYYYMMDDXX)
+$plugin->version = 2018110108;  // The current module version (Date: YYYYMMDDXX)
 $plugin->requires = 2018120300; // Moodle version.
 
 $plugin->component = 'mod_pimenkoquestionnaire';
 
-$plugin->release  = '3.6.1 (Build - 2019052400)';
-$plugin->maturity  = MATURITY_STABLE;
+$plugin->release = '3.6.1 (Build - 2019052400)';
+$plugin->maturity = MATURITY_STABLE;

@@ -19,28 +19,28 @@
 /**
  * Manage feedback settings.
  *
- * @package mod_pimenkoquestionnaire
+ * @package    mod_pimenkoquestionnaire
  * @copyright  2016 onward Mike Churchward (mike.churchward@poetgroup.org)
- * @author Joseph Rezeau
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ * @author     Joseph Rezeau
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
 
 $id = required_param('id', PARAM_INT);    // Course module ID.
 $currentgroupid = optional_param('group', 0, PARAM_INT); // Groupid.
 $action = optional_param('action', '', PARAM_ALPHA);
 
-if (! $cm = get_coursemodule_from_id('pimenkoquestionnaire', $id)) {
+if (!$cm = get_coursemodule_from_id('pimenkoquestionnaire', $id)) {
     print_error('invalidcoursemodule');
 }
 
-if (! $course = $DB->get_record("course", ["id" => $cm->course])) {
+if (!$course = $DB->get_record("course", ["id" => $cm->course])) {
     print_error('coursemisconf');
 }
 
-if (! $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $cm->instance])) {
+if (!$pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $cm->instance])) {
     print_error('invalidcoursemodule');
 }
 
@@ -48,7 +48,7 @@ if (! $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $
 require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 
-$PAGE->set_url(new moodle_url($CFG->wwwroot.'/mod/pimenkoquestionnaire/feedback.php', ['id' => $id]));
+$PAGE->set_url(new moodle_url($CFG->wwwroot . '/mod/pimenkoquestionnaire/feedback.php', ['id' => $id]));
 $PAGE->set_context($context);
 if (!isset($SESSION->pimenkoquestionnaire)) {
     $SESSION->pimenkoquestionnaire = new stdClass();
@@ -72,7 +72,7 @@ $sdata->id = $cm->id;
 
 $draftideditor = file_get_submitted_draft_itemid('feedbacknotes');
 $currentinfo = file_prepare_draft_area($draftideditor, $context->id, 'mod_pimenkoquestionnaire', 'feedbacknotes',
-    $sdata->sid, ['subdirs' => true], $pimenkoquestionnaire->survey->feedbacknotes);
+        $sdata->sid, ['subdirs' => true], $pimenkoquestionnaire->survey->feedbacknotes);
 $sdata->feedbacknotes = ['text' => $currentinfo, 'format' => FORMAT_HTML, 'itemid' => $draftideditor];
 
 $feedbackform->set_data($sdata);
@@ -103,7 +103,7 @@ if ($settings = $feedbackform->get_data()) {
             $sdata->fbnotesformat = $settings->feedbacknotes['format'];
             $sdata->feedbacknotes = $settings->feedbacknotes['text'];
             $sdata->feedbacknotes = file_save_draft_area_files($sdata->fbnotesitemid, $context->id, 'mod_pimenkoquestionnaire',
-                'feedbacknotes', $sdata->id, ['subdirs' => true], $sdata->feedbacknotes);
+                    'feedbacknotes', $sdata->id, ['subdirs' => true], $sdata->feedbacknotes);
         } else {
             $sdata->feedbacknotes = '';
         }

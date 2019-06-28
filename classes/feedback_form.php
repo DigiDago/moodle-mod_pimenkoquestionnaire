@@ -17,10 +17,10 @@
 /**
  * Print the form to manage feedback settings.
  *
- * @package mod_pimenkoquestionnaire
+ * @package    mod_pimenkoquestionnaire
  * @copyright  2016 onward Mike Churchward (mike.churchward@poetgroup.org)
- * @author Joseph Rezeau
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ * @author     Joseph Rezeau
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
 namespace mod_pimenkoquestionnaire;
@@ -28,7 +28,7 @@ namespace mod_pimenkoquestionnaire;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/formslib.php');
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/lib.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/lib.php');
 
 class feedback_form extends \moodleform {
 
@@ -56,11 +56,11 @@ class feedback_form extends \moodleform {
         if (get_config('pimenkoquestionnaire', 'usergraph')) {
             $chartgroup = [];
             $charttypes = [null => get_string('none'),
-                'bipolar' => get_string('chart:bipolar', 'pimenkoquestionnaire'),
-                'vprogress' => get_string('chart:vprogress', 'pimenkoquestionnaire')];
+                    'bipolar' => get_string('chart:bipolar', 'pimenkoquestionnaire'),
+                    'vprogress' => get_string('chart:vprogress', 'pimenkoquestionnaire')];
             $chartgroup[] = $mform->createElement('select', 'chart_type_global',
-                get_string('chart:type', 'pimenkoquestionnaire') . ' (' .
-                get_string('feedbackglobal', 'pimenkoquestionnaire') . ')', $charttypes);
+                    get_string('chart:type', 'pimenkoquestionnaire') . ' (' .
+                    get_string('feedbackglobal', 'pimenkoquestionnaire') . ')', $charttypes);
             if ($pimenkoquestionnaire->survey->feedbacksections == 1) {
                 $mform->setDefault('chart_type_global', $pimenkoquestionnaire->survey->chart_type);
             }
@@ -68,25 +68,25 @@ class feedback_form extends \moodleform {
             $mform->disabledIf('chart_type_global', 'feedbacksections', 'neq', 1);
 
             $charttypes = [null => get_string('none'),
-                'bipolar' => get_string('chart:bipolar', 'pimenkoquestionnaire'),
-                'hbar' => get_string('chart:hbar', 'pimenkoquestionnaire'),
-                'rose' => get_string('chart:rose', 'pimenkoquestionnaire')];
+                    'bipolar' => get_string('chart:bipolar', 'pimenkoquestionnaire'),
+                    'hbar' => get_string('chart:hbar', 'pimenkoquestionnaire'),
+                    'rose' => get_string('chart:rose', 'pimenkoquestionnaire')];
             $chartgroup[] = $mform->createElement('select', 'chart_type_two_sections',
-                get_string('chart:type', 'pimenkoquestionnaire') . ' (' .
-                get_string('feedbackbysection', 'pimenkoquestionnaire') . ')', $charttypes);
+                    get_string('chart:type', 'pimenkoquestionnaire') . ' (' .
+                    get_string('feedbackbysection', 'pimenkoquestionnaire') . ')', $charttypes);
             if ($pimenkoquestionnaire->survey->feedbacksections > 1) {
                 $mform->setDefault('chart_type_two_sections', $pimenkoquestionnaire->survey->chart_type);
             }
             $mform->disabledIf('chart_type_two_sections', 'feedbacksections', 'neq', 2);
 
             $charttypes = [null => get_string('none'),
-                'bipolar' => get_string('chart:bipolar', 'pimenkoquestionnaire'),
-                'hbar' => get_string('chart:hbar', 'pimenkoquestionnaire'),
-                'radar' => get_string('chart:radar', 'pimenkoquestionnaire'),
-                'rose' => get_string('chart:rose', 'pimenkoquestionnaire')];
+                    'bipolar' => get_string('chart:bipolar', 'pimenkoquestionnaire'),
+                    'hbar' => get_string('chart:hbar', 'pimenkoquestionnaire'),
+                    'radar' => get_string('chart:radar', 'pimenkoquestionnaire'),
+                    'rose' => get_string('chart:rose', 'pimenkoquestionnaire')];
             $chartgroup[] = $mform->createElement('select', 'chart_type_sections',
-                get_string('chart:type', 'pimenkoquestionnaire') . ' (' .
-                get_string('feedbackbysection', 'pimenkoquestionnaire') . ')', $charttypes);
+                    get_string('chart:type', 'pimenkoquestionnaire') . ' (' .
+                    get_string('feedbackbysection', 'pimenkoquestionnaire') . ')', $charttypes);
             if ($pimenkoquestionnaire->survey->feedbacksections > 1) {
                 $mform->setDefault('chart_type_sections', $pimenkoquestionnaire->survey->chart_type);
             }
@@ -95,7 +95,7 @@ class feedback_form extends \moodleform {
             $mform->disabledIf('chart_type_sections', 'feedbacksections', 'eq', 2);
 
             $mform->addGroup($chartgroup, 'chartgroup',
-                get_string('chart:type', 'pimenkoquestionnaire'), null, false);
+                    get_string('chart:type', 'pimenkoquestionnaire'), null, false);
             $mform->addHelpButton('chartgroup', 'chart:type', 'pimenkoquestionnaire');
         }
         $editoroptions = ['maxfiles' => EDITOR_UNLIMITED_FILES, 'trusttext' => true];
@@ -113,8 +113,10 @@ class feedback_form extends \moodleform {
 
         // Can't seem to disable or hide one button in the group, so create two different button sets and hide one.
         $buttongroup = [];
-        $buttongroup[] = $mform->createElement('submit', 'feedbacksettingsbutton1', get_string('savesettings', 'pimenkoquestionnaire'));
-        $buttongroup[] = $mform->createElement('submit', 'feedbackeditbutton', get_string('feedbackeditsections', 'pimenkoquestionnaire'));
+        $buttongroup[] =
+                $mform->createElement('submit', 'feedbacksettingsbutton1', get_string('savesettings', 'pimenkoquestionnaire'));
+        $buttongroup[] =
+                $mform->createElement('submit', 'feedbackeditbutton', get_string('feedbackeditsections', 'pimenkoquestionnaire'));
         $mform->addGroup($buttongroup, 'buttongroup');
         if (moodle_major_version() == '3.3') {
             $mform->disabledIf('buttongroup', 'feedbacksections', 'eq', 0);
@@ -130,7 +132,7 @@ class feedback_form extends \moodleform {
         }
     }
 
-    public function validation($data, $files) {
+    public function validation( $data, $files ) {
         $errors = parent::validation($data, $files);
         return $errors;
     }

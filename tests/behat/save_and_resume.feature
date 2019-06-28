@@ -1,40 +1,40 @@
 @mod @mod_pimenkoquestionnaire
 Feature: Questionnaire responses can be saved and resumed without submitting.
-  When save is used on a response, a response can be resumed with the saved responses intact.
+When save is used on a response, a response can be resumed with the saved responses intact.
 
   Background: Add a pimenkoquestionnaire with "Save/Resume answers" set to "Yes".
     Given the following "users" exist:
-      | username | firstname | lastname | email |
-      | teacher1 | Teacher | 1 | teacher1@example.com |
-      | student1 | Student | 1 | student1@example.com |
+      | username | firstname | lastname | email                |
+      | teacher1 | Teacher   | 1        | teacher1@example.com |
+      | student1 | Student   | 1        | student1@example.com |
     And the following "courses" exist:
       | fullname | shortname | category |
-      | Course 1 | C1 | 0 |
+      | Course 1 | C1        | 0        |
     And the following "course enrolments" exist:
-      | user | course | role |
-      | teacher1 | C1 | editingteacher |
-      | student1 | C1 | student |
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+      | student1 | C1     | student        |
     And the following "activities" exist:
-      | activity | name | description | course | idnumber | resume |
-      | pimenkoquestionnaire | Questionnaire 1 | Questionnaire description | C1 | questionnaire0 | 1 |
+      | activity             | name            | description               | course | idnumber       | resume |
+      | pimenkoquestionnaire | Questionnaire 1 | Questionnaire description | C1     | questionnaire0 | 1      |
 
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Questionnaire 1"
     And I navigate to "Questions" in current page administration
     And I add a "Check Boxes" question and I fill the form with:
-      | Question Name | Q1 |
-      | Yes | y |
-      | Min. forced responses | 1 |
-      | Max. forced responses | 2 |
-      | Question Text | Select one or two choices only |
-      | Possible answers | One,Two,Three,Four |
+      | Question Name         | Q1                             |
+      | Yes                   | y                              |
+      | Min. forced responses | 1                              |
+      | Max. forced responses | 2                              |
+      | Question Text         | Select one or two choices only |
+      | Possible answers      | One,Two,Three,Four             |
     Then I should see "[Check Boxes] (Q1)"
     And I should see "Select one or two choices only"
     And I add a "Dropdown Box" question and I fill the form with:
-      | Question Name | Q2 |
-      | No | n |
-      | Question Text | Select one choice |
+      | Question Name    | Q2                 |
+      | No               | n                  |
+      | Question Text    | Select one choice  |
       | Possible answers | One,Two,Three,Four |
     Then I should see "[Dropdown Box] (Q2)"
     And I should see "Select one choice"

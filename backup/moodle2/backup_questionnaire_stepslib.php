@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod_pimenkoquestionnaire
+ * @package    mod_pimenkoquestionnaire
  * @copyright  2016 Mike Churchward (mike.churchward@poetgroup.org)
  * @author     Mike Churchward
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -38,78 +38,78 @@ class backup_pimenkoquestionnaire_activity_structure_step extends backup_activit
         $userinfo = $this->get_setting_value('userinfo');
 
         // Define each element separated.
-        $pimenkoquestionnaire = new backup_nested_element('pimenkoquestionnaire', array('id'), array(
-            'course', 'name', 'intro', 'introformat', 'qtype',
-            'respondenttype', 'resp_eligible', 'resp_view', 'notifications', 'opendate',
-            'closedate', 'resume', 'navigate', 'grade', 'sid', 'timemodified', 'completionsubmit', 'autonum'));
+        $pimenkoquestionnaire = new backup_nested_element('pimenkoquestionnaire', ['id'], [
+                'course', 'name', 'intro', 'introformat', 'qtype',
+                'respondenttype', 'resp_eligible', 'resp_view', 'notifications', 'opendate',
+                'closedate', 'resume', 'navigate', 'grade', 'sid', 'timemodified', 'completionsubmit', 'autonum']);
 
         $surveys = new backup_nested_element('surveys');
 
-        $survey = new backup_nested_element('survey', array('id'), array(
-            'name', 'courseid', 'realm', 'status', 'title', 'email', 'subtitle',
-            'info', 'theme', 'thanks_page', 'thank_head', 'thank_body', 'feedbacksections',
-            'feedbacknotes', 'feedbackscores', 'chart_type'));
+        $survey = new backup_nested_element('survey', ['id'], [
+                'name', 'courseid', 'realm', 'status', 'title', 'email', 'subtitle',
+                'info', 'theme', 'thanks_page', 'thank_head', 'thank_body', 'feedbacksections',
+                'feedbacknotes', 'feedbackscores', 'chart_type']);
 
         $questions = new backup_nested_element('questions');
 
-        $question = new backup_nested_element('question', array('id'), array('surveyid', 'name', 'type_id', 'result_id',
-            'length', 'precise', 'position', 'content', 'required', 'deleted'));
+        $question = new backup_nested_element('question', ['id'], ['surveyid', 'name', 'type_id', 'result_id',
+                'length', 'precise', 'position', 'content', 'required', 'deleted']);
 
         $questchoices = new backup_nested_element('quest_choices');
 
-        $questchoice = new backup_nested_element('quest_choice', array('id'), array('question_id', 'content', 'value'));
+        $questchoice = new backup_nested_element('quest_choice', ['id'], ['question_id', 'content', 'value']);
 
         $questdependencies = new backup_nested_element('quest_dependencies');
 
-        $questdependency = new backup_nested_element('quest_dependency', array('id'), array(
-            'dependquestionid', 'dependchoiceid', 'dependlogic', 'questionid', 'surveyid', 'dependandor'));
+        $questdependency = new backup_nested_element('quest_dependency', ['id'], [
+                'dependquestionid', 'dependchoiceid', 'dependlogic', 'questionid', 'surveyid', 'dependandor']);
 
         $fbsections = new backup_nested_element('fb_sections');
 
-        $fbsection = new backup_nested_element('fb_section', array('id'), array(
-                'surveyid', 'section', 'scorecalculation', 'sectionlabel', 'sectionheading', 'sectionheadingformat'));
+        $fbsection = new backup_nested_element('fb_section', ['id'], [
+                'surveyid', 'section', 'scorecalculation', 'sectionlabel', 'sectionheading', 'sectionheadingformat']);
 
         $feedbacks = new backup_nested_element('feedbacks');
 
-        $feedback = new backup_nested_element('feedback', array('id'), array(
-                'sectionid', 'feedbacklabel', 'feedbacktext', 'feedbacktextformat', 'minscore', 'maxscore'));
+        $feedback = new backup_nested_element('feedback', ['id'], [
+                'sectionid', 'feedbacklabel', 'feedbacktext', 'feedbacktextformat', 'minscore', 'maxscore']);
 
         $responses = new backup_nested_element('responses');
 
-        $response = new backup_nested_element('response', array('id'), array(
-            'pimenkoquestionnaireid', 'submitted', 'complete', 'grade', 'userid'));
+        $response = new backup_nested_element('response', ['id'], [
+                'pimenkoquestionnaireid', 'submitted', 'complete', 'grade', 'userid']);
 
         $responsebools = new backup_nested_element('response_bools');
 
-        $responsebool = new backup_nested_element('response_bool', array('id'), array('response_id', 'question_id', 'choice_id'));
+        $responsebool = new backup_nested_element('response_bool', ['id'], ['response_id', 'question_id', 'choice_id']);
 
         $responsedates = new backup_nested_element('response_dates');
 
-        $responsedate = new backup_nested_element('response_date', array('id'), array('response_id', 'question_id', 'response'));
+        $responsedate = new backup_nested_element('response_date', ['id'], ['response_id', 'question_id', 'response']);
 
         $responsemultiples = new backup_nested_element('response_multiples');
 
-        $responsemultiple = new backup_nested_element('response_multiple', array('id'), array(
-            'response_id', 'question_id', 'choice_id'));
+        $responsemultiple = new backup_nested_element('response_multiple', ['id'], [
+                'response_id', 'question_id', 'choice_id']);
 
         $responseothers = new backup_nested_element('response_others');
 
-        $responseother = new backup_nested_element('response_other', array('id'), array(
-            'response_id', 'question_id', 'choice_id', 'response'));
+        $responseother = new backup_nested_element('response_other', ['id'], [
+                'response_id', 'question_id', 'choice_id', 'response']);
 
         $responseranks = new backup_nested_element('response_ranks');
 
-        $responserank = new backup_nested_element('response_rank', array('id'), array(
-            'response_id', 'question_id', 'choice_id', 'rankvalue'));
+        $responserank = new backup_nested_element('response_rank', ['id'], [
+                'response_id', 'question_id', 'choice_id', 'rankvalue']);
 
         $responsesingles = new backup_nested_element('response_singles');
 
-        $responsesingle = new backup_nested_element('response_single', array('id'), array(
-            'response_id', 'question_id', 'choice_id'));
+        $responsesingle = new backup_nested_element('response_single', ['id'], [
+                'response_id', 'question_id', 'choice_id']);
 
         $responsetexts = new backup_nested_element('response_texts');
 
-        $responsetext = new backup_nested_element('response_text', array('id'), array('response_id', 'question_id', 'response'));
+        $responsetext = new backup_nested_element('response_text', ['id'], ['response_id', 'question_id', 'response']);
 
         // Build the tree.
         $pimenkoquestionnaire->add_child($surveys);
@@ -155,12 +155,12 @@ class backup_pimenkoquestionnaire_activity_structure_step extends backup_activit
         $responsetexts->add_child($responsetext);
 
         // Define sources.
-        $pimenkoquestionnaire->set_source_table('pimenkoquestionnaire', array('id' => backup::VAR_ACTIVITYID));
+        $pimenkoquestionnaire->set_source_table('pimenkoquestionnaire', ['id' => backup::VAR_ACTIVITYID]);
 
         // Is current pimenkoquestionnaire based on a public pimenkoquestionnaire?
         $qid = $this->task->get_activityid();
-        $currentpimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", array ("id" => $qid));
-        $currentsurvey = $DB->get_record("pimenkoquestionnaire_survey", array ("id" => $currentpimenkoquestionnaire->sid));
+        $currentpimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $qid]);
+        $currentsurvey = $DB->get_record("pimenkoquestionnaire_survey", ["id" => $currentpimenkoquestionnaire->sid]);
         $haspublic = false;
         if ($currentsurvey->realm == 'public' && $currentsurvey->courseid != $currentpimenkoquestionnaire->course) {
             $haspublic = true;
@@ -168,23 +168,23 @@ class backup_pimenkoquestionnaire_activity_structure_step extends backup_activit
 
         // If current pimenkoquestionnaire is based on a public one, do not include survey nor questions in backup.
         if (!$haspublic) {
-            $survey->set_source_table('pimenkoquestionnaire_survey', array('id' => '../../sid'));
-            $question->set_source_table('pimenko_question', array('surveyid' => backup::VAR_PARENTID));
-            $fbsection->set_source_table('pimenko_fb_sections', array('surveyid' => backup::VAR_PARENTID));
-            $feedback->set_source_table('pimenko_feedbackections', array('sectionid' => backup::VAR_PARENTID));
-            $questchoice->set_source_table('pimenko_quest_choice', array('question_id' => backup::VAR_PARENTID));
-            $questdependency->set_source_table('pimenko_dependency', array('questionid' => backup::VAR_PARENTID));
+            $survey->set_source_table('pimenkoquestionnaire_survey', ['id' => '../../sid']);
+            $question->set_source_table('pimenko_question', ['surveyid' => backup::VAR_PARENTID]);
+            $fbsection->set_source_table('pimenko_fb_sections', ['surveyid' => backup::VAR_PARENTID]);
+            $feedback->set_source_table('pimenko_feedbackections', ['sectionid' => backup::VAR_PARENTID]);
+            $questchoice->set_source_table('pimenko_quest_choice', ['question_id' => backup::VAR_PARENTID]);
+            $questdependency->set_source_table('pimenko_dependency', ['questionid' => backup::VAR_PARENTID]);
 
             // All the rest of elements only happen if we are including user info.
             if ($userinfo) {
-                $response->set_source_table('pimenko_response', array('pimenkoquestionnaireid' => backup::VAR_PARENTID));
-                $responsebool->set_source_table('pimenko_response_bool', array('response_id' => backup::VAR_PARENTID));
-                $responsedate->set_source_table('pimenko_response_date', array('response_id' => backup::VAR_PARENTID));
-                $responsemultiple->set_source_table('pimenko_resp_multiple', array('response_id' => backup::VAR_PARENTID));
-                $responseother->set_source_table('pimenko_response_other', array('response_id' => backup::VAR_PARENTID));
-                $responserank->set_source_table('pimenko_response_rank', array('response_id' => backup::VAR_PARENTID));
-                $responsesingle->set_source_table('pimenko_resp_single', array('response_id' => backup::VAR_PARENTID));
-                $responsetext->set_source_table('pimenko_response_text', array('response_id' => backup::VAR_PARENTID));
+                $response->set_source_table('pimenko_response', ['pimenkoquestionnaireid' => backup::VAR_PARENTID]);
+                $responsebool->set_source_table('pimenko_response_bool', ['response_id' => backup::VAR_PARENTID]);
+                $responsedate->set_source_table('pimenko_response_date', ['response_id' => backup::VAR_PARENTID]);
+                $responsemultiple->set_source_table('pimenko_resp_multiple', ['response_id' => backup::VAR_PARENTID]);
+                $responseother->set_source_table('pimenko_response_other', ['response_id' => backup::VAR_PARENTID]);
+                $responserank->set_source_table('pimenko_response_rank', ['response_id' => backup::VAR_PARENTID]);
+                $responsesingle->set_source_table('pimenko_resp_single', ['response_id' => backup::VAR_PARENTID]);
+                $responsetext->set_source_table('pimenko_response_text', ['response_id' => backup::VAR_PARENTID]);
             }
 
             // Define id annotations.

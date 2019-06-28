@@ -17,13 +17,14 @@
 /**
  * This file contains the parent class for check question types.
  *
- * @author Mike Churchward
+ * @author  Mike Churchward
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package questiontypes
  */
 
 namespace mod_pimenkoquestionnaire\question;
 defined('MOODLE_INTERNAL') || die();
+
 use \html_writer;
 
 class check extends base {
@@ -45,6 +46,7 @@ class check extends base {
 
     /**
      * Override and return a form template if provided. Output of question_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function question_template() {
@@ -53,6 +55,7 @@ class check extends base {
 
     /**
      * Override and return a form template if provided. Output of response_survey_display is iterpreted based on this.
+     *
      * @return boolean | string
      */
     public function response_template() {
@@ -61,6 +64,7 @@ class check extends base {
 
     /**
      * Override this and return true if the question type allows dependent questions.
+     *
      * @return boolean
      */
     public function allows_dependents() {
@@ -69,28 +73,30 @@ class check extends base {
 
     /**
      * Return the context tags for the check question template.
-     * @param object $data
-     * @param array $dependants Array of all questions/choices depending on this question.
+     *
+     * @param object  $data
+     * @param array   $dependants Array of all questions/choices depending on this question.
      * @param boolean $blankpimenkoquestionnaire
+     *
      * @return object The check question context tags.
      *
      */
-    protected function question_survey_display($data, $dependants, $blankpimenkoquestionnaire=false) {
+    protected function question_survey_display( $data, $dependants, $blankpimenkoquestionnaire = false ) {
         // Check boxes.
         $otherempty = false;
-        if (!empty($data) ) {
-            if (!isset($data->{'q'.$this->id}) || !is_array($data->{'q'.$this->id})) {
-                $data->{'q'.$this->id} = array();
+        if (!empty($data)) {
+            if (!isset($data->{'q' . $this->id}) || !is_array($data->{'q' . $this->id})) {
+                $data->{'q' . $this->id} = [];
             }
             // Verify that number of checked boxes (nbboxes) is within set limits (length = min; precision = max).
-            if ( $data->{'q'.$this->id} ) {
+            if ($data->{'q' . $this->id}) {
                 $otherempty = false;
-                $boxes = $data->{'q'.$this->id};
+                $boxes = $data->{'q' . $this->id};
                 $nbboxes = count($boxes);
                 foreach ($boxes as $box) {
                     $pos = strpos($box, 'other_');
                     if (is_int($pos) == true) {
-                        $resp = 'q'.$this->id.''.substr($box, 5);
+                        $resp = 'q' . $this->id . '' . substr($box, 5);
                         if (isset($data->$resp) && (trim($data->$resp) == false)) {
                             $otherempty = true;
                         }
@@ -109,15 +115,15 @@ class check extends base {
                 if ($nbboxes < $min || $nbboxes > $max) {
                     $msg = get_string('boxesnbreq', 'pimenkoquestionnaire');
                     if ($min == $max) {
-                        $msg .= '&nbsp;'.get_string('boxesnbexact', 'pimenkoquestionnaire', $min);
+                        $msg .= '&nbsp;' . get_string('boxesnbexact', 'pimenkoquestionnaire', $min);
                     } else {
                         if ($min && ($nbboxes < $min)) {
                             $msg .= get_string('boxesnbmin', 'pimenkoquestionnaire', $min);
                             if ($nbboxes > $max) {
-                                $msg .= ' & ' .get_string('boxesnbmax', 'pimenkoquestionnaire', $max);
+                                $msg .= ' & ' . get_string('boxesnbmax', 'pimenkoquestionnaire', $max);
                             }
                         } else {
-                            if ($nbboxes > $max ) {
+                            if ($nbboxes > $max) {
                                 $msg .= get_string('boxesnbmax', 'pimenkoquestionnaire', $max);
                             }
                         }
@@ -136,42 +142,42 @@ class check extends base {
             if ($other !== 0) { // This is a normal check box.
                 $contents = pimenkoquestionnaire_choice_values($choice->content);
                 $checked = false;
-                if (!empty($data) ) {
-                    $checked = in_array($id, $data->{'q'.$this->id});
+                if (!empty($data)) {
+                    $checked = in_array($id, $data->{'q' . $this->id});
                 }
-                $checkbox->name = 'q'.$this->id.'[]';
+                $checkbox->name = 'q' . $this->id . '[]';
                 $checkbox->value = $id;
-                $checkbox->id = 'checkbox_'.$id;
-                $checkbox->label = format_text($contents->text, FORMAT_HTML, ['noclean' => true]).$contents->image;
+                $checkbox->id = 'checkbox_' . $id;
+                $checkbox->label = format_text($contents->text, FORMAT_HTML, ['noclean' => true]) . $contents->image;
                 if ($checked) {
                     $checkbox->checked = $checked;
                 }
             } else {             // Check box with associated !other text field.
                 // In case length field has been used to enter max number of choices, set it to 20.
                 $othertext = preg_replace(
-                        array("/^!other=/", "/^!other/"),
-                        array('', get_string('other', 'pimenkoquestionnaire')),
+                        ["/^!other=/", "/^!other/"],
+                        ['', get_string('other', 'pimenkoquestionnaire')],
                         $choice->content);
-                $cid = 'q'.$this->id.'_'.$id;
+                $cid = 'q' . $this->id . '_' . $id;
                 if (!empty($data) && isset($data->$cid) && (trim($data->$cid) != false)) {
                     $checked = true;
                 } else {
                     $checked = false;
                 }
-                $name = 'q'.$this->id.'[]';
-                $value = 'other_'.$id;
+                $name = 'q' . $this->id . '[]';
+                $value = 'other_' . $id;
 
                 $checkbox->name = $name;
                 $checkbox->oname = $cid;
                 $checkbox->value = $value;
                 $checkbox->ovalue = (isset($data->$cid) && !empty($data->$cid) ? stripslashes($data->$cid) : '');
-                $checkbox->id = 'checkbox_'.$id;
-                $checkbox->label = format_text($othertext.'', FORMAT_HTML, ['noclean' => true]);
+                $checkbox->id = 'checkbox_' . $id;
+                $checkbox->label = format_text($othertext . '', FORMAT_HTML, ['noclean' => true]);
                 if ($checked) {
                     $checkbox->checked = $checked;
                 }
             }
-            $choicetags->qelements[] = (object)['choice' => $checkbox];
+            $choicetags->qelements[] = (object) ['choice' => $checkbox];
         }
         if ($otherempty) {
             $this->add_notification(get_string('otherempty', 'pimenkoquestionnaire'));
@@ -182,43 +188,45 @@ class check extends base {
 
     /**
      * Return the context tags for the check response template.
+     *
      * @param object $data
+     *
      * @return object The check question response context tags.
      *
      */
-    protected function response_survey_display($data) {
+    protected function response_survey_display( $data ) {
         static $uniquetag = 0;  // To make sure all radios have unique names.
 
         $resptags = new \stdClass();
         $resptags->choices = [];
 
-        if (!isset($data->{'q'.$this->id}) || !is_array($data->{'q'.$this->id})) {
-            $data->{'q'.$this->id} = array();
+        if (!isset($data->{'q' . $this->id}) || !is_array($data->{'q' . $this->id})) {
+            $data->{'q' . $this->id} = [];
         }
 
         foreach ($this->choices as $id => $choice) {
             $chobj = new \stdClass();
             if (strpos($choice->content, '!other') !== 0) {
                 $contents = pimenkoquestionnaire_choice_values($choice->content);
-                $choice->content = $contents->text.$contents->image;
-                if (in_array($id, $data->{'q'.$this->id})) {
+                $choice->content = $contents->text . $contents->image;
+                if (in_array($id, $data->{'q' . $this->id})) {
                     $chobj->selected = 1;
                 }
-                $chobj->name = $id.$uniquetag++;
+                $chobj->name = $id . $uniquetag++;
                 $chobj->content = (($choice->content === '') ? $id : format_text($choice->content, FORMAT_HTML,
-                    ['noclean' => true]));
+                        ['noclean' => true]));
             } else {
                 $othertext = preg_replace(
-                        array("/^!other=/", "/^!other/"),
-                        array('', get_string('other', 'pimenkoquestionnaire')),
+                        ["/^!other=/", "/^!other/"],
+                        ['', get_string('other', 'pimenkoquestionnaire')],
                         $choice->content);
-                $cid = 'q'.$this->id.'_'.$id;
+                $cid = 'q' . $this->id . '_' . $id;
 
                 if (isset($data->$cid)) {
                     $chobj->selected = 1;
                     $chobj->othercontent = (!empty($data->$cid) ? htmlspecialchars($data->$cid) : '&nbsp;');
                 }
-                $chobj->name = $id.$uniquetag++;
+                $chobj->name = $id . $uniquetag++;
                 $chobj->content = (($othertext === '') ? $id : $othertext);
             }
             $resptags->choices[] = $chobj;
@@ -230,16 +238,17 @@ class check extends base {
      * Check question's form data for valid response. Override this is type has specific format requirements.
      *
      * @param object $responsedata The data entered into the response.
+     *
      * @return boolean
      */
-    public function response_valid($responsedata) {
+    public function response_valid( $responsedata ) {
         $valid = true;
-        if (isset($responsedata->{'q'.$this->id})) {
+        if (isset($responsedata->{'q' . $this->id})) {
             $nbrespchoices = 0;
-            foreach ($responsedata->{'q'.$this->id} as $resp) {
+            foreach ($responsedata->{'q' . $this->id} as $resp) {
                 if (strpos($resp, 'other_') !== false) {
                     // ..."other" choice is checked but text box is empty.
-                    $othercontent = "q".$this->id.substr($resp, 5);
+                    $othercontent = "q" . $this->id . substr($resp, 5);
                     if (trim($responsedata->$othercontent) == false) {
                         $valid = false;
                         break;
@@ -270,20 +279,20 @@ class check extends base {
         return $valid;
     }
 
-    protected function form_length(\MoodleQuickForm $mform, $helptext = '') {
+    protected function form_length( \MoodleQuickForm $mform, $helptext = '' ) {
         return parent::form_length($mform, 'minforcedresponses');
     }
 
-    protected function form_precise(\MoodleQuickForm $mform, $helptext = '') {
+    protected function form_precise( \MoodleQuickForm $mform, $helptext = '' ) {
         return parent::form_precise($mform, 'maxforcedresponses');
     }
 
     /**
      * Preprocess choice data.
      */
-    protected function form_preprocess_choicedata($formdata) {
+    protected function form_preprocess_choicedata( $formdata ) {
         if (empty($formdata->allchoices)) {
-            error (get_string('enterpossibleanswers', 'pimenkoquestionnaire'));
+            error(get_string('enterpossibleanswers', 'pimenkoquestionnaire'));
         } else {
             // Sanity checks for min and max checked boxes.
             $allchoices = $formdata->allchoices;

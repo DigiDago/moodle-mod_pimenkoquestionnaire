@@ -15,33 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
-require_once($CFG->dirroot.'/mod/pimenkoquestionnaire/classes/question/base.php'); // Needed for question type constants.
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/pimenkoquestionnaire.class.php');
+require_once($CFG->dirroot . '/mod/pimenkoquestionnaire/classes/question/base.php'); // Needed for question type constants.
 
-$id     = required_param('id', PARAM_INT);                 // Course module ID
+$id = required_param('id', PARAM_INT);                 // Course module ID
 $action = optional_param('action', 'main', PARAM_ALPHA);   // Screen.
-$qid    = optional_param('qid', 0, PARAM_INT);             // Question id.
-$moveq  = optional_param('moveq', 0, PARAM_INT);           // Question id to move.
-$delq   = optional_param('delq', 0, PARAM_INT);             // Question id to delete
-$qtype  = optional_param('type_id', 0, PARAM_INT);         // Question type.
+$qid = optional_param('qid', 0, PARAM_INT);             // Question id.
+$moveq = optional_param('moveq', 0, PARAM_INT);           // Question id to move.
+$delq = optional_param('delq', 0, PARAM_INT);             // Question id to delete
+$qtype = optional_param('type_id', 0, PARAM_INT);         // Question type.
 $currentgroupid = optional_param('group', 0, PARAM_INT); // Group id.
 
-if (! $cm = get_coursemodule_from_id('pimenkoquestionnaire', $id)) {
+if (!$cm = get_coursemodule_from_id('pimenkoquestionnaire', $id)) {
     print_error('invalidcoursemodule');
 }
 
-if (! $course = $DB->get_record("course", array("id" => $cm->course))) {
+if (!$course = $DB->get_record("course", ["id" => $cm->course])) {
     print_error('coursemisconf');
 }
 
-if (! $pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", array("id" => $cm->instance))) {
+if (!$pimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", ["id" => $cm->instance])) {
     print_error('invalidcoursemodule');
 }
 
 require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 
-$url = new moodle_url($CFG->wwwroot.'/mod/pimenkoquestionnaire/questions.php');
+$url = new moodle_url($CFG->wwwroot . '/mod/pimenkoquestionnaire/questions.php');
 $url->param('id', $id);
 if ($qid) {
     $url->param('qid', $qid);
@@ -85,15 +85,15 @@ if ($delq) {
 
     // Just in case the page is refreshed (F5) after a question has been deleted.
     if (isset($questions[$qid])) {
-        $select = 'surveyid = '.$sid.' AND deleted = \'n\' AND position > '.
-                        $questions[$qid]->position;
+        $select = 'surveyid = ' . $sid . ' AND deleted = \'n\' AND position > ' .
+                $questions[$qid]->position;
     } else {
-        redirect($CFG->wwwroot.'/mod/pimenkoquestionnaire/questions.php?id='.$pimenkoquestionnaire->cm->id);
+        redirect($CFG->wwwroot . '/mod/pimenkoquestionnaire/questions.php?id=' . $pimenkoquestionnaire->cm->id);
     }
 
     if ($records = $DB->get_records_select('pimenko_question', $select, null, 'position ASC')) {
         foreach ($records as $record) {
-            $DB->set_field('pimenko_question', 'position', $record->position - 1, array('id' => $record->id));
+            $DB->set_field('pimenko_question', 'position', $record->position - 1, ['id' => $record->id]);
         }
     }
     // Delete section breaks without asking for confirmation.
@@ -113,11 +113,11 @@ if ($delq) {
     // Log question deleted event.
     $context = context_module::instance($pimenkoquestionnaire->cm->id);
     $questiontype = \mod_pimenkoquestionnaire\question\base::qtypename($pimenkoquestionnaire->questions[$qid]->type_id);
-    $params = array(
-                    'context' => $context,
-                    'courseid' => $pimenkoquestionnaire->course->id,
-                    'other' => array('questiontype' => $questiontype)
-    );
+    $params = [
+            'context' => $context,
+            'courseid' => $pimenkoquestionnaire->course->id,
+            'other' => ['questiontype' => $questiontype]
+    ];
     $event = \mod_pimenkoquestionnaire\event\question_deleted::create($params);
     $event->trigger();
 
@@ -135,7 +135,7 @@ if ($action == 'main') {
     if (!empty($pimenkoquestionnaire->questions)) {
         $pos = 1;
         foreach ($pimenkoquestionnaire->questions as $qidx => $question) {
-            $sdata->{'pos_'.$qidx} = $pos;
+            $sdata->{'pos_' . $qidx} = $pos;
             $pos++;
         }
     }
@@ -143,7 +143,7 @@ if ($action == 'main') {
     if ($questionsform->is_cancelled()) {
         // Switch to main screen.
         $action = 'main';
-        redirect($CFG->wwwroot.'/mod/pimenkoquestionnaire/questions.php?id='.$pimenkoquestionnaire->cm->id);
+        redirect($CFG->wwwroot . '/mod/pimenkoquestionnaire/questions.php?id=' . $pimenkoquestionnaire->cm->id);
         $reload = true;
     }
     if ($qformdata = $questionsform->get_data()) {
@@ -172,7 +172,8 @@ if ($action == 'main') {
 
             // Delete section breaks without asking for confirmation.
             if ($qtype == QUESPAGEBREAK) {
-                redirect($CFG->wwwroot.'/mod/pimenkoquestionnaire/questions.php?id='.$pimenkoquestionnaire->cm->id.'&amp;delq='.$qid);
+                redirect($CFG->wwwroot . '/mod/pimenkoquestionnaire/questions.php?id=' . $pimenkoquestionnaire->cm->id .
+                        '&amp;delq=' . $qid);
             }
             if ($pimenkoquestionnairehasdependencies) {
                 // Important: due to possibly multiple parents per question
@@ -226,11 +227,9 @@ if ($action == 'main') {
 
         } else if (isset($qformdata->movebutton)) {
             // Nothing I do will seem to reload the form with new data, except for moving away from the page, so...
-            redirect($CFG->wwwroot.'/mod/pimenkoquestionnaire/questions.php?id='.$pimenkoquestionnaire->cm->id.
-                     '&moveq='.key($qformdata->movebutton));
+            redirect($CFG->wwwroot . '/mod/pimenkoquestionnaire/questions.php?id=' . $pimenkoquestionnaire->cm->id .
+                    '&moveq=' . key($qformdata->movebutton));
             $reload = true;
-
-
 
         } else if (isset($qformdata->moveherebutton)) {
             // Need to use the key, since IE returns the image position as the value rather than the specified
@@ -245,7 +244,7 @@ if ($action == 'main') {
                 $SESSION->pimenkoquestionnaire->validateresults = pimenkoquestionnaire_check_page_breaks($pimenkoquestionnaire);
             }
             // Nothing I do will seem to reload the form with new data, except for moving away from the page, so...
-            redirect($CFG->wwwroot.'/mod/pimenkoquestionnaire/questions.php?id='.$pimenkoquestionnaire->cm->id);
+            redirect($CFG->wwwroot . '/mod/pimenkoquestionnaire/questions.php?id=' . $pimenkoquestionnaire->cm->id);
             $reload = true;
 
         } else if (isset($qformdata->validate)) {
@@ -289,11 +288,11 @@ if ($action == 'main') {
     if (isset($qformdata)) {
         $context = context_module::instance($pimenkoquestionnaire->cm->id);
         $questiontype = \mod_pimenkoquestionnaire\question\base::qtypename($qformdata->type_id);
-        $params = array(
-                        'context' => $context,
-                        'courseid' => $pimenkoquestionnaire->course->id,
-                        'other' => array('questiontype' => $questiontype)
-        );
+        $params = [
+                'context' => $context,
+                'courseid' => $pimenkoquestionnaire->course->id,
+                'other' => ['questiontype' => $questiontype]
+        ];
         $event = \mod_pimenkoquestionnaire\event\question_created::create($params);
         $event->trigger();
     }
@@ -316,7 +315,7 @@ if ($reload) {
         if (!empty($pimenkoquestionnaire->questions)) {
             $pos = 1;
             foreach ($pimenkoquestionnaire->questions as $qidx => $question) {
-                $sdata->{'pos_'.$qidx} = $pos;
+                $sdata->{'pos_' . $qidx} = $pos;
                 $pos++;
             }
         }
@@ -354,9 +353,9 @@ if ($action == "confirmdelquestion" || $action == "confirmdelquestionparent") {
     // Count responses already saved for that question.
     $countresps = 0;
     if ($qtype != QUESSECTIONTEXT) {
-        $responsetable = $DB->get_field('pimenko_question_type', 'response_table', array('typeid' => $qtype));
+        $responsetable = $DB->get_field('pimenko_question_type', 'response_table', ['typeid' => $qtype]);
         if (!empty($responsetable)) {
-            $countresps = $DB->count_records('pimenko_'.$responsetable, array('question_id' => $qid));
+            $countresps = $DB->count_records('pimenko_' . $responsetable, ['question_id' => $qid]);
         }
     }
 
@@ -370,18 +369,18 @@ if ($action == "confirmdelquestion" || $action == "confirmdelquestionparent") {
 
     $qname = '';
     if ($question->name) {
-        $qname = ' ('.$question->name.')';
+        $qname = ' (' . $question->name . ')';
     }
 
     $num = get_string('position', 'pimenkoquestionnaire');
-    $pos = $question->position.$qname;
+    $pos = $question->position . $qname;
 
-    $msg = '<div class="warning centerpara"><p>'.get_string('confirmdelquestion', 'pimenkoquestionnaire', $pos).'</p>';
+    $msg = '<div class="warning centerpara"><p>' . get_string('confirmdelquestion', 'pimenkoquestionnaire', $pos) . '</p>';
     if ($countresps !== 0) {
-        $msg .= '<p>'.get_string('confirmdelquestionresps', 'pimenkoquestionnaire', $countresps).'</p>';
+        $msg .= '<p>' . get_string('confirmdelquestionresps', 'pimenkoquestionnaire', $countresps) . '</p>';
     }
     $msg .= '</div>';
-    $msg .= '<div class = "qn-container">'.$num.' '.$pos.'<div class="qn-question">'.$question->content.'</div></div>';
+    $msg .= '<div class = "qn-container">' . $num . ' ' . $pos . '<div class="qn-question">' . $question->content . '</div></div>';
     $args = "id={$pimenkoquestionnaire->cm->id}";
     $urlno = new moodle_url("/mod/pimenkoquestionnaire/questions.php?{$args}");
     $args .= "&delq={$qid}";

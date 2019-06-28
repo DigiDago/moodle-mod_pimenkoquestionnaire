@@ -17,7 +17,7 @@
 /**
  * prints the tabbed bar
  *
- * @package mod_pimenkoquestionnaire
+ * @package    mod_pimenkoquestionnaire
  * @copyright  2016 Mike Churchward (mike.churchward@poetgroup.org)
  * @author     Mike Churchward
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,10 +26,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $DB, $SESSION;
-$tabs = array();
-$row  = array();
-$inactive = array();
-$activated = array();
+$tabs = [];
+$row = [];
+$inactive = [];
+$activated = [];
 if (!isset($SESSION->pimenkoquestionnaire)) {
     $SESSION->pimenkoquestionnaire = new stdClass();
 }
@@ -39,60 +39,61 @@ $currenttab = $SESSION->pimenkoquestionnaire->current_tab;
 // viewing all responses...except in the course where that PUBLIC pimenkoquestionnaire was originally created.
 
 $owner = $pimenkoquestionnaire->is_survey_owner();
-if ($pimenkoquestionnaire->capabilities->manage  && $owner) {
-    $row[] = new tabobject('settings', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/qsettings.php?'.
-            'id='.$pimenkoquestionnaire->cm->id), get_string('advancedsettings'));
+if ($pimenkoquestionnaire->capabilities->manage && $owner) {
+    $row[] = new tabobject('settings', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/qsettings.php?' .
+                    'id=' . $pimenkoquestionnaire->cm->id), get_string('advancedsettings'));
 }
 
 if ($pimenkoquestionnaire->capabilities->editquestions && $owner) {
-    $row[] = new tabobject('questions', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/questions.php?'.
-            'id='.$pimenkoquestionnaire->cm->id), get_string('questions', 'pimenkoquestionnaire'));
+    $row[] = new tabobject('questions', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/questions.php?' .
+                    'id=' . $pimenkoquestionnaire->cm->id), get_string('questions', 'pimenkoquestionnaire'));
 }
 
 if ($pimenkoquestionnaire->capabilities->editquestions && $owner) {
-    $row[] = new tabobject('feedback', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/feedback.php?'.
-            'id='.$pimenkoquestionnaire->cm->id), get_string('feedback'));
+    $row[] = new tabobject('feedback', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/feedback.php?' .
+                    'id=' . $pimenkoquestionnaire->cm->id), get_string('feedback'));
 }
 
 if ($pimenkoquestionnaire->capabilities->preview && $owner) {
     if (!empty($pimenkoquestionnaire->questions)) {
-        $row[] = new tabobject('preview', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/preview.php?'.
-                        'id='.$pimenkoquestionnaire->cm->id), get_string('preview_label', 'pimenkoquestionnaire'));
+        $row[] = new tabobject('preview', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/preview.php?' .
+                        'id=' . $pimenkoquestionnaire->cm->id), get_string('preview_label', 'pimenkoquestionnaire'));
     }
 }
 
 $usernumresp = $pimenkoquestionnaire->count_submissions($USER->id);
 
 if ($pimenkoquestionnaire->capabilities->readownresponses && ($usernumresp > 0)) {
-    $argstr = 'instance='.$pimenkoquestionnaire->id.'&user='.$USER->id.'&group='.$currentgroupid;
+    $argstr = 'instance=' . $pimenkoquestionnaire->id . '&user=' . $USER->id . '&group=' . $currentgroupid;
     if ($usernumresp == 1) {
         $argstr .= '&byresponse=1&action=vresp';
         $yourrespstring = get_string('yourresponse', 'pimenkoquestionnaire');
     } else {
         $yourrespstring = get_string('yourresponses', 'pimenkoquestionnaire');
     }
-    $row[] = new tabobject('myreport', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/myreport.php?'.
-                           $argstr), $yourrespstring);
+    $row[] = new tabobject('myreport', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/myreport.php?' .
+                    $argstr), $yourrespstring);
 
-    if ($usernumresp > 1 && in_array($currenttab, array('mysummary', 'mybyresponse', 'myvall', 'mydownloadcsv'))) {
+    if ($usernumresp > 1 && in_array($currenttab, ['mysummary', 'mybyresponse', 'myvall', 'mydownloadcsv'])) {
         $inactive[] = 'myreport';
         $activated[] = 'myreport';
-        $row2 = array();
-        $argstr2 = $argstr.'&action=summary';
-        $row2[] = new tabobject('mysummary', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/myreport.php?'.$argstr2),
-                                get_string('summary', 'pimenkoquestionnaire'));
-        $argstr2 = $argstr.'&byresponse=1&action=vresp';
-        $row2[] = new tabobject('mybyresponse', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/myreport.php?'.$argstr2),
-                                get_string('viewindividualresponse', 'pimenkoquestionnaire'));
-        $argstr2 = $argstr.'&byresponse=0&action=vall&group='.$currentgroupid;
-        $row2[] = new tabobject('myvall', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/myreport.php?'.$argstr2),
-                                get_string('myresponses', 'pimenkoquestionnaire'));
+        $row2 = [];
+        $argstr2 = $argstr . '&action=summary';
+        $row2[] = new tabobject('mysummary', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/myreport.php?' . $argstr2),
+                get_string('summary', 'pimenkoquestionnaire'));
+        $argstr2 = $argstr . '&byresponse=1&action=vresp';
+        $row2[] = new tabobject('mybyresponse',
+                $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/myreport.php?' . $argstr2),
+                get_string('viewindividualresponse', 'pimenkoquestionnaire'));
+        $argstr2 = $argstr . '&byresponse=0&action=vall&group=' . $currentgroupid;
+        $row2[] = new tabobject('myvall', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/myreport.php?' . $argstr2),
+                get_string('myresponses', 'pimenkoquestionnaire'));
         if ($pimenkoquestionnaire->capabilities->downloadresponses) {
-            $argstr2 = $argstr.'&action=dwnpg';
-            $link  = $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2);
+            $argstr2 = $argstr . '&action=dwnpg';
+            $link = $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2);
             $row2[] = new tabobject('mydownloadcsv', $link, get_string('downloadtextformat', 'pimenkoquestionnaire'));
         }
-    } else if (in_array($currenttab, array('mybyresponse', 'mysummary'))) {
+    } else if (in_array($currenttab, ['mybyresponse', 'mysummary'])) {
         $inactive[] = 'myreport';
         $activated[] = 'myreport';
     }
@@ -118,103 +119,110 @@ $grouplogic = $canviewallgroups || $canviewgroups;
 $resplogic = ($numresp > 0) && ($numselectedresps > 0);
 
 if ($pimenkoquestionnaire->can_view_all_responses_anytime($grouplogic, $resplogic)) {
-    $argstr = 'instance='.$pimenkoquestionnaire->id;
-    $row[] = new tabobject('allreport', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.
-                           $argstr.'&action=vall'), get_string('viewallresponses', 'pimenkoquestionnaire'));
-    if (in_array($currenttab, array('vall', 'vresp', 'valldefault', 'vallasort', 'vallarsort', 'deleteall', 'downloadcsv',
-                                     'vrespsummary', 'individualresp', 'printresp', 'deleteresp'))) {
+    $argstr = 'instance=' . $pimenkoquestionnaire->id;
+    $row[] = new tabobject('allreport', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' .
+                    $argstr . '&action=vall'), get_string('viewallresponses', 'pimenkoquestionnaire'));
+    if (in_array($currenttab, ['vall', 'vresp', 'valldefault', 'vallasort', 'vallarsort', 'deleteall', 'downloadcsv',
+            'vrespsummary', 'individualresp', 'printresp', 'deleteresp'])) {
         $inactive[] = 'allreport';
         $activated[] = 'allreport';
         if ($currenttab == 'vrespsummary' || $currenttab == 'valldefault') {
             $inactive[] = 'vresp';
         }
-        $row2 = array();
-        $argstr2 = $argstr.'&action=vall&group='.$currentgroupid;
-        $row2[] = new tabobject('vall', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                                get_string('summary', 'pimenkoquestionnaire'));
+        $row2 = [];
+        $argstr2 = $argstr . '&action=vall&group=' . $currentgroupid;
+        $row2[] = new tabobject('vall', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                get_string('summary', 'pimenkoquestionnaire'));
         if ($pimenkoquestionnaire->capabilities->viewsingleresponse) {
-            $argstr2 = $argstr.'&byresponse=1&action=vresp&group='.$currentgroupid;
-            $row2[] = new tabobject('vrespsummary', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                                get_string('viewbyresponse', 'pimenkoquestionnaire'));
+            $argstr2 = $argstr . '&byresponse=1&action=vresp&group=' . $currentgroupid;
+            $row2[] = new tabobject('vrespsummary',
+                    $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                    get_string('viewbyresponse', 'pimenkoquestionnaire'));
             if ($currenttab == 'individualresp' || $currenttab == 'deleteresp') {
-                $argstr2 = $argstr.'&byresponse=1&action=vresp';
-                $row2[] = new tabobject('vresp', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                        get_string('viewindividualresponse', 'pimenkoquestionnaire'));
+                $argstr2 = $argstr . '&byresponse=1&action=vresp';
+                $row2[] =
+                        new tabobject('vresp', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                                get_string('viewindividualresponse', 'pimenkoquestionnaire'));
             }
         }
     }
-    if (in_array($currenttab, array('valldefault',  'vallasort', 'vallarsort', 'deleteall', 'downloadcsv'))) {
+    if (in_array($currenttab, ['valldefault', 'vallasort', 'vallarsort', 'deleteall', 'downloadcsv'])) {
         $activated[] = 'vall';
-        $row3 = array();
+        $row3 = [];
 
-        $argstr2 = $argstr.'&action=vall&group='.$currentgroupid;
-        $row3[] = new tabobject('valldefault', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                                get_string('order_default', 'pimenkoquestionnaire'));
+        $argstr2 = $argstr . '&action=vall&group=' . $currentgroupid;
+        $row3[] = new tabobject('valldefault', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                get_string('order_default', 'pimenkoquestionnaire'));
         if ($currenttab != 'downloadcsv' && $currenttab != 'deleteall') {
-            $argstr2 = $argstr.'&action=vallasort&group='.$currentgroupid;
-            $row3[] = new tabobject('vallasort', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                                    get_string('order_ascending', 'pimenkoquestionnaire'));
-            $argstr2 = $argstr.'&action=vallarsort&group='.$currentgroupid;
-            $row3[] = new tabobject('vallarsort', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                                    get_string('order_descending', 'pimenkoquestionnaire'));
+            $argstr2 = $argstr . '&action=vallasort&group=' . $currentgroupid;
+            $row3[] =
+                    new tabobject('vallasort', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                            get_string('order_ascending', 'pimenkoquestionnaire'));
+            $argstr2 = $argstr . '&action=vallarsort&group=' . $currentgroupid;
+            $row3[] = new tabobject('vallarsort',
+                    $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                    get_string('order_descending', 'pimenkoquestionnaire'));
         }
         if ($pimenkoquestionnaire->capabilities->deleteresponses) {
-            $argstr2 = $argstr.'&action=delallresp&group='.$currentgroupid;
-            $row3[] = new tabobject('deleteall', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                                    get_string('deleteallresponses', 'pimenkoquestionnaire'));
+            $argstr2 = $argstr . '&action=delallresp&group=' . $currentgroupid;
+            $row3[] =
+                    new tabobject('deleteall', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                            get_string('deleteallresponses', 'pimenkoquestionnaire'));
         }
 
         if ($pimenkoquestionnaire->capabilities->downloadresponses) {
-            $argstr2 = $argstr.'&action=dwnpg&group='.$currentgroupid;
-            $link  = $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2);
+            $argstr2 = $argstr . '&action=dwnpg&group=' . $currentgroupid;
+            $link = $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2);
             $row3[] = new tabobject('downloadcsv', $link, get_string('downloadtextformat', 'pimenkoquestionnaire'));
         }
     }
 
-    if (in_array($currenttab, array('individualresp', 'deleteresp'))) {
+    if (in_array($currenttab, ['individualresp', 'deleteresp'])) {
         $inactive[] = 'vresp';
         if ($currenttab != 'deleteresp') {
             $activated[] = 'vresp';
         }
         if ($pimenkoquestionnaire->capabilities->deleteresponses) {
-            $argstr2 = $argstr.'&action=dresp&rid='.$rid.'&individualresponse=1';
-            $row2[] = new tabobject('deleteresp', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                            get_string('deleteresp', 'pimenkoquestionnaire'));
+            $argstr2 = $argstr . '&action=dresp&rid=' . $rid . '&individualresponse=1';
+            $row2[] = new tabobject('deleteresp',
+                    $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                    get_string('deleteresp', 'pimenkoquestionnaire'));
         }
 
     }
 } else if ($pimenkoquestionnaire->can_view_all_responses_with_restrictions($usernumresp, $grouplogic, $resplogic)) {
-    $argstr = 'instance='.$pimenkoquestionnaire->id.'&sid='.$pimenkoquestionnaire->sid;
-    $row[] = new tabobject('allreport', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.
-                           $argstr.'&action=vall&group='.$currentgroupid), get_string('viewallresponses', 'pimenkoquestionnaire'));
-    if (in_array($currenttab, array('valldefault',  'vallasort', 'vallarsort', 'deleteall', 'downloadcsv'))) {
+    $argstr = 'instance=' . $pimenkoquestionnaire->id . '&sid=' . $pimenkoquestionnaire->sid;
+    $row[] = new tabobject('allreport', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' .
+                    $argstr . '&action=vall&group=' . $currentgroupid), get_string('viewallresponses', 'pimenkoquestionnaire'));
+    if (in_array($currenttab, ['valldefault', 'vallasort', 'vallarsort', 'deleteall', 'downloadcsv'])) {
         $inactive[] = 'vall';
         $activated[] = 'vall';
-        $row2 = array();
-        $argstr2 = $argstr.'&action=vall&group='.$currentgroupid;
-        $row2[] = new tabobject('valldefault', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                                get_string('summary', 'pimenkoquestionnaire'));
+        $row2 = [];
+        $argstr2 = $argstr . '&action=vall&group=' . $currentgroupid;
+        $row2[] = new tabobject('valldefault', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                get_string('summary', 'pimenkoquestionnaire'));
         $inactive[] = $currenttab;
         $activated[] = $currenttab;
-        $row3 = array();
-        $argstr2 = $argstr.'&action=vall&group='.$currentgroupid;
-        $row3[] = new tabobject('valldefault', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                                get_string('order_default', 'pimenkoquestionnaire'));
-        $argstr2 = $argstr.'&action=vallasort&group='.$currentgroupid;
-        $row3[] = new tabobject('vallasort', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                                get_string('order_ascending', 'pimenkoquestionnaire'));
-        $argstr2 = $argstr.'&action=vallarsort&group='.$currentgroupid;
-        $row3[] = new tabobject('vallarsort', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                                get_string('order_descending', 'pimenkoquestionnaire'));
+        $row3 = [];
+        $argstr2 = $argstr . '&action=vall&group=' . $currentgroupid;
+        $row3[] = new tabobject('valldefault', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                get_string('order_default', 'pimenkoquestionnaire'));
+        $argstr2 = $argstr . '&action=vallasort&group=' . $currentgroupid;
+        $row3[] = new tabobject('vallasort', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                get_string('order_ascending', 'pimenkoquestionnaire'));
+        $argstr2 = $argstr . '&action=vallarsort&group=' . $currentgroupid;
+        $row3[] = new tabobject('vallarsort', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                get_string('order_descending', 'pimenkoquestionnaire'));
         if ($pimenkoquestionnaire->capabilities->deleteresponses) {
-            $argstr2 = $argstr.'&action=delallresp';
-            $row2[] = new tabobject('deleteall', $CFG->wwwroot.htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2),
-                                    get_string('deleteallresponses', 'pimenkoquestionnaire'));
+            $argstr2 = $argstr . '&action=delallresp';
+            $row2[] =
+                    new tabobject('deleteall', $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2),
+                            get_string('deleteallresponses', 'pimenkoquestionnaire'));
         }
 
         if ($pimenkoquestionnaire->capabilities->downloadresponses) {
-            $argstr2 = $argstr.'&action=dwnpg';
-            $link  = htmlspecialchars('/mod/pimenkoquestionnaire/report.php?'.$argstr2);
+            $argstr2 = $argstr . '&action=dwnpg';
+            $link = htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr2);
             $row2[] = new tabobject('downloadcsv', $link, get_string('downloadtextformat', 'pimenkoquestionnaire'));
         }
         if (count($row2) <= 1) {
@@ -224,10 +232,11 @@ if ($pimenkoquestionnaire->can_view_all_responses_anytime($grouplogic, $resplogi
 }
 
 if ($pimenkoquestionnaire->capabilities->viewsingleresponse && ($canviewallgroups || $canviewgroups)) {
-    $nonrespondenturl = new moodle_url('/mod/pimenkoquestionnaire/show_nonrespondents.php', array('id' => $pimenkoquestionnaire->cm->id));
+    $nonrespondenturl =
+            new moodle_url('/mod/pimenkoquestionnaire/show_nonrespondents.php', ['id' => $pimenkoquestionnaire->cm->id]);
     $row[] = new tabobject('nonrespondents',
-                    $nonrespondenturl->out(),
-                    get_string('show_nonrespondents', 'pimenkoquestionnaire'));
+            $nonrespondenturl->out(),
+            get_string('show_nonrespondents', 'pimenkoquestionnaire'));
 }
 
 if ((count($row) > 1) || (!empty($row2) && (count($row2) > 1))) {

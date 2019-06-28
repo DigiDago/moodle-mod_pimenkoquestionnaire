@@ -25,25 +25,25 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
-    $options = array(0 => get_string('no'), 1 => get_string('yes'));
+    $options = [0 => get_string('no'), 1 => get_string('yes')];
     $str = get_string('configusergraphlong', 'pimenkoquestionnaire');
     $settings->add(new admin_setting_configselect('pimenkoquestionnaire/usergraph',
-                                    get_string('configusergraph', 'pimenkoquestionnaire'),
-                                    $str, 0, $options));
+            get_string('configusergraph', 'pimenkoquestionnaire'),
+            $str, 0, $options));
     $settings->add(new admin_setting_configtext('pimenkoquestionnaire/maxsections',
-                                    get_string('configmaxsections', 'pimenkoquestionnaire'),
-                                    '', 10, PARAM_INT));
-    $choices = array(
-        'response' => get_string('response', 'pimenkoquestionnaire'),
-        'submitted' => get_string('submitted', 'pimenkoquestionnaire'),
-        'institution' => get_string('institution'),
-        'department' => get_string('department'),
-        'course' => get_string('course'),
-        'group' => get_string('group'),
-        'id' => get_string('id', 'pimenkoquestionnaire'),
-        'fullname' => get_string('fullname'),
-        'username' => get_string('username')
-    );
+            get_string('configmaxsections', 'pimenkoquestionnaire'),
+            '', 10, PARAM_INT));
+    $choices = [
+            'response' => get_string('response', 'pimenkoquestionnaire'),
+            'submitted' => get_string('submitted', 'pimenkoquestionnaire'),
+            'institution' => get_string('institution'),
+            'department' => get_string('department'),
+            'course' => get_string('course'),
+            'group' => get_string('group'),
+            'id' => get_string('id', 'pimenkoquestionnaire'),
+            'fullname' => get_string('fullname'),
+            'username' => get_string('username')
+    ];
 
     $settings->add(new admin_setting_configmultiselect('pimenkoquestionnaire/downloadoptions',
             get_string('textdownloadoptions', 'pimenkoquestionnaire'), '', array_keys($choices), $choices));
