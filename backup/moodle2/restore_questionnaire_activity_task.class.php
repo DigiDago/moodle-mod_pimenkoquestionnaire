@@ -55,8 +55,8 @@ class restore_pimenkoquestionnaire_activity_task extends restore_activity_task {
         $contents = array();
 
         $contents[] = new restore_decode_content('pimenkoquestionnaire', array('intro'), 'pimenkoquestionnaire');
-        $contents[] = new restore_decode_content('pimenko_survey',
-                        array('info', 'thank_head', 'thank_body', 'thanks_page'), 'pimenko_survey');
+        $contents[] = new restore_decode_content('pimenkoquestionnaire_survey',
+                        array('info', 'thank_head', 'thank_body', 'thanks_page'), 'pimenkoquestionnaire_survey');
         $contents[] = new restore_decode_content('pimenko_question', array('content'), 'pimenko_question');
 
         return $contents;

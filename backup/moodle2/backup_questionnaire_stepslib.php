@@ -160,7 +160,7 @@ class backup_pimenkoquestionnaire_activity_structure_step extends backup_activit
         // Is current pimenkoquestionnaire based on a public pimenkoquestionnaire?
         $qid = $this->task->get_activityid();
         $currentpimenkoquestionnaire = $DB->get_record("pimenkoquestionnaire", array ("id" => $qid));
-        $currentsurvey = $DB->get_record("pimenko_survey", array ("id" => $currentpimenkoquestionnaire->sid));
+        $currentsurvey = $DB->get_record("pimenkoquestionnaire_survey", array ("id" => $currentpimenkoquestionnaire->sid));
         $haspublic = false;
         if ($currentsurvey->realm == 'public' && $currentsurvey->courseid != $currentpimenkoquestionnaire->course) {
             $haspublic = true;
@@ -168,7 +168,7 @@ class backup_pimenkoquestionnaire_activity_structure_step extends backup_activit
 
         // If current pimenkoquestionnaire is based on a public one, do not include survey nor questions in backup.
         if (!$haspublic) {
-            $survey->set_source_table('pimenko_survey', array('id' => '../../sid'));
+            $survey->set_source_table('pimenkoquestionnaire_survey', array('id' => '../../sid'));
             $question->set_source_table('pimenko_question', array('surveyid' => backup::VAR_PARENTID));
             $fbsection->set_source_table('pimenko_fb_sections', array('surveyid' => backup::VAR_PARENTID));
             $feedback->set_source_table('pimenko_feedbackections', array('sectionid' => backup::VAR_PARENTID));

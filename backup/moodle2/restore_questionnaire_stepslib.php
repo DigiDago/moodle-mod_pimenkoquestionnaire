@@ -53,7 +53,7 @@ class restore_pimenkoquestionnaire_activity_structure_step extends restore_activ
         $userinfo = $this->get_setting_value('userinfo');
 
         $paths[] = new restore_path_element('pimenkoquestionnaire', '/activity/pimenkoquestionnaire');
-        $paths[] = new restore_path_element('pimenko_survey', '/activity/pimenkoquestionnaire/surveys/survey');
+        $paths[] = new restore_path_element('pimenkoquestionnaire_survey', '/activity/pimenkoquestionnaire/surveys/survey');
         $paths[] = new restore_path_element('pimenko_fb_sections',
                         '/activity/pimenkoquestionnaire/surveys/survey/fb_sections/fb_section');
         $paths[] = new restore_path_element('pimenko_feedbackections',
@@ -126,7 +126,7 @@ class restore_pimenkoquestionnaire_activity_structure_step extends restore_activ
         $this->apply_activity_instance($newitemid);
     }
 
-    protected function process_pimenko_survey($data) {
+    protected function process_pimenkoquestionnaire_survey($data) {
         global $DB;
 
         $data = (object)$data;
@@ -138,9 +138,9 @@ class restore_pimenkoquestionnaire_activity_structure_step extends restore_activ
             $data->feedbacksections = 2;
         }
 
-        // Insert the pimenko_survey record.
-        $newitemid = $DB->insert_record('pimenko_survey', $data);
-        $this->set_mapping('pimenko_survey', $oldid, $newitemid, true);
+        // Insert the pimenkoquestionnaire_survey record.
+        $newitemid = $DB->insert_record('pimenkoquestionnaire_survey', $data);
+        $this->set_mapping('pimenkoquestionnaire_survey', $oldid, $newitemid, true);
 
         // Update the pimenkoquestionnaire record we just created with the new survey id.
         $DB->set_field('pimenkoquestionnaire', 'sid', $newitemid, array('id' => $this->get_new_parentid('pimenkoquestionnaire')));
@@ -151,7 +151,7 @@ class restore_pimenkoquestionnaire_activity_structure_step extends restore_activ
 
         $data = (object)$data;
         $oldid = $data->id;
-        $data->surveyid = $this->get_new_parentid('pimenko_survey');
+        $data->surveyid = $this->get_new_parentid('pimenkoquestionnaire_survey');
 
         // Insert the pimenko_question record.
         $newitemid = $DB->insert_record('pimenko_question', $data);
@@ -175,7 +175,7 @@ class restore_pimenkoquestionnaire_activity_structure_step extends restore_activ
 
         $data = (object)$data;
         $oldid = $data->id;
-        $data->surveyid = $this->get_new_parentid('pimenko_survey');
+        $data->surveyid = $this->get_new_parentid('pimenkoquestionnaire_survey');
 
         // If this pimenkoquestionnaire has separate sections feedbacks.
         if (isset($data->scorecalculation)) {
@@ -238,7 +238,7 @@ class restore_pimenkoquestionnaire_activity_structure_step extends restore_activ
         $data = (object)$data;
 
         $data->questionid = $this->get_new_parentid('pimenko_question');
-        $data->surveyid = $this->get_new_parentid('pimenko_survey');
+        $data->surveyid = $this->get_new_parentid('pimenkoquestionnaire_survey');
 
         if (isset($data)) {
             $this->olddependencies[] = $data;
@@ -366,7 +366,7 @@ class restore_pimenkoquestionnaire_activity_structure_step extends restore_activ
         foreach ($this->olddependquestions as $newid => $olddependid) {
             $newrec = new stdClass();
             $newrec->questionid = $newid;
-            $newrec->surveyid = $this->get_new_parentid('pimenko_survey');
+            $newrec->surveyid = $this->get_new_parentid('pimenkoquestionnaire_survey');
             $newrec->dependquestionid = $this->get_mappingid('pimenko_question', $olddependid);
             // Only change mapping for RADIO and DROP question types, not for YESNO question.
             $dependqtype = $DB->get_field('pimenko_question', 'type_id', ['id' => $newrec->dependquestionid]);
@@ -395,9 +395,9 @@ class restore_pimenkoquestionnaire_activity_structure_step extends restore_activ
 
         // Add pimenkoquestionnaire related files, no need to match by itemname (just internally handled context).
         $this->add_related_files('mod_pimenkoquestionnaire', 'intro', null);
-        $this->add_related_files('mod_pimenkoquestionnaire', 'info', 'pimenko_survey');
-        $this->add_related_files('mod_pimenkoquestionnaire', 'thankbody', 'pimenko_survey');
-        $this->add_related_files('mod_pimenkoquestionnaire', 'feedbacknotes', 'pimenko_survey');
+        $this->add_related_files('mod_pimenkoquestionnaire', 'info', 'pimenkoquestionnaire_survey');
+        $this->add_related_files('mod_pimenkoquestionnaire', 'thankbody', 'pimenkoquestionnaire_survey');
+        $this->add_related_files('mod_pimenkoquestionnaire', 'feedbacknotes', 'pimenkoquestionnaire_survey');
         $this->add_related_files('mod_pimenkoquestionnaire', 'question', 'pimenko_question');
         $this->add_related_files('mod_pimenkoquestionnaire', 'sectionheading', 'pimenko_fb_sections');
         $this->add_related_files('mod_pimenkoquestionnaire', 'feedback', 'pimenko_feedbackections');

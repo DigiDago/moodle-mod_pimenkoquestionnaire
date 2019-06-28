@@ -38,7 +38,7 @@ if ($id) {
         print_error('invalidcoursemodule');
     }
 } else {
-    if (! $survey = $DB->get_record("pimenko_survey", array("id" => $sid))) {
+    if (! $survey = $DB->get_record("pimenkoquestionnaire_survey", array("id" => $sid))) {
         print_error('surveynotexists', 'pimenkoquestionnaire');
     }
     if (! $course = $DB->get_record("course", ["id" => $survey->courseid])) {
