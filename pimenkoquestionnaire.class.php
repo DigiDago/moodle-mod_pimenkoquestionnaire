@@ -3084,7 +3084,7 @@ class pimenkoquestionnaire {
     }
 
     public function survey_copy( $owner ) {
-        global $DB;
+        global $DB,$COURSE;
 
         // Clear the sid, clear the creation date, change the name, and clear the status.
         $survey = clone($this->survey);
@@ -3129,6 +3129,30 @@ class pimenkoquestionnaire {
                 return (false);
             }
             $qidarray[$oldid] = $newqid;
+            if ($question->type_id == QUESTEACHERSELECT) {
+                // We need to unset all previous choices.
+                foreach ($question->choices as $key => $choice) {
+                    unset($cidarray[$key]);
+                }
+
+                // Get ur new teachers list.
+                $choicerecords = [];
+                $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
+                $context = context_course::instance($COURSE->id);
+                $teachers = get_role_users($role->id, $context);
+                foreach ($teachers as $teacher) {
+                    $choicerecord = new \stdClass();
+                    $choicerecord->content = $teacher->firstname . ' ' . $teacher->lastname;
+                    $choicerecord->value =  $choicerecord->content;
+                    $choicerecords[$newqid] = $choicerecord;
+                }
+                if (!$choicerecords) {
+                    $choicerecord = new \stdClass();
+                    $choicerecord->content = get_string('noteacher','pimenkoquestionnaire');
+                    $choicerecords[$newqid] = $choicerecord;
+                }
+                $question->choices = $choicerecords;
+            }
             foreach ($question->choices as $key => $choice) {
                 $oldcid = $key;
                 unset($choice->id);

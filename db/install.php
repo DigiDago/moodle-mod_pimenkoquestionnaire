@@ -97,7 +97,7 @@ function xmldb_pimenkoquestionnaire_install() {
     $questiontype->typeid = 11;
     $questiontype->type = 'Teacher select';
     $questiontype->has_choices = 'y';
-    $questiontype->response_table = 'resp_single';
+    $questiontype->response_table = 'resp_multiple';
     $id = $DB->insert_record('pimenko_question_type', $questiontype);
 
     $questiontype = new stdClass();

@@ -15,9 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_pimenkoquestionnaire/question_drop
+    @template mod_pimenkoquestionnaire/question_check
 
-    Template which defines a radio button type question survey display.
+    Template which defines a check type question survey display.
 
     Classes required for JS:
     * /mod/pimenkoquestionnaire/module.js
@@ -29,36 +29,37 @@
 
     Example context (json):
     {
-        "qelements": {
-            "choice": {
-                "id": "choiceid1",
-                "name": "choiceid1",
-                "class": "classname",
-                "onchange": "dosomething()",
-                "options": [
-                    {
-                        "selected": 1,
-                        "value": "34",
-                        "label": "Option 1"
-                    },
-                    {
-                        "selected": 0,
-                        "value": "35",
-                        "label": "Option 2"
-                    }
-                ]
+        "qelements": [
+            {
+                "choice": {
+                    "id": "choiceid1",
+                    "value": "1",
+                    "name": "choiceid1",
+                    "checked": "",
+                    "label": "Choice question label"
+                }
+            },
+            {
+                "choice": {
+                    "id": "choiceid7",
+                    "value": "7",
+                    "name": "choiceid7",
+                    "checked": "1",
+                    "label": "Choice question label",
+                    "oname": "Other",
+                    "ovalue": "another choice"
+                }
             }
-        }
+        ]
     }
     }}
-<!-- Begin HTML generated from question_drop template. -->
+<!-- Begin HTML generated from question_check template. -->
 {{#qelements}}
     {{#choice}}
-        <select id="{{choice.id}}" name="{{choice.name}}" class="{{choice.class}}" {{#choice.onchange}}onchange="{{.}}"{{/choice.onchange}}>
-            {{#choice.options}}
-                <option {{#selected}}selected="selected" {{/selected}}value="{{value}}">{{label}}</option>
-            {{/choice.options}}
-        </select>
+        <input id="{{choice.id}}" value="{{choice.value}}" name="{{choice.name}}" type="checkbox" {{#choice.checked}}checked="checked"{{/choice.checked}} />
+        <label for="{{choice.id}}">{{{choice.label}}}</label>
+        {{#choice.oname}}<input size="25" name="{{choice.oname}}" onclick="other_check(name)" value="{{choice.ovalue}}" type="text"/>{{/choice.oname}}
+        <br/>
     {{/choice}}
 {{/qelements}}
-<!-- End HTML generated from question_drop template. -->
+<!-- End HTML generated from question_check template. -->

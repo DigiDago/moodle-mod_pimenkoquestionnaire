@@ -732,9 +732,9 @@ class mod_pimenkoquestionnaire_generator extends testing_module_generator {
                         ]
                 );
             } else {
-                if ($qtype === QUESCHOOSE || $qtype === QUESRADIO || $qtype === QUESDROP || $qtype === QUESTEACHERSELECT) {
+                if ($qtype === QUESCHOOSE || $qtype === QUESRADIO || $qtype === QUESDROP ) {
                     $instable = 'pimenkoquestionnaire_resp_single';
-                } else if ($qtype === QUESCHECK) {
+                } else if ($qtype === QUESCHECK || $qtype === QUESTEACHERSELECT) {
                     $instable = 'pimenkoquestionnaire_resp_multiple';
                 }
                 $DB->insert_record($instable, [

@@ -15,19 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Questionnaire version information.
+ * Setting your event observers
  *
- * @package mod_pimenkoquestionnaire
- * @author  Mike Churchward
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     mod_pimenkoquestionnaire
+ * @category    mod
+ * @copyright   DigiDago 2019
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version = 2018110112;  // The current module version (Date: YYYYMMDDXX)
-$plugin->requires = 2018120300; // Moodle version.
-
-$plugin->component = 'mod_pimenkoquestionnaire';
-
-$plugin->release = '3.6.1 (Build - 2019052400)';
-$plugin->maturity = MATURITY_STABLE;
+$observers = [
+        [
+                'eventname' => '\core\event\role_assigned',
+                'callback' => 'mod_pimenkoquestionnaire_observer::role_assigned',
+        ]
+];
