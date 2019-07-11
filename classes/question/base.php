@@ -1271,6 +1271,15 @@ abstract class base {
         global $DB;
         $retvalue = true;
 
+        // avoid double entries.
+        $sql = "SELECT * FROM {pimenko_quest_choice}
+                            WHERE question_id = " . $choicerecord->question_id . "
+                            AND content = '" . $choicerecord->content . "'";
+        $existing = $DB->get_record_sql($sql);
+        if ($existing) {
+            return false;
+        }
+
         if ($cid = $DB->insert_record('pimenko_quest_choice', $choicerecord)) {
             $this->choices[$cid] = new \stdClass();
             $this->choices[$cid]->content = $choicerecord->content;

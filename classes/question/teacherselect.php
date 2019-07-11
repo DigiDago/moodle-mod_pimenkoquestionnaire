@@ -58,15 +58,21 @@ class teacherselect extends base {
         global $DB, $COURSE;
         $numchoices = count($choices);
         $allchoices = '';
-        $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
-        $context = context_course::instance($COURSE->id);
-        $teachers = get_role_users($role->id, $context);
-        foreach ($teachers as $teacher) {
-            $choice = new \stdClass();
-            $choice->content = $teacher->firstname . ' ' . $teacher->lastname;
-            $choice->value = $choice->content;
-            $choices[] = $choice;
+
+        if (!$choices) {
+            $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
+            $context = context_course::instance($COURSE->id);
+            $teachers = get_role_users($role->id, $context);
+            foreach ($teachers as $teacher) {
+                $choice = new \stdClass();
+                $choice->content = $teacher->firstname . ' ' . $teacher->lastname;
+                $choice->value = $choice->content;
+                $choices[] = $choice;
+            }
         }
+
+        //var_dump($choices);
+        //die;
         foreach ($choices as $choice) {
             if (!empty($allchoices)) {
                 $allchoices .= "\n";
