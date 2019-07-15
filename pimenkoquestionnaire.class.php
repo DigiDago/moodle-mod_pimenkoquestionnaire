@@ -3084,7 +3084,7 @@ class pimenkoquestionnaire {
     }
 
     public function survey_copy( $owner ) {
-        global $DB,$COURSE;
+        global $DB;
 
         // Clear the sid, clear the creation date, change the name, and clear the status.
         $survey = clone($this->survey);
@@ -3138,7 +3138,7 @@ class pimenkoquestionnaire {
                 // Get ur new teachers list.
                 $choicerecords = [];
                 $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
-                $context = context_course::instance($COURSE->id);
+                $context = context_course::instance($survey->courseid);
                 $teachers = get_role_users($role->id, $context);
                 foreach ($teachers as $teacher) {
                     $choicerecord = new \stdClass();

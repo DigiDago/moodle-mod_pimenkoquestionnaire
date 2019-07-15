@@ -50,6 +50,15 @@ class mod_pimenkoquestionnaire_observer {
                     if (!$existing) {
                         $DB->insert_record('pimenko_quest_choice', $record);
                     }
+                    $sql = "SELECT * FROM {pimenko_quest_choice}
+                            WHERE question_id = " . $record->question_id . "
+                            AND content = '" . get_string('noteacher', 'pimenkoquestionnaire') . "'";
+                    $record = $DB->get_record_sql($sql);
+                    if ($record) {
+                        $sql = "DELETE FROM {pimenko_quest_choice} WHERE question_id = " . $record->question_id . "
+                            AND content = '" . get_string('noteacher', 'pimenkoquestionnaire') . "'";
+                        $DB->execute($sql);
+                    }
                 }
             }
         }
