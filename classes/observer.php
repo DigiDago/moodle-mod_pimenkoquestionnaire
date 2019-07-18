@@ -45,7 +45,7 @@ class mod_pimenkoquestionnaire_observer {
                     $record->value = $record->content;
                     $sql = "SELECT * FROM {pimenko_quest_choice}
                             WHERE question_id = " . $record->question_id . "
-                            AND content = '" . $record->content . "'";
+                            AND content = '" . str_replace("'", "''", $record->content) . "'";
                     $existing = $DB->get_record_sql($sql);
                     if (!$existing) {
                         $DB->insert_record('pimenko_quest_choice', $record);

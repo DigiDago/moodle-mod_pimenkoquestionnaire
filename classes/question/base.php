@@ -1274,7 +1274,7 @@ abstract class base {
         // avoid double entries.
         $sql = "SELECT * FROM {pimenko_quest_choice}
                             WHERE question_id = " . $choicerecord->question_id . "
-                            AND content = '" . $choicerecord->content . "'";
+                            AND content = '" . str_replace("'", "''", $choicerecord->content) . "'";
         $existing = $DB->get_record_sql($sql);
         if ($existing) {
             return false;
@@ -1282,7 +1282,7 @@ abstract class base {
 
         if ($cid = $DB->insert_record('pimenko_quest_choice', $choicerecord)) {
             $this->choices[$cid] = new \stdClass();
-            $this->choices[$cid]->content = $choicerecord->content;
+            $this->choices[$cid]->content = str_replace("'", "''", $choicerecord->content);
             $this->choices[$cid]->value = isset($choicerecord->value) ? $choicerecord->value : null;
         } else {
             $retvalue = false;

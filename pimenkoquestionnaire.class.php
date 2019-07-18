@@ -3160,7 +3160,7 @@ class pimenkoquestionnaire {
                 // avoid double entries.
                 $sql = "SELECT * FROM {pimenko_quest_choice}
                             WHERE question_id = " . $choice->question_id . "
-                            AND content = '" . $choice->content . "'";
+                            AND content = '" . str_replace("'", "''", $choice->content) . "'";
                 $existing = $DB->get_record_sql($sql);
                 if ($existing) {
                     return false;
