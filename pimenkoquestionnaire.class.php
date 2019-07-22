@@ -1273,11 +1273,25 @@ class pimenkoquestionnaire {
                     throw new coding_exception('Choice question has no choices!', 'question id ' . $qid . ' of type ' . $type);
                 }
                 $choices = $choicesbyqid[$qid];
-
                 switch ($type) {
 
                     case QUESRADIO: // Single.
                     case QUESDROP:
+                        $columns[][$qpos] = $col;
+                        $questionidcols[][$qpos] = $qid;
+                        array_push($types, $idtocsvmap[$type]);
+                        $thisnum = 1;
+                        foreach ($choices as $choice) {
+                            $content = $choice->content;
+                            // If "Other" add a column for the actual "other" text entered.
+                            if (preg_match('/^!other/', $content)) {
+                                $col = $choice->name . '_' . $stringother;
+                                $columns[][$qpos] = $col;
+                                $questionidcols[][$qpos] = null;
+                                array_push($types, '0');
+                            }
+                        }
+                        break;
                     case QUESTEACHERSELECT:
                         $columns[][$qpos] = $col;
                         $questionidcols[][$qpos] = $qid;
@@ -1294,7 +1308,6 @@ class pimenkoquestionnaire {
                             }
                         }
                         break;
-
                     case QUESCHECK: // Multiple.
                         $thisnum = 1;
                         foreach ($choices as $choice) {
@@ -1374,7 +1387,6 @@ class pimenkoquestionnaire {
             }
             $num++;
         }
-
         array_push($output, $columns);
         $numrespcols = count($output[0]); // Number of columns used for storing question responses.
 
@@ -1471,14 +1483,20 @@ class pimenkoquestionnaire {
                             }
                         }
                     }
+
                     $content = $choicesbyqid[$qid][$responserow->choice_id]->content;
+
                     if (preg_match('/^!other/', $content)) {
                         // If this has an "other" text, use it.
                         $responsetxt = preg_replace(["/^!other=/", "/^!other/"],
                                 ['', get_string('other', 'pimenkoquestionnaire')], $content);
                         $responsetxt1 = $responserow->response;
                     } else if (($choicecodes == 1) && ($choicetext == 1)) {
-                        $responsetxt = $c . ' : ' . $content;
+                        if($question->type_id == 11) {
+                            $responsetxt = $content;
+                        } else {
+                            $responsetxt = $c . ' : ' . $content;
+                        }
                     } else if ($choicecodes == 1) {
                         $responsetxt = $c;
                     } else {
@@ -1498,7 +1516,11 @@ class pimenkoquestionnaire {
                         $responsetxt = preg_replace("/[\r\n\t]/", ' ', $responsetxt);
                     }
                 }
-                $row[$position] = $responsetxt;
+                if(isset($row[$position]) && $question->type_id == 11) {
+                    $row[$position] = $row[$position] . " - " . $responsetxt;
+                } else {
+                    $row[$position] = $responsetxt;
+                }
                 // Check for "other" text and set it to the next position if present.
                 if (!empty($responsetxt1)) {
                     $row[$position + 1] = $responsetxt1;
@@ -3143,13 +3165,13 @@ class pimenkoquestionnaire {
                 foreach ($teachers as $teacher) {
                     $choicerecord = new \stdClass();
                     $choicerecord->content = $teacher->firstname . ' ' . $teacher->lastname;
-                    $choicerecord->value =  $choicerecord->content;
-                    $choicerecords[$newqid] = $choicerecord;
+                    $choicerecord->value = $choicerecord->content;
+                    array_push($choicerecords,$choicerecord);
                 }
                 if (!$choicerecords) {
                     $choicerecord = new \stdClass();
-                    $choicerecord->content = get_string('noteacher','pimenkoquestionnaire');
-                    $choicerecords[$newqid] = $choicerecord;
+                    $choicerecord->content = get_string('noteacher', 'pimenkoquestionnaire');
+                    $choicerecords[0] = $choicerecord;
                 }
                 $question->choices = $choicerecords;
             }
