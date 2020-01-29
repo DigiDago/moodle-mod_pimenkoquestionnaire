@@ -114,7 +114,7 @@ $string['createcontent_link'] = 'mod/pimenkoquestionnaire/mod#Content_Options';
 $string['createnew'] = 'Créer un nouveau questionnaire';
 $string['crontask'] = 'Nettoyage du questionnaire';
 $string['date'] = 'Date';
-$string['dateformatting'] = '<em>Utilisez le format jour-mois-année, par exemple pour le 14 mars 1945:&nbsp; </em><span class = monospace>14-3-1945</monospace>';
+$string['dateformatting'] = '<em>Utilisez le format jour-mois-année, par exemple pour le 14 mars 1945:&nbsp; </em><span class = monospace>14/03/1945</monospace>';
 $string['date_help'] = 'Utilisez ce type de question si vous voulez que la réponse soit donnée sous forme d\'une date correctement formatée.';
 $string['date_link'] = 'mod/pimenkoquestionnaire/questions#Date';
 $string['deleteallresponses'] = 'Effacer toutes les réponses';

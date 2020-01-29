@@ -57,7 +57,7 @@ class pimenkoquestionnaire {
      * The class constructor
      *
      */
-    public function __construct( $id = 0, $pimenkoquestionnaire = null, &$course, &$cm, $addquestions = true ) {
+    public function __construct($id = 0, $pimenkoquestionnaire = null, &$course, &$cm, $addquestions = true) {
         global $DB;
 
         if ($id) {
@@ -98,7 +98,7 @@ class pimenkoquestionnaire {
      * Adding a survey record to the object.
      *
      */
-    public function add_survey( $sid = 0, $survey = null ) {
+    public function add_survey($sid = 0, $survey = null) {
         global $DB;
 
         if ($sid) {
@@ -111,7 +111,7 @@ class pimenkoquestionnaire {
     /**
      * Adding questions to the object.
      */
-    public function add_questions( $sid = false ) {
+    public function add_questions($sid = false) {
         global $DB;
 
         if ($sid === false) {
@@ -155,7 +155,7 @@ class pimenkoquestionnaire {
      *
      * @return int
      */
-    private static function cmp( $a, $b ) {
+    private static function cmp($a, $b) {
         if ($a == $b) {
             return 0;
         } else if ($a < $b) {
@@ -170,7 +170,7 @@ class pimenkoquestionnaire {
      *
      * @param \plugin_renderer_base $renderer The module renderer, extended from core renderer.
      */
-    public function add_renderer( $renderer ) {
+    public function add_renderer($renderer) {
         $this->renderer = $renderer;
     }
 
@@ -179,7 +179,7 @@ class pimenkoquestionnaire {
      *
      * @param \renderable, \templatable $page The page to rendere, implementing core classes.
      */
-    public function add_page( $page ) {
+    public function add_page($page) {
         $this->page = $page;
     }
 
@@ -329,11 +329,11 @@ class pimenkoquestionnaire {
         return ($this->closedate > 0) ? ($this->closedate < time()) : false;
     }
 
-    public function user_is_eligible( $userid ) {
+    public function user_is_eligible($userid) {
         return ($this->capabilities->view && $this->capabilities->submit);
     }
 
-    public function user_can_take( $userid ) {
+    public function user_can_take($userid) {
 
         if (!$this->is_active() || !$this->user_is_eligible($userid)) {
             return false;
@@ -346,7 +346,7 @@ class pimenkoquestionnaire {
         }
     }
 
-    public function user_time_for_new_attempt( $userid ) {
+    public function user_time_for_new_attempt($userid) {
         global $DB;
 
         $params = ['pimenkoquestionnaireid' => $this->id, 'userid' => $userid, 'complete' => 'y'];
@@ -402,7 +402,7 @@ class pimenkoquestionnaire {
         return $cantake;
     }
 
-    public function print_survey( $userid = false, $quser ) {
+    public function print_survey($userid = false, $quser) {
         global $SESSION, $CFG;
         $formdata = new stdClass();
         if (data_submitted() && confirm_sesskey()) {
@@ -539,7 +539,7 @@ class pimenkoquestionnaire {
         return $msg;
     }
 
-    private function get_response( $userid, $rid = 0 ) {
+    private function get_response($userid, $rid = 0) {
         global $DB;
 
         $rid = intval($rid);
@@ -561,7 +561,7 @@ class pimenkoquestionnaire {
         }
     }
 
-    private function response_select_max_sec( $rid ) {
+    private function response_select_max_sec($rid) {
         global $DB;
 
         $pos = $this->response_select_max_pos($rid);
@@ -572,7 +572,7 @@ class pimenkoquestionnaire {
         return $max;
     }
 
-    private function response_select_max_pos( $rid ) {
+    private function response_select_max_pos($rid) {
         global $DB;
 
         $max = 0;
@@ -594,7 +594,7 @@ class pimenkoquestionnaire {
         return $max;
     }
 
-    private function response_check_format( $section, $formdata, $checkmissing = true, $checkwrongformat = true ) {
+    private function response_check_format($section, $formdata, $checkmissing = true, $checkwrongformat = true) {
         $missing = 0;
         $strmissing = '';     // Missing questions.
         $wrongformat = 0;
@@ -659,7 +659,7 @@ class pimenkoquestionnaire {
         return ($message);
     }
 
-    private function response_delete( $rid, $sec = null ) {
+    private function response_delete($rid, $sec = null) {
         global $DB;
 
         if (empty($rid)) {
@@ -701,7 +701,7 @@ class pimenkoquestionnaire {
         }
     }
 
-    public function response_insert( $section, $rid, $userid, $resume = false ) {
+    public function response_insert($section, $rid, $userid, $resume = false) {
         global $DB;
 
         $record = new stdClass();
@@ -747,7 +747,7 @@ class pimenkoquestionnaire {
         return ($rid);
     }
 
-    private function response_goto_saved( $url ) {
+    private function response_goto_saved($url) {
         global $CFG;
         $resumesurvey = get_string('resumesurvey', 'pimenkoquestionnaire');
         $savedprogress = get_string('savedprogress', 'pimenkoquestionnaire', '<strong>' . $resumesurvey . '</strong>');
@@ -786,7 +786,7 @@ class pimenkoquestionnaire {
      *
      * @return boolean
      */
-    public function eligible_questions_on_page( $secnum, $rid ) {
+    public function eligible_questions_on_page($secnum, $rid) {
         $questionstodisplay = false;
 
         foreach ($this->questionsbysec[$secnum] as $question) {
@@ -798,7 +798,7 @@ class pimenkoquestionnaire {
         return $questionstodisplay;
     }
 
-    private function response_import_sec( $rid, $sec, &$varr ) {
+    private function response_import_sec($rid, $sec, &$varr) {
         if ($sec < 1 || !isset($this->questionsbysec[$sec])) {
             return;
         }
@@ -814,7 +814,7 @@ class pimenkoquestionnaire {
         }
     }
 
-    private function response_select( $rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1 ) {
+    private function response_select($rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1) {
         if ($col == null) {
             $col = '';
         }
@@ -822,7 +822,7 @@ class pimenkoquestionnaire {
             $col = explode(',', preg_replace("/\s/", '', $col));
         }
         if (is_array($col) && count($col) > 0) {
-            $callback = function( $a ) {
+            $callback = function($a) {
                 return 'q.' . $a;
             };
             $col = ',' . implode(',', array_map($callback, $col));
@@ -849,7 +849,7 @@ class pimenkoquestionnaire {
         return ($values);
     }
 
-    private function survey_render( $section = 1, $message = '', &$formdata ) {
+    private function survey_render($section = 1, $message = '', &$formdata) {
 
         $this->usehtmleditor = null;
 
@@ -896,7 +896,7 @@ class pimenkoquestionnaire {
         return;
     }
 
-    private function has_required( $section = 0 ) {
+    private function has_required($section = 0) {
         if (empty($this->questions)) {
             return false;
         } else if ($section <= 0) {
@@ -1045,7 +1045,7 @@ class pimenkoquestionnaire {
         return is_object($this->survey) && ($this->survey->realm == 'public');
     }
 
-    private function print_survey_end( $section, $numsections ) {
+    private function print_survey_end($section, $numsections) {
         $autonum = $this->autonum;
         // If no questions autonumbering.
         if ($autonum < 3) {
@@ -1062,7 +1062,7 @@ class pimenkoquestionnaire {
 
     // Display Methods.
 
-    private function response_commit( $rid ) {
+    private function response_commit($rid) {
         global $DB;
 
         $record = new stdClass();
@@ -1086,7 +1086,7 @@ class pimenkoquestionnaire {
      * @return boolean Operation success.
      *
      */
-    private function submission_notify( $rid ) {
+    private function submission_notify($rid) {
         global $DB;
 
         $success = true;
@@ -1116,14 +1116,14 @@ class pimenkoquestionnaire {
     /**
      * Send the full response submission to the defined email addresses.
      *
-     * @param int    $rid   The id of the response record.
+     * @param int $rid The id of the response record.
      * @param string $email The comma separated list of emails to send to.
      *
      * @return bool
      * @throws coding_exception
      * @throws dml_exception
      */
-    private function response_send_email( $rid, $email ) {
+    private function response_send_email($rid, $email) {
         global $CFG;
 
         $submission = $this->generate_csv($rid, '', null, 1, 0);
@@ -1176,7 +1176,7 @@ class pimenkoquestionnaire {
         return $return;
     }
 
-    public function generate_csv( $rid = '', $userid = '', $choicecodes = 1, $choicetext = 0, $currentgroupid, $showincompletes = 0
+    public function generate_csv($rid = '', $userid = '', $choicecodes = 1, $choicetext = 0, $currentgroupid, $showincompletes = 0
     ) {
         global $DB;
 
@@ -1492,7 +1492,7 @@ class pimenkoquestionnaire {
                                 ['', get_string('other', 'pimenkoquestionnaire')], $content);
                         $responsetxt1 = $responserow->response;
                     } else if (($choicecodes == 1) && ($choicetext == 1)) {
-                        if($question->type_id == 11) {
+                        if ($question->type_id == 11) {
                             $responsetxt = $content;
                         } else {
                             $responsetxt = $c . ' : ' . $content;
@@ -1516,7 +1516,7 @@ class pimenkoquestionnaire {
                         $responsetxt = preg_replace("/[\r\n\t]/", ' ', $responsetxt);
                     }
                 }
-                if(isset($row[$position]) && $question->type_id == 11) {
+                if (isset($row[$position]) && $question->type_id == 11) {
                     $row[$position] = $row[$position] . " - " . $responsetxt;
                 } else {
                     $row[$position] = $responsetxt;
@@ -1582,7 +1582,7 @@ class pimenkoquestionnaire {
      * @return array
      * @author: Guy Thomas
      */
-    protected function get_survey_all_responses( $rid = '', $userid = '', $groupid = false, $showincompletes = 0 ) {
+    protected function get_survey_all_responses($rid = '', $userid = '', $groupid = false, $showincompletes = 0) {
         global $DB;
         $uniquetypes = $this->get_survey_questiontypes(true);
         $allresponsessql = "";
@@ -1606,22 +1606,27 @@ class pimenkoquestionnaire {
             $allresponsessql .= $sql;
         }
 
-        $allresponsessql .= " ORDER BY usrid, id";
-        $allresponses = $DB->get_recordset_sql($allresponsessql, $allresponsesparams);
+        if ($allresponsessql) {
+            $allresponsessql .= " ORDER BY usrid, id";
+            $allresponses = $DB->get_recordset_sql($allresponsessql, $allresponsesparams);
+        } else {
+            $allresponses = [];
+        }
+
         return $allresponses;
     }
 
     /**
      * Get unique list of question types used in the current survey.
      *
-     * @param int  $surveyid
+     * @param int $surveyid
      * @param bool $uniquebytable
      *
      * @return array
      * @throws moodle_exception
      * @author: Guy Thomas
      */
-    protected function get_survey_questiontypes( $uniquebytable = false ) {
+    protected function get_survey_questiontypes($uniquebytable = false) {
 
         $uniquetypes = [];
         $uniquetables = [];
@@ -1668,12 +1673,12 @@ class pimenkoquestionnaire {
     /**
      * Process individual row for csv output
      *
-     * @param array    $outputrow output row
-     * @param stdClass $resprow   resultset row
-     * @param int      $currentgroupid
-     * @param array    $questionsbyposition
-     * @param int      $nbinfocols
-     * @param int      $numrespcols
+     * @param array $outputrow output row
+     * @param stdClass $resprow resultset row
+     * @param int $currentgroupid
+     * @param array $questionsbyposition
+     * @param int $nbinfocols
+     * @param int $numrespcols
      *
      * @return array
      * @throws Exception
@@ -1837,7 +1842,7 @@ class pimenkoquestionnaire {
      *
      * @return array The formatted set of answers as plain text and HTML.
      */
-    private function get_formatted_answers_for_emails( $answers ) {
+    private function get_formatted_answers_for_emails($answers) {
         global $USER;
 
         // Line endings for html and plaintext emails.
@@ -1879,7 +1884,7 @@ class pimenkoquestionnaire {
      * @return boolean Operation success.
      *
      */
-    private function send_submission_notifications( $rid ) {
+    private function send_submission_notifications($rid) {
         global $CFG, $USER;
 
         $answers = new stdClass();
@@ -1929,7 +1934,7 @@ class pimenkoquestionnaire {
         return $success;
     }
 
-    private function response_import_all( $rid, &$varr ) {
+    private function response_import_all($rid, &$varr) {
 
         $vals = $this->response_select($rid, 'content');
         reset($vals);
@@ -1956,7 +1961,7 @@ class pimenkoquestionnaire {
      * @return string
      * @throws coding_exception
      */
-    private function get_full_submission_for_notifications( $answers ) {
+    private function get_full_submission_for_notifications($answers) {
         $responses = $this->get_full_submission_for_export($answers);
         $message = '';
         foreach ($responses as $response) {
@@ -1982,7 +1987,7 @@ class pimenkoquestionnaire {
      * @return string
      * @throws coding_exception
      */
-    private function get_full_submission_for_export( $answers ) {
+    private function get_full_submission_for_export($answers) {
         $exportstructure = [];
         foreach ($this->questions as $question) {
             $rqid = 'q' . $question->id;
@@ -2056,7 +2061,7 @@ class pimenkoquestionnaire {
      *
      * @return array
      */
-    protected function get_notifiable_users( $userid ) {
+    protected function get_notifiable_users($userid) {
         // Potential users should be active users only.
         $potentialusers = get_enrolled_users($this->context, 'mod/pimenkoquestionnaire:submissionnotification',
                 null, 'u.*', null, null, null, true);
@@ -2107,7 +2112,7 @@ class pimenkoquestionnaire {
      *
      * @return void
      */
-    private function send_message( $info, $eventtype ) {
+    private function send_message($info, $eventtype) {
         $eventdata = new \core\message\message();
         $eventdata->courseid = $this->course->id;
         $eventdata->modulename = 'pimenkoquestionnaire';
@@ -2190,7 +2195,7 @@ class pimenkoquestionnaire {
         return;
     }
 
-    public function view_all_responses( $resps ) {
+    public function view_all_responses($resps) {
         $this->print_survey_start('', 1, 1, 0);
 
         // If a student's responses have been deleted by teacher while student was viewing the report,
@@ -2238,14 +2243,14 @@ class pimenkoquestionnaire {
         $this->print_survey_end(1, 1);
     }
 
-    public function user_has_saved_response( $userid ) {
+    public function user_has_saved_response($userid) {
         global $DB;
 
         return $DB->record_exists('pimenko_response',
                 ['pimenkoquestionnaireid' => $this->id, 'userid' => $userid, 'complete' => 'n']);
     }
 
-    public function can_view_response( $rid ) {
+    public function can_view_response($rid) {
         global $USER, $DB;
 
         if (!empty($rid)) {
@@ -2305,7 +2310,7 @@ class pimenkoquestionnaire {
         }
     }
 
-    public function count_submissions( $userid = false, $groupid = 0 ) {
+    public function count_submissions($userid = false, $groupid = 0) {
         global $DB;
 
         $params = [];
@@ -2351,7 +2356,7 @@ class pimenkoquestionnaire {
      * @return bool
      * @throws coding_exception
      */
-    public function can_view_all_responses( $usernumresp = null ) {
+    public function can_view_all_responses($usernumresp = null) {
         global $USER, $DB, $SESSION;
 
         $owner = $this->is_survey_owner();
@@ -2394,7 +2399,7 @@ class pimenkoquestionnaire {
      * @return bool
      * @throws coding_exception
      */
-    public function can_view_all_responses_anytime( $grouplogic = true, $respslogic = true ) {
+    public function can_view_all_responses_anytime($grouplogic = true, $respslogic = true) {
         // Can view if you are a valid group user, this is the owning course, and there are responses, and you have no
         // response view restrictions.
         return $grouplogic && $respslogic && $this->is_survey_owner() && $this->capabilities->readallresponseanytime;
@@ -2408,7 +2413,7 @@ class pimenkoquestionnaire {
      * @return bool
      * @throws coding_exception
      */
-    public function can_view_all_responses_with_restrictions( $usernumresp, $grouplogic = true, $respslogic = true ) {
+    public function can_view_all_responses_with_restrictions($usernumresp, $grouplogic = true, $respslogic = true) {
         // Can view if you are a valid group user, this is the owning course, and there are responses, and you can view
         // subject to viewing settings..
         return $grouplogic && $respslogic && $this->is_survey_owner() &&
@@ -2424,7 +2429,7 @@ class pimenkoquestionnaire {
      *
      * @return array
      */
-    public function get_all_dependants( $questionid ) {
+    public function get_all_dependants($questionid) {
         $directids = $this->get_dependants($questionid);
         $directs = [];
         $indirects = [];
@@ -2456,7 +2461,7 @@ class pimenkoquestionnaire {
      *
      * @return array
      */
-    public function get_dependants( $questionid ) {
+    public function get_dependants($questionid) {
         $qu = [];
         // Create an array which shows for every question the child-IDs.
         foreach ($this->questions as $question) {
@@ -2480,7 +2485,7 @@ class pimenkoquestionnaire {
      *
      * @return bool
      */
-    public function load_parents( $question ) {
+    public function load_parents($question) {
         foreach ($question->dependencies as $did => $dependency) {
             $dependquestion = $this->questions[$dependency->dependquestionid];
             $qdependchoice = '';
@@ -2526,7 +2531,7 @@ class pimenkoquestionnaire {
 
     // Display responses for current user (your responses).
 
-    public function survey_print_render( $message = '', $referer = '', $courseid, $rid = 0, $blankpimenkoquestionnaire = false ) {
+    public function survey_print_render($message = '', $referer = '', $courseid, $rid = 0, $blankpimenkoquestionnaire = false) {
         global $DB, $CFG;
 
         if (!$course = $DB->get_record("course", ["id" => $courseid])) {
@@ -3037,7 +3042,7 @@ class pimenkoquestionnaire {
         return ($parents);
     }
 
-    public function survey_update( $sdata ) {
+    public function survey_update($sdata) {
         global $DB;
 
         $errstr = ''; // TODO: notused!
@@ -3105,7 +3110,7 @@ class pimenkoquestionnaire {
         return ($this->survey->id);
     }
 
-    public function survey_copy( $owner ) {
+    public function survey_copy($owner) {
         global $DB;
 
         // Clear the sid, clear the creation date, change the name, and clear the status.
@@ -3166,7 +3171,7 @@ class pimenkoquestionnaire {
                     $choicerecord = new \stdClass();
                     $choicerecord->content = $teacher->firstname . ' ' . $teacher->lastname;
                     $choicerecord->value = $choicerecord->content;
-                    array_push($choicerecords,$choicerecord);
+                    array_push($choicerecords, $choicerecord);
                 }
                 if (!$choicerecords) {
                     $choicerecord = new \stdClass();
@@ -3245,13 +3250,13 @@ class pimenkoquestionnaire {
      * @return string
      * @throws coding_exception
      */
-    public function get_structured_response( $rid ) {
+    public function get_structured_response($rid) {
         $answers = new stdClass();
         $this->response_import_all($rid, $answers);
         return $this->get_full_submission_for_export($answers);
     }
 
-    public function survey_results_navbar_alpha( $currrid, $currentgroupid, $cm, $byresponse ) {
+    public function survey_results_navbar_alpha($currrid, $currentgroupid, $cm, $byresponse) {
         global $CFG, $DB;
 
         // Is this pimenkoquestionnaire set to fullname or anonymous?
@@ -3413,12 +3418,12 @@ class pimenkoquestionnaire {
      * Get the requested responses for this pimenkoquestionnaire.
      *
      * @param int|bool $userid
-     * @param int      $groupid
+     * @param int $groupid
      *
      * @return array
      * @throws dml_exception
      */
-    public function get_responses( $userid = false, $groupid = 0 ) {
+    public function get_responses($userid = false, $groupid = 0) {
         global $DB;
 
         $params = [];
@@ -3462,7 +3467,7 @@ class pimenkoquestionnaire {
     Exports the results of a survey to an array.
     */
 
-    public function survey_results_navbar_student( $currrid, $userid, $instance, $resps, $reporttype = 'myreport', $sid = '' ) {
+    public function survey_results_navbar_student($currrid, $userid, $instance, $resps, $reporttype = 'myreport', $sid = '') {
         global $DB;
         $stranonymous = get_string('anonymous', 'pimenkoquestionnaire');
 
@@ -3667,12 +3672,12 @@ class pimenkoquestionnaire {
      * Function to move a question to a new position.
      * Adapted from feedback plugin.
      *
-     * @param int $moveqid   The id of the question to be moved.
+     * @param int $moveqid The id of the question to be moved.
      * @param int $movetopos The position to move question to.
      *
      */
 
-    public function move_question( $moveqid, $movetopos ) {
+    public function move_question($moveqid, $movetopos) {
         global $DB;
 
         $questions = $this->questions;
