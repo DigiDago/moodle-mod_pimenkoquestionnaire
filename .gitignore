@@ -1,0 +1,5 @@
+**/.DS_Store
+.idea
+fonts/*
+node_modules/*
+**/package-lock.json
