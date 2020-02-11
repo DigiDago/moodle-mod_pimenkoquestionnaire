@@ -105,7 +105,9 @@ if ($currentgroupid !== null) {
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);
-
+$PAGE->requires->js(new moodle_url('/mod/pimenkoquestionnaire/javascript/html2canvas.js'), true);
+$PAGE->requires->js(new moodle_url('/mod/pimenkoquestionnaire/javascript/jsPDF.js'), true);
+$PAGE->requires->js_call_amd('mod_pimenkoquestionnaire/pimenkoquestionnaire', 'init');
 // Tab setup.
 if (!isset($SESSION->pimenkoquestionnaire)) {
     $SESSION->pimenkoquestionnaire = new stdClass();

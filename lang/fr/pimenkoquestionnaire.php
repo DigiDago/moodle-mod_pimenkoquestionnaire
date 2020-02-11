@@ -600,3 +600,4 @@ $string['yesno'] = 'Oui/Non';
 $string['yesno_help'] = 'Simple question à réponse **Oui** ou **Non**.';
 $string['yourresponse'] = 'Votre réponse';
 $string['yourresponses'] = 'Vos réponses';
+$string['printtopdf'] = 'Imprimer en pdf';

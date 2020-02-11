@@ -636,3 +636,4 @@ $string['yourresponses'] = 'Your responses';
 $string['crontask'] = 'Questionnaire cleanup job';
 $string['teacherselect_help'] = 'Teacher list will be generate automatically';
 $string['noteacher'] = 'No teacher define';
+$string['printtopdf'] = 'Imprimer en pdf';
