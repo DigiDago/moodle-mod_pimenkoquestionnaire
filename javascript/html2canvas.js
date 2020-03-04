@@ -5,8 +5,8 @@
  */
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-        typeof define === 'function' && define.amd ? define(factory) :
-            (global = global || self, global.html2canvas = factory());
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global = global || self, global.html2canvas = factory());
 }(this, function () { 'use strict';
 
     /*! *****************************************************************************
@@ -188,8 +188,8 @@
             }
         }
         var buffer = typeof ArrayBuffer !== 'undefined' &&
-        typeof Uint8Array !== 'undefined' &&
-        typeof Uint8Array.prototype.slice !== 'undefined'
+            typeof Uint8Array !== 'undefined' &&
+            typeof Uint8Array.prototype.slice !== 'undefined'
             ? new ArrayBuffer(bufferLength)
             : new Array(bufferLength);
         var bytes = Array.isArray(buffer) ? buffer : new Uint8Array(buffer);
@@ -648,9 +648,9 @@
         }
         // LB25 Do not break between the following pairs of classes relevant to numbers:
         if (
-            // (PR | PO) × ( OP | HY )? NU
-            ([PR, PO].indexOf(current) !== -1 &&
-                (next === NU || ([OP, HY].indexOf(next) !== -1 && classTypes[afterIndex + 1] === NU))) ||
+        // (PR | PO) × ( OP | HY )? NU
+        ([PR, PO].indexOf(current) !== -1 &&
+            (next === NU || ([OP, HY].indexOf(next) !== -1 && classTypes[afterIndex + 1] === NU))) ||
             // ( OP | HY ) × NU
             ([OP, HY].indexOf(current) !== -1 && next === NU) ||
             // NU ×	(NU | SY | IS)
@@ -777,8 +777,8 @@
                 }
                 var lineBreak = BREAK_NOT_ALLOWED;
                 while (nextIndex < length &&
-                (lineBreak = _lineBreakAtIndex(codePoints, classTypes, indicies, ++nextIndex, forbiddenBreakpoints)) ===
-                BREAK_NOT_ALLOWED) { }
+                    (lineBreak = _lineBreakAtIndex(codePoints, classTypes, indicies, ++nextIndex, forbiddenBreakpoints)) ===
+                        BREAK_NOT_ALLOWED) { }
                 if (lineBreak !== BREAK_NOT_ALLOWED || nextIndex === length) {
                     var value = new Break(codePoints, lineBreak, lastEnd, nextIndex);
                     lastEnd = nextIndex;
@@ -2280,23 +2280,23 @@
         ctx.fillRect(0, 0, size, size);
         return loadSerializedSVG(svg)
             .then(function (img) {
-                ctx.drawImage(img, 0, 0);
-                var data = ctx.getImageData(0, 0, size, size).data;
-                ctx.fillStyle = 'red';
-                ctx.fillRect(0, 0, size, size);
-                var node = document.createElement('div');
-                node.style.backgroundImage = "url(" + greenImageSrc + ")";
-                node.style.height = size + "px";
-                // Firefox 55 does not render inline <img /> tags
-                return isGreenPixel(data)
-                    ? loadSerializedSVG(createForeignObjectSVG(size, size, 0, 0, node))
-                    : Promise.reject(false);
-            })
+            ctx.drawImage(img, 0, 0);
+            var data = ctx.getImageData(0, 0, size, size).data;
+            ctx.fillStyle = 'red';
+            ctx.fillRect(0, 0, size, size);
+            var node = document.createElement('div');
+            node.style.backgroundImage = "url(" + greenImageSrc + ")";
+            node.style.height = size + "px";
+            // Firefox 55 does not render inline <img /> tags
+            return isGreenPixel(data)
+                ? loadSerializedSVG(createForeignObjectSVG(size, size, 0, 0, node))
+                : Promise.reject(false);
+        })
             .then(function (img) {
-                ctx.drawImage(img, 0, 0);
-                // Edge does not render background-images
-                return isGreenPixel(ctx.getImageData(0, 0, size, size).data);
-            })
+            ctx.drawImage(img, 0, 0);
+            // Edge does not render background-images
+            return isGreenPixel(ctx.getImageData(0, 0, size, size).data);
+        })
             .catch(function () { return false; });
     };
     var createForeignObjectSVG = function (width, height, x, y, node) {
@@ -2529,22 +2529,22 @@
                         case 2:
                             Logger.getInstance(this.id).debug("Added image " + key.substring(0, 256));
                             return [4 /*yield*/, new Promise(function (resolve, reject) {
-                                var img = new Image();
-                                img.onload = function () { return resolve(img); };
-                                img.onerror = reject;
-                                //ios safari 10.3 taints canvas with data urls unless crossOrigin is set to anonymous
-                                if (isInlineBase64Image(src) || useCORS) {
-                                    img.crossOrigin = 'anonymous';
-                                }
-                                img.src = src;
-                                if (img.complete === true) {
-                                    // Inline XML images may fail to parse, throwing an Error later on
-                                    setTimeout(function () { return resolve(img); }, 500);
-                                }
-                                if (_this._options.imageTimeout > 0) {
-                                    setTimeout(function () { return reject("Timed out (" + _this._options.imageTimeout + "ms) loading image"); }, _this._options.imageTimeout);
-                                }
-                            })];
+                                    var img = new Image();
+                                    img.onload = function () { return resolve(img); };
+                                    img.onerror = reject;
+                                    //ios safari 10.3 taints canvas with data urls unless crossOrigin is set to anonymous
+                                    if (isInlineBase64Image(src) || useCORS) {
+                                        img.crossOrigin = 'anonymous';
+                                    }
+                                    img.src = src;
+                                    if (img.complete === true) {
+                                        // Inline XML images may fail to parse, throwing an Error later on
+                                        setTimeout(function () { return resolve(img); }, 500);
+                                    }
+                                    if (_this._options.imageTimeout > 0) {
+                                        setTimeout(function () { return reject("Timed out (" + _this._options.imageTimeout + "ms) loading image"); }, _this._options.imageTimeout);
+                                    }
+                                })];
                         case 3: return [2 /*return*/, _a.sent()];
                     }
                 });
@@ -2939,11 +2939,11 @@
         parse: function (tokens) {
             return parseFunctionArgs(tokens)
                 .map(function (values) {
-                    return values
-                        .filter(isIdentToken)
-                        .map(function (token) { return token.value; })
-                        .join(' ');
-                })
+                return values
+                    .filter(isIdentToken)
+                    .map(function (token) { return token.value; })
+                    .join(' ');
+            })
                 .map(parseBackgroundRepeat);
         }
     };
@@ -3768,18 +3768,18 @@
             return tokens
                 .filter(isIdentToken)
                 .map(function (token) {
-                    switch (token.value) {
-                        case 'underline':
-                            return 1 /* UNDERLINE */;
-                        case 'overline':
-                            return 2 /* OVERLINE */;
-                        case 'line-through':
-                            return 3 /* LINE_THROUGH */;
-                        case 'none':
-                            return 4 /* BLINK */;
-                    }
-                    return 0 /* NONE */;
-                })
+                switch (token.value) {
+                    case 'underline':
+                        return 1 /* UNDERLINE */;
+                    case 'overline':
+                        return 2 /* OVERLINE */;
+                    case 'line-through':
+                        return 3 /* LINE_THROUGH */;
+                    case 'none':
+                        return 4 /* BLINK */;
+                }
+                return 0 /* NONE */;
+            })
                 .filter(function (line) { return line !== 0 /* NONE */; });
         }
     };
@@ -4526,9 +4526,6 @@
     var isHTMLElementNode = function (node) {
         return typeof node.style !== 'undefined';
     };
-    var isSVGElementNode = function (element) {
-        return typeof element.className === 'object';
-    };
     var isLIElement = function (node) { return node.tagName === 'LI'; };
     var isOLElement = function (node) { return node.tagName === 'OL'; };
     var isInputElement = function (node) { return node.tagName === 'INPUT'; };
@@ -4860,8 +4857,8 @@
         var codePointRangeLength = codePointRangeEnd - codePointRangeStart + 1;
         return ((value < 0 ? '-' : '') +
             (createCounterStyleWithSymbolResolver(Math.abs(value), codePointRangeLength, isNumeric, function (codePoint) {
-                    return fromCodePoint(Math.floor(codePoint % codePointRangeLength) + codePointRangeStart);
-                }) +
+                return fromCodePoint(Math.floor(codePoint % codePointRangeLength) + codePointRangeStart);
+            }) +
                 suffix));
     };
     var createCounterStyleFromSymbols = function (value, symbols, suffix) {
@@ -5064,8 +5061,8 @@
                         case 2:
                             if (typeof onclone === 'function') {
                                 return [2 /*return*/, Promise.resolve()
-                                    .then(function () { return onclone(documentClone); })
-                                    .then(function () { return iframe; })];
+                                        .then(function () { return onclone(documentClone); })
+                                        .then(function () { return iframe; })];
                             }
                             return [2 /*return*/, iframe];
                     }
@@ -5333,15 +5330,10 @@
                 }
             });
             anonymousReplacedElement.className = PSEUDO_HIDE_ELEMENT_CLASS_BEFORE + " " + PSEUDO_HIDE_ELEMENT_CLASS_AFTER;
-            var newClassName = pseudoElt === PseudoElementType.BEFORE
-                ? " " + PSEUDO_HIDE_ELEMENT_CLASS_BEFORE
-                : " " + PSEUDO_HIDE_ELEMENT_CLASS_AFTER;
-            if (isSVGElementNode(clone)) {
-                clone.className.baseValue += newClassName;
-            }
-            else {
-                clone.className += newClassName;
-            }
+            clone.className +=
+                pseudoElt === PseudoElementType.BEFORE
+                    ? " " + PSEUDO_HIDE_ELEMENT_CLASS_BEFORE
+                    : " " + PSEUDO_HIDE_ELEMENT_CLASS_AFTER;
             return anonymousReplacedElement;
         };
         DocumentCloner.destroy = function (container) {
@@ -6217,12 +6209,12 @@
                                 .slice(0)
                                 .reverse()
                                 .forEach(function (textShadow) {
-                                    _this.ctx.shadowColor = asString(textShadow.color);
-                                    _this.ctx.shadowOffsetX = textShadow.offsetX.number * _this.options.scale;
-                                    _this.ctx.shadowOffsetY = textShadow.offsetY.number * _this.options.scale;
-                                    _this.ctx.shadowBlur = textShadow.blur.number;
-                                    _this.ctx.fillText(text.text, text.bounds.left, text.bounds.top + text.bounds.height);
-                                });
+                                _this.ctx.shadowColor = asString(textShadow.color);
+                                _this.ctx.shadowOffsetX = textShadow.offsetX.number * _this.options.scale;
+                                _this.ctx.shadowOffsetY = textShadow.offsetY.number * _this.options.scale;
+                                _this.ctx.shadowBlur = textShadow.blur.number;
+                                _this.ctx.fillText(text.text, text.bounds.left, text.bounds.top + text.bounds.height);
+                            });
                             _this.ctx.shadowColor = '';
                             _this.ctx.shadowOffsetX = 0;
                             _this.ctx.shadowOffsetY = 0;
@@ -6443,10 +6435,10 @@
                 var _i, _a, child, _b, _c, child, _d, _e, child, _f, _g, child, _h, _j, child, _k, _l, child, _m, _o, child;
                 return __generator(this, function (_p) {
                     switch (_p.label) {
-                        case 0:
-                            // https://www.w3.org/TR/css-position-3/#painting-order
-                            // 1. the background and borders of the element forming the stacking context.
-                            return [4 /*yield*/, this.renderNodeBackgroundAndBorders(stack.element)];
+                        case 0: 
+                        // https://www.w3.org/TR/css-position-3/#painting-order
+                        // 1. the background and borders of the element forming the stacking context.
+                        return [4 /*yield*/, this.renderNodeBackgroundAndBorders(stack.element)];
                         case 1:
                             // https://www.w3.org/TR/css-position-3/#painting-order
                             // 1. the background and borders of the element forming the stacking context.
@@ -6463,9 +6455,9 @@
                         case 4:
                             _i++;
                             return [3 /*break*/, 2];
-                        case 5:
-                            // 3. For all its in-flow, non-positioned, block-level descendants in tree order:
-                            return [4 /*yield*/, this.renderNodeContent(stack.element)];
+                        case 5: 
+                        // 3. For all its in-flow, non-positioned, block-level descendants in tree order:
+                        return [4 /*yield*/, this.renderNodeContent(stack.element)];
                         case 6:
                             // 3. For all its in-flow, non-positioned, block-level descendants in tree order:
                             _p.sent();
@@ -6757,28 +6749,28 @@
                                 .slice(0)
                                 .reverse()
                                 .forEach(function (shadow) {
-                                    _this.ctx.save();
-                                    var borderBoxArea = calculateBorderBoxPath(paint.curves);
-                                    var maskOffset = shadow.inset ? 0 : MASK_OFFSET;
-                                    var shadowPaintingArea = transformPath(borderBoxArea, -maskOffset + (shadow.inset ? 1 : -1) * shadow.spread.number, (shadow.inset ? 1 : -1) * shadow.spread.number, shadow.spread.number * (shadow.inset ? -2 : 2), shadow.spread.number * (shadow.inset ? -2 : 2));
-                                    if (shadow.inset) {
-                                        _this.path(borderBoxArea);
-                                        _this.ctx.clip();
-                                        _this.mask(shadowPaintingArea);
-                                    }
-                                    else {
-                                        _this.mask(borderBoxArea);
-                                        _this.ctx.clip();
-                                        _this.path(shadowPaintingArea);
-                                    }
-                                    _this.ctx.shadowOffsetX = shadow.offsetX.number + maskOffset;
-                                    _this.ctx.shadowOffsetY = shadow.offsetY.number;
-                                    _this.ctx.shadowColor = asString(shadow.color);
-                                    _this.ctx.shadowBlur = shadow.blur.number;
-                                    _this.ctx.fillStyle = shadow.inset ? asString(shadow.color) : 'rgba(0,0,0,1)';
-                                    _this.ctx.fill();
-                                    _this.ctx.restore();
-                                });
+                                _this.ctx.save();
+                                var borderBoxArea = calculateBorderBoxPath(paint.curves);
+                                var maskOffset = shadow.inset ? 0 : MASK_OFFSET;
+                                var shadowPaintingArea = transformPath(borderBoxArea, -maskOffset + (shadow.inset ? 1 : -1) * shadow.spread.number, (shadow.inset ? 1 : -1) * shadow.spread.number, shadow.spread.number * (shadow.inset ? -2 : 2), shadow.spread.number * (shadow.inset ? -2 : 2));
+                                if (shadow.inset) {
+                                    _this.path(borderBoxArea);
+                                    _this.ctx.clip();
+                                    _this.mask(shadowPaintingArea);
+                                }
+                                else {
+                                    _this.mask(borderBoxArea);
+                                    _this.ctx.clip();
+                                    _this.path(shadowPaintingArea);
+                                }
+                                _this.ctx.shadowOffsetX = shadow.offsetX.number + maskOffset;
+                                _this.ctx.shadowOffsetY = shadow.offsetY.number;
+                                _this.ctx.shadowColor = asString(shadow.color);
+                                _this.ctx.shadowBlur = shadow.blur.number;
+                                _this.ctx.fillStyle = shadow.inset ? asString(shadow.color) : 'rgba(0,0,0,1)';
+                                _this.ctx.fill();
+                                _this.ctx.restore();
+                            });
                             _a.label = 2;
                         case 2:
                             side = 0;
@@ -6912,9 +6904,7 @@
         if (options === void 0) { options = {}; }
         return renderElement(element, options);
     };
-    if (typeof window !== "undefined") {
-        CacheStorage.setContext(window);
-    }
+    CacheStorage.setContext(window);
     var renderElement = function (element, opts) { return __awaiter(_this, void 0, void 0, function () {
         var ownerDocument, defaultView, instanceName, _a, width, height, left, top, defaultResourceOptions, resourceOptions, defaultOptions, options, windowBounds, documentCloner, clonedElement, container, documentBackgroundColor, bodyBackgroundColor, bgColor, defaultBackgroundColor, backgroundColor, renderOptions, canvas, renderer, root, renderer;
         return __generator(this, function (_b) {

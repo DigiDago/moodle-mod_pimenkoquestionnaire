@@ -14531,7 +14531,7 @@
             options.html2canvas = options.html2canvas || {};
             options.html2canvas.canvas = options.html2canvas.canvas || this.canvas;
             options.jsPDF = options.jsPDF || this; // Create a new worker with the given options.
-
+            console.log(options);
             var worker = new Worker(options);
 
             if (!options.worker) {

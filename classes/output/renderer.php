@@ -35,7 +35,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string | boolean
      */
-    public function render_viewpage( $page ) {
+    public function render_viewpage($page) {
         $data = $page->export_for_template($this);
         return $this->render_from_template('mod_pimenkoquestionnaire/viewpage', $data);
     }
@@ -47,7 +47,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string | boolean
      */
-    public function render_completepage( $page ) {
+    public function render_completepage($page) {
         $data = $page->export_for_template($this);
         return $this->render_from_template('mod_pimenkoquestionnaire/completepage', $data);
     }
@@ -59,8 +59,18 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string | boolean
      */
-    public function render_reportpage( $page ) {
+    public function render_reportpage($page) {
+        global $COURSE;
         $data = $page->export_for_template($this);
+        $data->coursetitle = $COURSE->fullname;
+
+        if (isset($_GET['action'])) {
+            if ($_GET['action'] == "vall"
+                    || $_GET['action'] == "vallsort"
+                    || $_GET['action'] == "vallarsort") {
+                $data->showprintbutton = true;
+            }
+        }
         return $this->render_from_template('mod_pimenkoquestionnaire/reportpage', $data);
     }
 
@@ -71,7 +81,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string | boolean
      */
-    public function render_qsettingspage( $page ) {
+    public function render_qsettingspage($page) {
         $data = $page->export_for_template($this);
         return $this->render_from_template('mod_pimenkoquestionnaire/qsettingspage', $data);
     }
@@ -83,7 +93,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string | boolean
      */
-    public function render_feedbackpage( $page ) {
+    public function render_feedbackpage($page) {
         $data = $page->export_for_template($this);
         return $this->render_from_template('mod_pimenkoquestionnaire/qsettingspage', $data);
     }
@@ -95,7 +105,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string | boolean
      */
-    public function render_questionspage( $page ) {
+    public function render_questionspage($page) {
         $data = $page->export_for_template($this);
         return $this->render_from_template('mod_pimenkoquestionnaire/questionspage', $data);
     }
@@ -107,7 +117,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string | boolean
      */
-    public function render_previewpage( $page ) {
+    public function render_previewpage($page) {
         $data = $page->export_for_template($this);
         return $this->render_from_template('mod_pimenkoquestionnaire/previewpage', $data);
     }
@@ -119,7 +129,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string | boolean
      */
-    public function render_nonrespondentspage( $page ) {
+    public function render_nonrespondentspage($page) {
         $data = $page->export_for_template($this);
         return $this->render_from_template('mod_pimenkoquestionnaire/nonrespondentspage', $data);
     }
@@ -131,7 +141,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string | boolean
      */
-    public function render_fbsectionspage( $page ) {
+    public function render_fbsectionspage($page) {
         $data = $page->export_for_template($this);
         return $this->render_from_template('mod_pimenkoquestionnaire/fbsectionspage', $data);
     }
@@ -141,19 +151,19 @@ class renderer extends \plugin_renderer_base {
      *
      * @param string $text The respondent information.
      */
-    public function respondent_info( $text ) {
+    public function respondent_info($text) {
         return \html_writer::tag('span', $text, ['class' => 'respondentinfo']);
     }
 
     /**
      * Render the completion form start HTML.
      *
-     * @param string $action       The action URL.
-     * @param array  $hiddeninputs Name/value pairs of hidden inputs used by the form.
+     * @param string $action The action URL.
+     * @param array $hiddeninputs Name/value pairs of hidden inputs used by the form.
      *
      * @return string The output for the page.
      */
-    public function complete_formstart( $action, $hiddeninputs = [] ) {
+    public function complete_formstart($action, $hiddeninputs = []) {
         $output = '';
         $output .= \html_writer::start_tag('form', ['id' => 'phpesp_response', 'method' => 'post', 'action' => $action]) . "\n";
         foreach ($hiddeninputs as $name => $value) {
@@ -169,7 +179,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string The output for the page.
      */
-    public function complete_formend( $inputs = [] ) {
+    public function complete_formend($inputs = []) {
         $output = '';
         foreach ($inputs as $type => $attributes) {
             $output .= \html_writer::empty_tag('input', array_merge(['type' => $type], $attributes)) . "\n";
@@ -185,7 +195,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string The output for the page.
      */
-    public function complete_controlbuttons( $inputs = null ) {
+    public function complete_controlbuttons($inputs = null) {
         $output = '';
         if (is_array($inputs)) {
             foreach ($inputs as $name => $attributes) {
@@ -200,15 +210,15 @@ class renderer extends \plugin_renderer_base {
     /**
      * Render a question for a survey.
      *
-     * @param mod_pimenkoquestionnaire\question\base $question           The question object.
-     * @param array                                  $formdata           Any returned form data.
-     * @param array                                  $dependants         Array of all questions/choices depending on $question.
-     * @param int                                    $qnum               The question number.
-     * @param boolean                                $blankquestionnaire Used for printing a blank one.
+     * @param mod_pimenkoquestionnaire\question\base $question The question object.
+     * @param array $formdata Any returned form data.
+     * @param array $dependants Array of all questions/choices depending on $question.
+     * @param int $qnum The question number.
+     * @param boolean $blankquestionnaire Used for printing a blank one.
      *
      * @return string The output for the page.
      */
-    public function question_output( $question, $formdata, $dependants = [], $qnum, $blankquestionnaire ) {
+    public function question_output($question, $formdata, $dependants = [], $qnum, $blankquestionnaire) {
 
         $pagetags = $question->question_output($formdata, $dependants, $qnum, $blankquestionnaire);
 
@@ -232,12 +242,12 @@ class renderer extends \plugin_renderer_base {
      * Render a question response.
      *
      * @param mod_pimenkoquestionnaire\question\base $question The question object.
-     * @param stdClass                               $data     All of the response data.
-     * @param int                                    $qnum     The question number.
+     * @param stdClass $data All of the response data.
+     * @param int $qnum The question number.
      *
      * @return string The output for the page.
      */
-    public function response_output( $question, $data, $qnum = null ) {
+    public function response_output($question, $data, $qnum = null) {
         $pagetags = $question->response_output($data, $qnum);
 
         // If the response has a template, then render it from the 'qformelement' context. If no template, then 'qformelement'
@@ -262,7 +272,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string The output for the page.
      */
-    public function all_response_output( $data = null ) {
+    public function all_response_output($data = null) {
         $output = '';
         if (is_string($data)) {
             $output .= $data;
@@ -291,14 +301,14 @@ class renderer extends \plugin_renderer_base {
     /**
      * Render a question results summary.
      *
-     * @param mod_pimenkoquestionnaire\question\base $question  The question object.
-     * @param array                                  $rids      The response ids.
-     * @param string                                 $sort      The sort order being used.
-     * @param string                                 $anonymous The value of the anonymous setting.
+     * @param mod_pimenkoquestionnaire\question\base $question The question object.
+     * @param array $rids The response ids.
+     * @param string $sort The sort order being used.
+     * @param string $anonymous The value of the anonymous setting.
      *
      * @return string The output for the page.
      */
-    public function results_output( $question, $rids, $sort, $anonymous ) {
+    public function results_output($question, $rids, $sort, $anonymous) {
         $pagetags = $question->display_results($rids, $sort, $anonymous);
 
         // If the response has a template, then render it from $pagetags. If no template, then $pagetags already contains HTML.
@@ -316,7 +326,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string The rendered HTML.
      */
-    public function navigationbar( $navbar ) {
+    public function navigationbar($navbar) {
         return $this->render_from_template('mod_pimenkoquestionnaire/navbaralpha', $navbar);
     }
 
@@ -327,7 +337,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string The rendered HTML.
      */
-    public function usernavigationbar( $navbar ) {
+    public function usernavigationbar($navbar) {
         return $this->render_from_template('mod_pimenkoquestionnaire/navbaruser', $navbar);
     }
 
@@ -338,7 +348,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string The rendered HTML.
      */
-    public function responselist( $navbar ) {
+    public function responselist($navbar) {
         return $this->render_from_template('mod_pimenkoquestionnaire/responselist', $navbar);
     }
 
@@ -349,20 +359,20 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string The rendered HTML.
      */
-    public function print_preview_pagenumber( $content ) {
+    public function print_preview_pagenumber($content) {
         return \html_writer::tag('div', $content, ['class' => 'surveyPage']);
     }
 
     /**
      * Render the print/preview completion form end HTML.
      *
-     * @param string $url       The url to call.
+     * @param string $url The url to call.
      * @param string $submitstr The submit text.
-     * @param string $resetstr  The reset text.
+     * @param string $resetstr The reset text.
      *
      * @return string The output for the page.
      */
-    public function print_preview_formend( $url, $submitstr, $resetstr ) {
+    public function print_preview_formend($url, $submitstr, $resetstr) {
         $output = '';
         $output .= \html_writer::start_tag('div');
         $output .= \html_writer::empty_tag('input', ['type' => 'submit', 'name' => 'submit', 'value' => $submitstr]);
@@ -376,12 +386,12 @@ class renderer extends \plugin_renderer_base {
     /**
      * Render the back to home link on the save page.
      *
-     * @param string $url  The url to link to.
+     * @param string $url The url to link to.
      * @param string $text The text to apply the link to.
      *
      * @return string The rendered HTML.
      */
-    public function homelink( $url, $text ) {
+    public function homelink($url, $text) {
         $output = '';
         $output .= \html_writer::start_tag('div', ['class' => 'homelink']);
         $output .= \html_writer::tag('a', $text, ['href' => $url]);
@@ -396,7 +406,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string
      */
-    public function dependency_warnings( $children, $langstring, $strnum ) {
+    public function dependency_warnings($children, $langstring, $strnum) {
         $msg = '<div class="warning">' . get_string($langstring, 'pimenkoquestionnaire') . '</div><br />';
         foreach ($children as $child) {
             $loopindicator = [];
@@ -459,7 +469,7 @@ class renderer extends \plugin_renderer_base {
      *
      * @return string
      */
-    public function get_dependency_html( $qid, $dependencies ) {
+    public function get_dependency_html($qid, $dependencies) {
         $html = '';
         foreach ($dependencies as $dependency) {
             switch ($dependency->dependlogic) {
@@ -495,11 +505,11 @@ class renderer extends \plugin_renderer_base {
      * Helper method dealing with the fact we can not just fetch the output of flexible_table
      *
      * @param flexible_table $table
-     * @param boolean        $buffering True if already buffering.
+     * @param boolean $buffering True if already buffering.
      *
      * @return string HTML
      */
-    public function flexible_table( \flexible_table $table, $buffering = false ) {
+    public function flexible_table(\flexible_table $table, $buffering = false) {
 
         $o = '';
         if (!$buffering) {
