@@ -60,7 +60,7 @@ class teacherselect extends base {
         $allchoices = '';
 
         if (!$choices) {
-            $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
+            $role = $DB->get_record('role', ['shortname' => 'editingteacher', 'shortname' => 'responsablebloccontact']);
             $context = context_course::instance($COURSE->id);
             $teachers = get_role_users($role->id, $context);
             foreach ($teachers as $teacher) {
@@ -71,8 +71,6 @@ class teacherselect extends base {
             }
         }
 
-        //var_dump($choices);
-        //die;
         foreach ($choices as $choice) {
             if (!empty($allchoices)) {
                 $allchoices .= "\n";

@@ -3164,7 +3164,7 @@ class pimenkoquestionnaire {
 
                 // Get ur new teachers list.
                 $choicerecords = [];
-                $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
+                $role = $DB->get_record('role', ['shortname' => 'editingteacher', 'shortname' => 'responsablebloccontact']);
                 $context = context_course::instance($survey->courseid);
                 $teachers = get_role_users($role->id, $context);
                 foreach ($teachers as $teacher) {

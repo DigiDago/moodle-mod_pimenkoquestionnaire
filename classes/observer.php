@@ -34,7 +34,8 @@ class mod_pimenkoquestionnaire_observer {
         global $DB;
         $role = $DB->get_record($event->objecttable, ['id' => $event->objectid]);
         $user = $DB->get_record('user', ['id' => $event->relateduserid]);
-        if ($role->shortname == 'editingteacher') {
+
+        if ($role->shortname == 'editingteacher' || $role->shortname == 'responsablebloccontact') {
             $questionnaires = $DB->get_records('pimenkoquestionnaire', ['course' => $event->courseid]);
             foreach ($questionnaires as $questionnaire) {
                 $questions = $DB->get_records("pimenko_question", ['surveyid' => $questionnaire->sid, 'type_id' => 11]);

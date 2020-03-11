@@ -114,7 +114,7 @@ abstract class base {
      * The class constructor
      *
      */
-    public function __construct( $id = 0, $question = null, $context = null, $params = [] ) {
+    public function __construct($id = 0, $question = null, $context = null, $params = []) {
         global $DB;
         static $qtypes = null;
 
@@ -159,13 +159,37 @@ abstract class base {
     }
 
     private function get_choices() {
-        global $DB;
+        global $DB, $COURSE, $PAGE;
 
         if ($choices = $DB->get_records('pimenko_quest_choice', ['question_id' => $this->id], 'id ASC')) {
             foreach ($choices as $choice) {
+
                 $this->choices[$choice->id] = new \stdClass();
                 $this->choices[$choice->id]->content = $choice->content;
                 $this->choices[$choice->id]->value = $choice->value;
+            }
+
+            // Typeid always the same.
+            // Here we need to remove old teacher from the list.
+            // This code will remove Teacher who are no longer enrol as teacher from the select teacher list.
+            $type = $PAGE->pagetype;
+            if ($this->type_id == 11 && $type == "mod-pimenkoquestionnaire-complete") {
+                $role = $DB->get_record('role', ['shortname' => 'editingteacher', 'shortname' => 'responsablebloccontact']);
+                $context = context_course::instance($COURSE->id);
+                $teachers = get_role_users($role->id, $context);
+                foreach ($this->choices as $key => $choice) {
+                    $same = false;
+                    foreach ($teachers as $teacher) {
+                        $value = $teacher->firstname . ' ' . $teacher->lastname;
+                        if (stristr($choice->value, $value) !== false) {
+                            $same = true;
+                            break;
+                        }
+                    }
+                    if ($same === false) {
+                        unset($this->choices[$key]);
+                    }
+                }
             }
         } else {
             $this->choices = [];
@@ -199,11 +223,11 @@ abstract class base {
      * Build a question from data.
      *
      * @return A question object.
-     * @var int|array|object $qdata   Either the id of the record, or a structure containing the question data, or null.
-     * @var object           $context The context for the question.
-     * @var int              $qtype   The question type code.
+     * @var int|array|object $qdata Either the id of the record, or a structure containing the question data, or null.
+     * @var object $context The context for the question.
+     * @var int $qtype The question type code.
      */
-    static public function question_builder( $qtype, $qdata = null, $context = null ) {
+    static public function question_builder($qtype, $qdata = null, $context = null) {
         $qclassname = '\\mod_pimenkoquestionnaire\\question\\' . self::qtypename($qtype);
         $qid = 0;
         if (!empty($qdata) && is_array($qdata)) {
@@ -219,7 +243,7 @@ abstract class base {
      *
      * @return array
      */
-    static public function qtypename( $qtype ) {
+    static public function qtypename($qtype) {
         if (array_key_exists($qtype, self::$qtypenames)) {
             return self::$qtypenames[$qtype];
         } else {
@@ -227,13 +251,13 @@ abstract class base {
         }
     }
 
-    static public function form_length_hidden( \MoodleQuickForm $mform, $value = 0 ) {
+    static public function form_length_hidden(\MoodleQuickForm $mform, $value = 0) {
         $mform->addElement('hidden', 'length', $value);
         $mform->setType('length', PARAM_INT);
         return $mform;
     }
 
-    static public function form_precise_hidden( \MoodleQuickForm $mform, $value = 0 ) {
+    static public function form_precise_hidden(\MoodleQuickForm $mform, $value = 0) {
         $mform->addElement('hidden', 'precise', $value);
         $mform->setType('precise', PARAM_INT);
         return $mform;
@@ -242,12 +266,12 @@ abstract class base {
     /**
      * Return true if all dependencies or this question have been fulfilled, or there aren't any.
      *
-     * @param int   $rid       The response ID to check.
+     * @param int $rid The response ID to check.
      * @param array $questions An array containing all possible parent question objects.
      *
      * @return bool
      */
-    public function dependency_fulfilled( $rid, $questions ) {
+    public function dependency_fulfilled($rid, $questions) {
         if (!$this->has_dependencies()) {
             $fulfilled = true;
         } else {
@@ -320,7 +344,7 @@ abstract class base {
      *
      * @return bool
      */
-    public function response_has_choice( $rid, $choiceid ) {
+    public function response_has_choice($rid, $choiceid) {
         global $DB;
         $choiceval = $this->response->transform_choiceid($choiceid);
         return $DB->record_exists($this->response_table(),
@@ -334,7 +358,7 @@ abstract class base {
     /**
      * Insert response data method.
      */
-    public function insert_response( $rid, $val ) {
+    public function insert_response($rid, $val) {
         if (isset ($this->response) && is_object($this->response) &&
                 is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
             return $this->response->insert_response($rid, $val);
@@ -346,7 +370,7 @@ abstract class base {
     /**
      * Get results data method.
      */
-    public function get_results( $rids = false ) {
+    public function get_results($rids = false) {
         if (isset ($this->response) && is_object($this->response) &&
                 is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
             return $this->response->get_results($rids);
@@ -358,7 +382,7 @@ abstract class base {
     /**
      * Display results method.
      */
-    public function display_results( $rids = false, $sort = '', $anonymous = false ) {
+    public function display_results($rids = false, $sort = '', $anonymous = false) {
         if (isset ($this->response) && is_object($this->response) &&
                 is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
             return $this->response->display_results($rids, $sort, $anonymous);
@@ -372,7 +396,7 @@ abstract class base {
      *
      * @param string $message
      */
-    public function add_notification( $message ) {
+    public function add_notification($message) {
         $this->notifications[] = $message;
     }
 
@@ -417,7 +441,7 @@ abstract class base {
      *
      * @return array | boolean
      */
-    public function get_feedback_scores( array $rids ) {
+    public function get_feedback_scores(array $rids) {
         if ($this->valid_feedback() && isset($this->response) && is_object($this->response) &&
                 is_subclass_of($this->response, '\\mod_pimenkoquestionnaire\\response\\base')) {
             return $this->response->get_feedback_scores($rids);
@@ -439,6 +463,13 @@ abstract class base {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Override and return true if the question has choices.
+     */
+    public function has_choices() {
+        return false;
     }
 
     /**
@@ -478,7 +509,7 @@ abstract class base {
      *
      * @return boolean
      */
-    public function response_complete( $responsedata ) {
+    public function response_complete($responsedata) {
         return !($this->required() && ($this->deleted == 'n') &&
                 (!isset($responsedata->{'q' . $this->id}) || $responsedata->{'q' . $this->id} == ''));
     }
@@ -490,7 +521,7 @@ abstract class base {
      *
      * @return boolean
      */
-    public function response_valid( $responsedata ) {
+    public function response_valid($responsedata) {
         return true;
     }
 
@@ -499,7 +530,7 @@ abstract class base {
      *
      * @param boolean $required Whether question should be required or not.
      */
-    public function set_required( $required ) {
+    public function set_required($required) {
         global $DB;
         $rval = $required ? 'y' : 'n';
         // Need to fix this messed-up qid/id issue.
@@ -547,12 +578,12 @@ abstract class base {
     /**
      * Get the output for question renderers / templates.
      *
-     * @param object  $formdata
-     * @param array   $dependants Array of all questions/choices depending on this question.
+     * @param object $formdata
+     * @param array $dependants Array of all questions/choices depending on this question.
      * @param integer $qnum
      * @param boolean $blankpimenkoquestionnaire
      */
-    public function question_output( $formdata, $dependants = [], $qnum = '', $blankpimenkoquestionnaire ) {
+    public function question_output($formdata, $dependants = [], $qnum = '', $blankpimenkoquestionnaire) {
         $pagetags = $this->questionstart_survey_display($qnum, $formdata);
         $pagetags->qformelement = $this->question_survey_display($formdata, $dependants, $blankpimenkoquestionnaire);
         return $pagetags;
@@ -562,9 +593,9 @@ abstract class base {
      * Get the output for the start of the questions in a survey.
      *
      * @param integer $qnum
-     * @param object  $formdata
+     * @param object $formdata
      */
-    public function questionstart_survey_display( $qnum, $formdata = '' ) {
+    public function questionstart_survey_display($qnum, $formdata = '') {
         global $OUTPUT, $SESSION, $pimenkoquestionnaire, $PAGE;
 
         $pagetags = new \stdClass();
@@ -641,22 +672,22 @@ abstract class base {
     /**
      * Question specific display method.
      *
-     * @param object  $formdata
-     * @param array   $descendantdata
+     * @param object $formdata
+     * @param array $descendantdata
      * @param boolean $blankpimenkoquestionnaire
      *
      */
-    abstract protected function question_survey_display( $formdata, $descendantsdata, $blankpimenkoquestionnaire );
+    abstract protected function question_survey_display($formdata, $descendantsdata, $blankpimenkoquestionnaire);
 
     /**
      * Get the output for question renderers / templates.
      *
-     * @param object  $formdata
-     * @param string  $descendantdata
+     * @param object $formdata
+     * @param string $descendantdata
      * @param integer $qnum
      * @param boolean $blankpimenkoquestionnaire
      */
-    public function response_output( $data, $qnum = '' ) {
+    public function response_output($data, $qnum = '') {
         $pagetags = $this->questionstart_survey_display($qnum, $data);
         $pagetags->qformelement = $this->response_survey_display($data);
         return $pagetags;
@@ -665,22 +696,22 @@ abstract class base {
     /**
      * Question specific response display method.
      *
-     * @param object  $data
+     * @param object $data
      * @param integer $qnum
      *
      */
-    abstract protected function response_survey_display( $data );
+    abstract protected function response_survey_display($data);
 
     /**
      * Override this, or any of the internal methods, to provide specific form data for editing the question type.
      * The structure of the elements here is the default layout for the question form.
      *
-     * @param edit_question_form   $form                 The main moodleform object.
+     * @param edit_question_form $form The main moodleform object.
      * @param pimenkoquestionnaire $pimenkoquestionnaire The pimenkoquestionnaire being edited.
      *
      * @return bool
      */
-    public function edit_form( edit_question_form $form, pimenkoquestionnaire $pimenkoquestionnaire ) {
+    public function edit_form(edit_question_form $form, pimenkoquestionnaire $pimenkoquestionnaire) {
         $mform =& $form->_form;
         $this->form_header($mform);
         $this->form_name($mform);
@@ -724,7 +755,7 @@ abstract class base {
         return true;
     }
 
-    protected function form_header( \MoodleQuickForm $mform, $helpname = '' ) {
+    protected function form_header(\MoodleQuickForm $mform, $helpname = '') {
         // Display different messages for new question creation and existing question modification.
         if (isset($this->qid) && !empty($this->qid)) {
             $header = get_string('editquestion', 'pimenkoquestionnaire', pimenkoquestionnaire_get_type($this->type_id));
@@ -746,7 +777,7 @@ abstract class base {
      */
     abstract public function helpname();
 
-    protected function form_name( \MoodleQuickForm $mform ) {
+    protected function form_name(\MoodleQuickForm $mform) {
         $mform->addElement('text', 'name', get_string('optionalname', 'pimenkoquestionnaire'),
                 ['size' => '30', 'maxlength' => '30']);
         $mform->setType('name', PARAM_TEXT);
@@ -754,7 +785,7 @@ abstract class base {
         return $mform;
     }
 
-    protected function form_required( \MoodleQuickForm $mform ) {
+    protected function form_required(\MoodleQuickForm $mform) {
         $reqgroup = [];
         $reqgroup[] =& $mform->createElement('radio', 'required', '', get_string('yes'), 'y');
         $reqgroup[] =& $mform->createElement('radio', 'required', '', get_string('no'), 'n');
@@ -763,11 +794,11 @@ abstract class base {
         return $mform;
     }
 
-    protected function form_length( \MoodleQuickForm $mform, $helpname = '' ) {
+    protected function form_length(\MoodleQuickForm $mform, $helpname = '') {
         self::form_length_text($mform, $helpname);
     }
 
-    static public function form_length_text( \MoodleQuickForm $mform, $helpname = '', $value = 0 ) {
+    static public function form_length_text(\MoodleQuickForm $mform, $helpname = '', $value = 0) {
         $mform->addElement('text', 'length', get_string($helpname, 'pimenkoquestionnaire'), ['size' => '1'], $value);
         $mform->setType('length', PARAM_INT);
         if (!empty($helpname)) {
@@ -776,11 +807,11 @@ abstract class base {
         return $mform;
     }
 
-    protected function form_precise( \MoodleQuickForm $mform, $helpname = '' ) {
+    protected function form_precise(\MoodleQuickForm $mform, $helpname = '') {
         self::form_precise_text($mform, $helpname);
     }
 
-    static public function form_precise_text( \MoodleQuickForm $mform, $helpname = '', $value = 0 ) {
+    static public function form_precise_text(\MoodleQuickForm $mform, $helpname = '', $value = 0) {
         $mform->addElement('text', 'precise', get_string($helpname, 'pimenkoquestionnaire'), ['size' => '1']);
         $mform->setType('precise', PARAM_INT);
         if (!empty($helpname)) {
@@ -789,7 +820,7 @@ abstract class base {
         return $mform;
     }
 
-    protected function form_question_text( \MoodleQuickForm $mform, $context ) {
+    protected function form_question_text(\MoodleQuickForm $mform, $context) {
         $editoroptions = ['maxfiles' => EDITOR_UNLIMITED_FILES, 'trusttext' => true, 'context' => $context];
         $mform->addElement('editor', 'content', get_string('text', 'pimenkoquestionnaire'), null, $editoroptions);
         $mform->setType('content', PARAM_RAW);
@@ -797,7 +828,7 @@ abstract class base {
         return $mform;
     }
 
-    protected function form_choices( \MoodleQuickForm $mform, array $choices, $helpname = '' ) {
+    protected function form_choices(\MoodleQuickForm $mform, array $choices, $helpname = '') {
         $numchoices = count($choices);
         $allchoices = '';
         foreach ($choices as $choice) {
@@ -834,7 +865,7 @@ abstract class base {
      *
      * @return bool
      */
-    protected function form_dependencies( $form, $questions ) {
+    protected function form_dependencies($form, $questions) {
         // Create a new area for multiple dependencies.
         $mform = $form->_form;
         $position = ($this->position !== 0) ? $this->position : count($questions) + 1;
@@ -921,7 +952,7 @@ abstract class base {
     /**
      * Create and update question data from the forms.
      */
-    public function form_update( $formdata, $pimenkoquestionnaire ) {
+    public function form_update($formdata, $pimenkoquestionnaire) {
         global $DB;
 
         $this->form_preprocess_data($formdata);
@@ -1102,7 +1133,7 @@ abstract class base {
     /**
      * Any preprocessing of general data.
      */
-    protected function form_preprocess_data( $formdata ) {
+    protected function form_preprocess_data($formdata) {
         if ($this->has_choices()) {
             // Eliminate trailing blank lines.
             $formdata->allchoices = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $formdata->allchoices);
@@ -1146,7 +1177,7 @@ abstract class base {
     /**
      * Override this function for question specific choice preprocessing.
      */
-    protected function form_preprocess_choicedata( $formdata ) {
+    protected function form_preprocess_choicedata($formdata) {
         if (empty($formdata->allchoices)) {
             error(get_string('enterpossibleanswers', 'pimenkoquestionnaire'));
         }
@@ -1156,10 +1187,10 @@ abstract class base {
     /**
      * Update data record from object or optional question data.
      *
-     * @param object  $questionrecord An object with all updated question record data.
-     * @param boolean $updatechoices  True if choices should also be updated.
+     * @param object $questionrecord An object with all updated question record data.
+     * @param boolean $updatechoices True if choices should also be updated.
      */
-    public function update( $questionrecord = null, $updatechoices = true ) {
+    public function update($questionrecord = null, $updatechoices = true) {
         global $DB;
 
         if ($questionrecord === null) {
@@ -1213,7 +1244,7 @@ abstract class base {
         return $retvalue;
     }
 
-    public function update_choice( $choicerecord ) {
+    public function update_choice($choicerecord) {
         global $DB;
         return $DB->update_record('pimenko_quest_choice', $choicerecord);
     }
@@ -1221,11 +1252,11 @@ abstract class base {
     /**
      * Add the question to the database from supplied arguments.
      *
-     * @param object  $questionrecord The required data for adding the question.
-     * @param array   $choicerecords  An array of choice records with 'content' and 'value' properties.
-     * @param boolean $calcposition   Whether or not to calculate the next available position in the survey.
+     * @param object $questionrecord The required data for adding the question.
+     * @param array $choicerecords An array of choice records with 'content' and 'value' properties.
+     * @param boolean $calcposition Whether or not to calculate the next available position in the survey.
      */
-    public function add( $questionrecord, array $choicerecords = null, $calcposition = true ) {
+    public function add($questionrecord, array $choicerecords = null, $calcposition = true) {
         global $DB, $COURSE;
 
         // Create new question.
@@ -1254,20 +1285,20 @@ abstract class base {
                 $this->add_choice($choicerecord);
             }
         } else if ($questionrecord->type_id == 11) {
-            $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
+            $role = $DB->get_record('role', ['shortname' => 'editingteacher', 'shortname' => 'responsablebloccontact']);
             $context = context_course::instance($COURSE->id);
             $teachers = get_role_users($role->id, $context);
             foreach ($teachers as $teacher) {
                 $choicerecord = new \stdClass();
                 $choicerecord->question_id = $this->qid;
                 $choicerecord->content = $teacher->firstname . ' ' . $teacher->lastname;
-                $choicerecord->value =  $choicerecord->content;
+                $choicerecord->value = $choicerecord->content;
                 $this->add_choice($choicerecord);
             }
         }
     }
 
-    public function add_choice( $choicerecord ) {
+    public function add_choice($choicerecord) {
         global $DB;
         $retvalue = true;
 
@@ -1297,7 +1328,7 @@ abstract class base {
      *
      * @param integer|object $choice Either the integer id of the choice, or the choice record.
      */
-    public function delete_choice( $choice ) {
+    public function delete_choice($choice) {
         global $DB;
 
         $retvalue = true;
@@ -1314,12 +1345,12 @@ abstract class base {
         return $retvalue;
     }
 
-    public function update_dependency( $dependencyrecord ) {
+    public function update_dependency($dependencyrecord) {
         global $DB;
         return $DB->update_record('pimenko_dependency', $dependencyrecord);
     }
 
-    public function add_dependency( $dependencyrecord ) {
+    public function add_dependency($dependencyrecord) {
         global $DB;
 
         $retvalue = true;
@@ -1340,7 +1371,7 @@ abstract class base {
      *
      * @param integer|object $dependency Either the integer id of the dependency, or the dependency record.
      */
-    public function delete_dependency( $dependency ) {
+    public function delete_dependency($dependency) {
         global $DB;
 
         $retvalue = true;
@@ -1390,10 +1421,7 @@ abstract class base {
         return false;
     }
 
-    /**
-     * Override and return true if the question has choices.
-     */
-    public function has_choices() {
-        return false;
+    private function compare_object($a, $b) {
+
     }
 }
