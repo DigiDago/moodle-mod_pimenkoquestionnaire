@@ -40,6 +40,7 @@ if ($ADMIN->fulltree) {
             'department' => get_string('department'),
             'course' => get_string('course'),
             'group' => get_string('group'),
+            'cohort' => get_string('cohort', 'pimenkoquestionnaire'),
             'id' => get_string('id', 'pimenkoquestionnaire'),
             'fullname' => get_string('fullname'),
             'username' => get_string('username')

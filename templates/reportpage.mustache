@@ -65,6 +65,10 @@
     }}
 <div class="mod_pimenkoquestionnaire_reportpage generalbox">
     {{#tabsarea}}{{{tabsarea}}}{{/tabsarea}}
+    {{#showprintbutton}}
+        <input type="hidden" id="coursetitle" name="coursetitle" value="{{#coursetitle}}{{{coursetitle}}}{{/coursetitle}}">
+        <button class="printtopdf" onclick="window.print()" >{{# str }} printtopdf, pimenkoquestionnaire {{/ str }}</button>
+    {{/showprintbutton}}
     {{#notifications}}{{{notifications}}}{{/notifications}}
     <div class="box generalbox">
         {{#myheaders}}<h2>{{{.}}}</h2>{{/myheaders}}
