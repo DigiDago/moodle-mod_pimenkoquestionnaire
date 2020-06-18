@@ -3111,7 +3111,7 @@ class pimenkoquestionnaire {
     }
 
     public function survey_copy($owner) {
-        global $DB;
+        global $DB, $COURSE;
 
         // Clear the sid, clear the creation date, change the name, and clear the status.
         $survey = clone($this->survey);

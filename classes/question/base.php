@@ -1307,9 +1307,27 @@ abstract class base {
                 $this->add_choice($choicerecord);
             }
         } else if ($questionrecord->type_id == 11) {
-            $role = $DB->get_record('role', ['shortname' => 'editingteacher', 'shortname' => 'responsablebloccontact']);
+            $roleeditingteacher = $DB->get_record('role', ['shortname' => 'editingteacher']);
+            $roleresponsable = $DB->get_record('role', ['shortname' => 'responsablebloccontact']);
+
             $context = context_course::instance($COURSE->id);
-            $teachers = get_role_users($role->id, $context);
+            if($roleeditingteacher){
+                $editingteacher = get_role_users($roleeditingteacher->id, $context);
+            }
+            if($roleresponsable){
+                $responsable = get_role_users($roleresponsable->id, $context);
+            }
+
+            $teachers = [];
+
+            if(!empty($editingteacher) && !empty($responsable)) {
+                $teachers = array_merge($editingteacher,$responsable);
+            } elseif (!empty($editingteacher)) {
+                $teachers = $editingteacher;
+            } elseif (!empty($responsable)) {
+                $teachers = $responsable;
+            }
+
             foreach ($teachers as $teacher) {
                 $choicerecord = new \stdClass();
                 $choicerecord->question_id = $this->qid;
