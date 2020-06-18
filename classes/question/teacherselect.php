@@ -60,16 +60,40 @@ class teacherselect extends base {
         $allchoices = '';
 
         if (!$choices) {
-            $role = $DB->get_record('role', ['shortname' => 'editingteacher', 'shortname' => 'responsablebloccontact']);
+            $roleeditingteacher = $DB->get_record('role', ['shortname' => 'editingteacher']);
+            $roleresponsable = $DB->get_record('role', ['shortname' => 'responsablebloccontact']);
+
             $context = context_course::instance($COURSE->id);
-            $teachers = get_role_users($role->id, $context);
-            foreach ($teachers as $teacher) {
-                $choice = new \stdClass();
-                $choice->content = $teacher->firstname . ' ' . $teacher->lastname;
-                $choice->value = $choice->content;
-                $choices[] = $choice;
+            if($roleeditingteacher){
+                $editingteacher = get_role_users($roleeditingteacher->id, $context);
+            }
+            if($roleresponsable){
+                $responsable = get_role_users($roleresponsable->id, $context);
+            }
+
+            $teachers = [];
+
+            if(!empty($editingteacher) && !empty($responsable)) {
+                $teachers = array_merge($editingteacher,$responsable);
+            } elseif (!empty($editingteacher)) {
+                $teachers = $editingteacher;
+            } elseif (!empty($responsable)) {
+                $teachers = $responsable;
+            }
+
+            if (isset($teachers)) {
+                foreach ($teachers as $teacher) {
+                    $choice = new \stdClass();
+                    $choice->content = $teacher->firstname . ' ' . $teacher->lastname;
+                    $choice->value = $choice->content;
+                    if(!in_array($choice->value,$choices)){
+                        $choices[$choice->value] = $choice;
+                    }
+                }
             }
         }
+
+        $choices = array_values($choices);
 
         foreach ($choices as $choice) {
             if (!empty($allchoices)) {
