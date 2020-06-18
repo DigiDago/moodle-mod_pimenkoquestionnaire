@@ -174,9 +174,15 @@ abstract class base {
             // This code will remove Teacher who are no longer enrol as teacher from the select teacher list.
             $type = $PAGE->pagetype;
             if ($this->type_id == 11 && $type == "mod-pimenkoquestionnaire-complete") {
-                $role = $DB->get_record('role', ['shortname' => 'editingteacher', 'shortname' => 'responsablebloccontact']);
+                $roleeditingteacher = $DB->get_record('role', ['shortname' => 'editingteacher']);
+                $roleresponsable = $DB->get_record('role', ['shortname' => 'responsablebloccontact']);
+
                 $context = context_course::instance($COURSE->id);
-                $teachers = get_role_users($role->id, $context);
+
+                $editingteacher = get_role_users($roleeditingteacher->id, $context);
+                $responsable = get_role_users($roleresponsable->id, $context);
+
+                $teachers = array_merge($editingteacher,$responsable);
                 foreach ($this->choices as $key => $choice) {
                     $same = false;
                     foreach ($teachers as $teacher) {
