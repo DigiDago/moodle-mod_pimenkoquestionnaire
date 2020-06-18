@@ -163,26 +163,42 @@ abstract class base {
 
         if ($choices = $DB->get_records('pimenko_quest_choice', ['question_id' => $this->id], 'id ASC')) {
             foreach ($choices as $choice) {
-
                 $this->choices[$choice->id] = new \stdClass();
                 $this->choices[$choice->id]->content = $choice->content;
-                $this->choices[$choice->id]->value = $choice->value;
+                if(!$choice->value) {
+                    $this->choices[$choice->id]->value = $choice->content;
+                } else {
+                    $this->choices[$choice->id]->value = $choice->value;
+                }
             }
 
             // Typeid always the same.
             // Here we need to remove old teacher from the list.
             // This code will remove Teacher who are no longer enrol as teacher from the select teacher list.
             $type = $PAGE->pagetype;
-            if ($this->type_id == 11 && $type == "mod-pimenkoquestionnaire-complete") {
+            if ( $this->type_id == 11 && ($type == "mod-pimenkoquestionnaire-complete" || $type == "mod-pimenkoquestionnaire-preview")
+            ) {
                 $roleeditingteacher = $DB->get_record('role', ['shortname' => 'editingteacher']);
                 $roleresponsable = $DB->get_record('role', ['shortname' => 'responsablebloccontact']);
 
                 $context = context_course::instance($COURSE->id);
+                if($roleeditingteacher){
+                    $editingteacher = get_role_users($roleeditingteacher->id, $context);
+                }
+                if($roleresponsable){
+                    $responsable = get_role_users($roleresponsable->id, $context);
+                }
 
-                $editingteacher = get_role_users($roleeditingteacher->id, $context);
-                $responsable = get_role_users($roleresponsable->id, $context);
+                $teachers = [];
 
-                $teachers = array_merge($editingteacher,$responsable);
+                if(!empty($editingteacher) && !empty($responsable)) {
+                    $teachers = array_merge($editingteacher,$responsable);
+                } elseif (!empty($editingteacher)) {
+                    $teachers = $editingteacher;
+                } elseif (!empty($responsable)) {
+                    $teachers = $responsable;
+                }
+
                 foreach ($this->choices as $key => $choice) {
                     $same = false;
                     foreach ($teachers as $teacher) {
@@ -1313,10 +1329,10 @@ abstract class base {
                             WHERE question_id = " . $choicerecord->question_id . "
                             AND content = '" . str_replace("'", "''", $choicerecord->content) . "'";
         $existing = $DB->get_record_sql($sql);
+
         if ($existing) {
             return false;
         }
-
         if ($cid = $DB->insert_record('pimenko_quest_choice', $choicerecord)) {
             $this->choices[$cid] = new \stdClass();
             $this->choices[$cid]->content = str_replace("'", "''", $choicerecord->content);
