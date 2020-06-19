@@ -63,7 +63,6 @@ class renderer extends \plugin_renderer_base {
         global $COURSE;
         $data = $page->export_for_template($this);
         $data->coursetitle = $COURSE->fullname;
-
         if (isset($_GET['action'])) {
             if ($_GET['action'] == "vall"
                     || $_GET['action'] == "vallsort"
