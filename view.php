@@ -176,7 +176,7 @@ if ($pimenkoquestionnaire->capabilities->readownresponses && ($usernumresp > 0))
 }
 
 if ($pimenkoquestionnaire->can_view_all_responses($usernumresp)) {
-    $argstr = 'instance=' . $pimenkoquestionnaire->id . '&group=' . $currentgroupid;
+    $argstr = 'instance=' . $pimenkoquestionnaire->id . '&group=' . $currentgroupid . '&action=vall';
     $pimenkoquestionnaire->page->add_to_page('allresponses',
             '<a href="' . $CFG->wwwroot . htmlspecialchars('/mod/pimenkoquestionnaire/report.php?' . $argstr) . '">' .
             get_string('viewallresponses', 'pimenkoquestionnaire') . '</a>');
