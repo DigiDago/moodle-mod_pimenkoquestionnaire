@@ -391,7 +391,7 @@ $string['printtooltip'] = 'Opens printer-friendly window with current Response';
 
 $string['privacy:metadata:pimenko_response'] = 'A response in progress or submitted';
 $string['privacy:metadata:pimenko_response:userid'] = 'The ID of the user for this response.';
-$string['privacy:metadata:pimenko_response:questionnaireid'] = 'The ID of the questionnaire record for this response.';
+$string['privacy:metadata:pimenko_response:pimenkoquestionnaireid'] = 'The ID of the questionnaire record for this response.';
 $string['privacy:metadata:pimenko_response:complete'] = 'The response completion status.';
 $string['privacy:metadata:pimenko_response:grade'] = 'The grade for this response.';
 $string['privacy:metadata:pimenko_response:submitted'] = 'The timestamp for the most recent save for this response.';
