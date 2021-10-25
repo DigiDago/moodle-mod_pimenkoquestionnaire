@@ -25,8 +25,6 @@
 
 namespace mod_pimenkoquestionnaire\output;
 
-use core\plugininfo\format;
-
 defined('MOODLE_INTERNAL') || die();
 
 class renderer extends \plugin_renderer_base {
