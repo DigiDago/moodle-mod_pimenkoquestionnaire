@@ -25,6 +25,8 @@
 
 namespace mod_pimenkoquestionnaire\output;
 
+use core\plugininfo\format;
+
 defined('MOODLE_INTERNAL') || die();
 
 class renderer extends \plugin_renderer_base {
@@ -49,6 +51,11 @@ class renderer extends \plugin_renderer_base {
      */
     public function render_completepage($page) {
         $data = $page->export_for_template($this);
+
+        // Format for multilang.
+        $data->title = format_text($data->title);
+        $data->addinfo = format_text($data->addinfo);
+
         return $this->render_from_template('mod_pimenkoquestionnaire/completepage', $data);
     }
 
