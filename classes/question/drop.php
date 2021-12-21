@@ -102,7 +102,7 @@ class drop extends base {
             }
             $option = new \stdClass();
             $option->value = $key;
-            $option->label = $choice->content;
+            $option->label = format_string($choice->content);
             if (($selected !== false) && ($key == $selected)) {
                 $option->selected = true;
             }
