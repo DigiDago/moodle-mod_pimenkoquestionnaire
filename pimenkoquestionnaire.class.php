@@ -1019,13 +1019,13 @@ class pimenkoquestionnaire {
         }
         if ($section == 1) {
             if (!empty($this->survey->title)) {
-                $this->page->add_to_page('title', clean_text($this->survey->title, FORMAT_HTML));
+                $this->page->add_to_page('title', format_string($this->survey->title));
             }
             if (!empty($this->survey->subtitle)) {
-                $this->page->add_to_page('subtitle', clean_text($this->survey->subtitle, FORMAT_HTML));
+                $this->page->add_to_page('subtitle', format_string($this->survey->subtitle));
             }
             if ($this->survey->info) {
-                $infotext = file_rewrite_pluginfile_urls($this->survey->info, 'pluginfile.php',
+                $infotext = file_rewrite_pluginfile_urls(format_string($this->survey->info), 'pluginfile.php',
                         $this->context->id, 'mod_pimenkoquestionnaire', 'info', $this->survey->id);
                 $this->page->add_to_page('addinfo', $infotext);
             }
@@ -1193,7 +1193,7 @@ class pimenkoquestionnaire {
         $columns = [];
         $types = [];
         foreach ($options as $option) {
-            if (in_array($option, ['response', 'submitted', 'id'])) {
+            if (in_array($option, ['response', 'submitted', 'id', 'cohort'])) {
                 $columns[] = get_string($option, 'pimenkoquestionnaire');
                 $types[] = 0;
             } else {
@@ -1201,6 +1201,7 @@ class pimenkoquestionnaire {
                 $types[] = 1;
             }
         }
+
         $nbinfocols = count($columns);
 
         $idtocsvmap = [
@@ -1742,19 +1743,17 @@ class pimenkoquestionnaire {
         // Determine if the user is a member of a group in this course or not.
         // TODO - review for performance.
         $groupname = '';
-        if (groups_get_activity_groupmode($this->cm, $this->course)) {
-            if ($currentgroupid > 0) {
-                $groupname = groups_get_group_name($currentgroupid);
-            } else {
-                if ($user->id) {
-                    if ($groups = groups_get_all_groups($courseid, $user->id)) {
-                        foreach ($groups as $group) {
-                            $groupname .= $group->name . ', ';
-                        }
-                        $groupname = substr($groupname, 0, strlen($groupname) - 2);
-                    } else {
-                        $groupname = ' (' . get_string('groupnonmembers') . ')';
+        if ($currentgroupid > 0) {
+            $groupname = groups_get_group_name($currentgroupid);
+        } else {
+            if ($user->id) {
+                if ($groups = groups_get_all_groups($courseid, $user->id)) {
+                    foreach ($groups as $group) {
+                        $groupname .= $group->name . ', ';
                     }
+                    $groupname = substr($groupname, 0, strlen($groupname) - 2);
+                } else {
+                    $groupname = ' (' . get_string('groupnonmembers') . ')';
                 }
             }
         }
@@ -1771,6 +1770,17 @@ class pimenkoquestionnaire {
             $fullname = fullname($user);
             $username = $user->username;
         }
+
+        // Cohort.
+        $user->cohort = '';
+        $sql = "SELECT
+                    GROUP_CONCAT(c.name SEPARATOR ' - ') as cohort
+                FROM {cohort_members} cm
+                INNER JOIN {cohort} c ON cm.cohortid = c.id
+                INNER JOIN {enrol} e ON c.id = e.customint1 AND enrol = 'cohort' AND e.courseid = " . $courseid . "
+                WHERE cm.userid = " . $user->id;
+        $data = $DB->get_record_sql($sql);
+        $user->cohort = $data->cohort;
 
         if (in_array('response', $options)) {
             array_push($positioned, $resprow->rid);
@@ -1791,6 +1801,9 @@ class pimenkoquestionnaire {
         }
         if (in_array('group', $options)) {
             array_push($positioned, $groupname);
+        }
+        if (in_array('cohort', $options)) {
+            array_push($positioned, $user->cohort);
         }
         if (in_array('id', $options)) {
             array_push($positioned, $uid);
@@ -2524,7 +2537,7 @@ class pimenkoquestionnaire {
             $question->dependencies[$did]->name = $question->name;
             $question->dependencies[$did]->content = $question->content;
             $question->dependencies[$did]->parentposition = $dependquestion->position;
-            $question->dependencies[$did]->parent = $dependquestion->name . '->' . $dependchoice;
+            $question->dependencies[$did]->parent = format_string($dependquestion->name) . '->' . format_string($dependchoice);
         }
         return true;
     }
