@@ -1245,6 +1245,8 @@ class pimenkoquestionnaire {
             if (!empty($choicerecords)) {
                 // Hash the options by question id.
                 foreach ($choicerecords as $choicerecord) {
+                    // Force trad.
+                    $choicerecord->content = format_string($choicerecord->content);
                     if (!isset($choicesbyqid[$choicerecord->qid])) {
                         // New question id detected, intialise empty array to store choices.
                         $choicesbyqid[$choicerecord->qid] = [];
