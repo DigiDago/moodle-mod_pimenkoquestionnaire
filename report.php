@@ -486,8 +486,9 @@ switch ($action) {
         require_once($CFG->libdir . '/dataformatlib.php');
 
         // Use the pimenkoquestionnaire name as the file name. Clean it and change any non-filename characters to '_'.
-        $name = clean_param($pimenkoquestionnaire->name, PARAM_FILE);
-        $name = preg_replace("/[^A-Z0-9]+/i", "_", trim($name));
+        $name = format_string($pimenkoquestionnaire->name);
+        $name = preg_replace('/[\x00-\x1F\x7F-\xFF]/', "", trim($name));
+        $name = trim($name);
 
         $choicecodes = optional_param('choicecodes', '0', PARAM_INT);
         $choicetext = optional_param('choicetext', '0', PARAM_INT);
