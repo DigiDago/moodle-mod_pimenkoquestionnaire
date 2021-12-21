@@ -486,7 +486,7 @@ switch ($action) {
         require_once($CFG->libdir . '/dataformatlib.php');
 
         // Use the pimenkoquestionnaire name as the file name. Clean it and change any non-filename characters to '_'.
-        $name = format_string($pimenkoquestionnaire->name);
+        $name = format_string($pimenkoquestionnaire->name . ' - ' .$course->fullname);
         $name = preg_replace('/[\x00-\x1F\x7F-\xFF]/', "", trim($name));
         $name = trim($name);
 
