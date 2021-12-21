@@ -1780,7 +1780,9 @@ class pimenkoquestionnaire {
                 INNER JOIN {enrol} e ON c.id = e.customint1 AND enrol = 'cohort' AND e.courseid = " . $courseid . "
                 WHERE cm.userid = " . $user->id;
         $data = $DB->get_record_sql($sql);
-        $user->cohort = $data->cohort;
+        if ($data) {
+            $user->cohort = $data->cohort;
+        }
 
         if (in_array('response', $options)) {
             array_push($positioned, $resprow->rid);
