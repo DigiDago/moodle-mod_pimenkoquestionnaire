@@ -638,7 +638,7 @@ function pimenkoquestionnaire_get_parent( $question ) {
         $parent [$qid]['name'] = $question->name;
         $parent [$qid]['content'] = $question->content;
         $parent [$qid]['parentposition'] = $dependquestion->position;
-        $parent [$qid]['parent'] = $dependquestion->name . '->' . $dependchoice;
+        $parent [$qid]['parent'] = format_string($dependquestion->name) . '->' . format_string($dependchoice);
     }
     return $parent;
 }
