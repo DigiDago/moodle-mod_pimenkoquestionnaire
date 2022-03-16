@@ -602,3 +602,4 @@ $string['yourresponse'] = 'Votre réponse';
 $string['yourresponses'] = 'Vos réponses';
 $string['printtopdf'] = 'Imprimer en pdf';
 $string['cohort'] = 'Cohort';
+$string['teacherselect'] = 'Choix d\'un enseignant';
